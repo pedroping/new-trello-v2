@@ -3,19 +3,19 @@
   "$schema": "node_modules/nx/schemas/project-schema.json",
   "includedScripts": [],
   "projectType": "application",
-  "prefix": "app",
+  "prefix": "new-trello",
   "sourceRoot": "./src",
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:application",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": [
         "{options.outputPath}"
       ],
       "options": {
         "outputPath": "dist/new-trello-v2",
         "index": "./src/index.html",
-        "browser": "./src/main.ts",
+        "main": "./src/main.ts",
         "polyfills": [
           "zone.js"
         ],
@@ -30,6 +30,9 @@
         "styles": [
           "./src/styles.scss"
         ],
+        "customWebpackConfig": {
+          "path": "./webpack.config.js"
+        },
         "scripts": []
       },
       "configurations": {
@@ -58,7 +61,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@nx/angular:dev-server",
       "configurations": {
         "production": {
           "buildTarget": "new-trello-v2:build:production"
