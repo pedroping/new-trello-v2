@@ -1,16 +1,8 @@
-const baseConfig = require('./eslint.base.config.js');
 const nx = require('@nx/eslint-plugin');
+const baseConfig = require('../../eslint.base.config.js');
 
 module.exports = [
   ...baseConfig,
-  {
-    ignores: ['**/dist'],
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    // Override or add rules here
-    rules: {},
-  },
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
   {
@@ -20,7 +12,7 @@ module.exports = [
         'error',
         {
           type: 'attribute',
-          prefix: 'new-trello',
+          prefix: 'lib',
           style: 'camelCase',
         },
       ],
@@ -28,7 +20,7 @@ module.exports = [
         'error',
         {
           type: 'element',
-          prefix: 'new-trello',
+          prefix: 'lib',
           style: 'kebab-case',
         },
       ],
