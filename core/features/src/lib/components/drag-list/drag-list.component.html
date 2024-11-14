@@ -1,7 +1,32 @@
-<div class="list">
+<div class="list" #vcr>
   @for (item of listElements; track item.id) {
-  <lib-drag-element>
+  <lib-drag-element [id]="item.id" #elemnts>
     {{ item.name }}
   </lib-drag-element>
   }
 </div>
+
+<button
+  (click)="insert()"
+  style="
+    position: absolute;
+    top: 200px;
+    left: 150px;
+    transition: all 200ms ease-in-out;
+  "
+>
+  Insert
+</button>
+
+<lib-drag-element
+  [id]="150"
+  style="
+    position: absolute;
+    top: 20px;
+    left: 150px;
+    transition: all 200ms ease-in-out;
+  "
+  #otherElement
+>
+  Test 150
+</lib-drag-element>

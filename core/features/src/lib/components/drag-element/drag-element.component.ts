@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input, OnDestroy, OnInit } from '@angular/core';
 
 @Component({
   selector: 'lib-drag-element',
@@ -6,4 +6,14 @@ import { Component } from '@angular/core';
   styleUrls: ['./drag-element.component.scss'],
   standalone: true,
 })
-export class DragElementComponent {}
+export class DragElementComponent implements OnInit, OnDestroy {
+  id = input();
+
+  ngOnInit(): void {
+    console.log('Init', this.id());
+  }
+
+  ngOnDestroy(): void {
+    console.log('Destroy', this.id());
+  }
+}
