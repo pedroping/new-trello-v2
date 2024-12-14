@@ -4,7 +4,6 @@ import { Component, input, OnDestroy, OnInit } from '@angular/core';
   selector: 'lib-drag-element',
   templateUrl: './drag-element.component.html',
   styleUrls: ['./drag-element.component.scss'],
-  standalone: true,
 })
 export class DragElementComponent implements OnInit, OnDestroy {
   id = input();

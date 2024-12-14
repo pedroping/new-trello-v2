@@ -5,7 +5,6 @@ import { DragElementComponent } from '../drag-element/drag-element.component';
   selector: 'lib-drag-list',
   templateUrl: './drag-list.component.html',
   styleUrls: ['./drag-list.component.scss'],
-  standalone: true,
   imports: [DragElementComponent],
 })
 export class DragListComponent {

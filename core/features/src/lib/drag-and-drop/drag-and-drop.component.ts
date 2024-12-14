@@ -4,7 +4,6 @@ import { DragListComponent } from '../components/drag-list/drag-list.component';
 
 @Component({
   selector: 'lib-drag-and-drop',
-  standalone: true,
   imports: [CommonModule, DragListComponent],
   templateUrl: './drag-and-drop.component.html',
   styleUrl: './drag-and-drop.component.scss',
