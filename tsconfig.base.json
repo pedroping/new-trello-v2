@@ -20,7 +20,8 @@
       ],
       "@new-trello-v2/drag-and-drop": [
         "libs/features/drag-and-drop/src/index.ts"
-      ]
+      ],
+      "@new-trello-v2/styles": ["libs/utils/styles/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

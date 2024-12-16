@@ -27,6 +27,9 @@
         "customWebpackConfig": {
           "path": "./webpack.config.js"
         },
+        "stylePreprocessorOptions": {
+          "includePaths": ["libs/utils/styles/src/lib"]
+        },
         "scripts": []
       },
       "configurations": {
@@ -92,6 +95,22 @@
         "port": 4200,
         "staticFilePath": "dist/new-trello-v2/browser",
         "spa": true
+      }
+    },
+    "schematics": {
+      "@schematics/angular:component": {
+        "style": "scss",
+        "changeDetection": "OnPush",
+        "standalone": true,
+        "prefix": ""
+      }
+    },
+    "generators": {
+      "@schematics/angular:component": {
+        "style": "scss",
+        "changeDetection": "OnPush",
+        "standalone": true,
+        "prefix": ""
       }
     }
   }
