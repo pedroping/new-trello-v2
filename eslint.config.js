@@ -9,7 +9,9 @@ module.exports = [
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     // Override or add rules here
-    rules: {},
+    rules: {
+      '@angular-eslint/component-selector': ['disabled'],
+    },
   },
   ...nx.configs['flat/angular'],
   ...nx.configs['flat/angular-template'],
