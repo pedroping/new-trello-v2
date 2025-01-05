@@ -5,4 +5,9 @@ export const appRoutes: Route[] = [
     path: '',
     loadChildren: async () => await import('./domain/home/routes'),
   },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full',
+  },
 ];
