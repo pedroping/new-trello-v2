@@ -1,1 +1,7 @@
-<lib-list />
+@if (boardEnvironment$ | async; as boardEnvironment) {
+@for (list of boardEnvironment.lists; track list.id) {
+<lib-list [list]="list" />
+}
+}
+
+<button (click)="change()">Change</button>

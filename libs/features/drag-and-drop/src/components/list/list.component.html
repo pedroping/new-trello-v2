@@ -2,12 +2,9 @@
 <div class="content">
   <div class="sortable-list">
     <ul id="sortable">
+      @for (card of cards(); track card.id) {
       <li lib-list-card></li>
-      <li lib-list-card></li>
-      <li lib-list-card></li>
-      <li lib-list-card></li>
-      <li lib-list-card></li>
-      <li lib-list-card></li>
+      }
     </ul>
   </div>
 </div>
