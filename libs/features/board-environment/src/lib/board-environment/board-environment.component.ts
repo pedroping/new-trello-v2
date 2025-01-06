@@ -3,12 +3,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ListComponent } from '@new-trello-v2/drag-and-drop';
 import { BoardEnvironmentDataService } from '@new-trello-v2/drag-and-drop-data';
 import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
-
+import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
 @Component({
   selector: 'lib-board-environment',
   templateUrl: './board-environment.component.html',
   styleUrl: './board-environment.component.scss',
   imports: [ListComponent, AsyncPipe],
+  hostDirectives: [MousePageMoveDirective],
 })
 export class BoardEnvironmentComponent implements OnInit {
   private readonly boardEnvironmentDataService = inject(
