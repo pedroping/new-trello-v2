@@ -2,19 +2,30 @@ import {
   Component,
   computed,
   effect,
+  ElementRef,
   inject,
-  input
+  input,
 } from '@angular/core';
 import { ListDataService } from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListCardComponent } from '../list-card/list-card.component';
 import { ListHeaderComponent } from '../list-header/list-header.component';
+
 @Component({
   selector: 'lib-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
   imports: [ListHeaderComponent, ListCardComponent],
-  providers: [ListDataService],
+  providers: [
+    ListDataService,
+    {
+      provide: LIST_ELEMENT,
+      useFactory: () => {
+        return inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+      },
+    },
+  ],
 })
 export class ListComponent {
   list = input.required<IList>();

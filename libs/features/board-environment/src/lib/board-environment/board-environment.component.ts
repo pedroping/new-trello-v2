@@ -2,8 +2,9 @@ import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ListComponent } from '@new-trello-v2/drag-and-drop';
 import { BoardEnvironmentDataService } from '@new-trello-v2/drag-and-drop-data';
-import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
+import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
+
 @Component({
   selector: 'lib-board-environment',
   templateUrl: './board-environment.component.html',
@@ -27,7 +28,7 @@ export class BoardEnvironmentComponent implements OnInit {
         id: i,
         name: 'List ' + (i + 1),
         environmentId: 1,
-        cards: Array.from({ length: 10 }).map((_, y) => ({
+        cards: Array.from({ length: 100 }).map((_, y) => ({
           name: 'Card ' + (y + 1),
           id: y,
           listId: i,

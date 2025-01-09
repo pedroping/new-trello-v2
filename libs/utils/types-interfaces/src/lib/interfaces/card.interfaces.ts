@@ -3,3 +3,9 @@ export interface ICard {
   id: number;
   listId: number;
 }
+
+export interface ICardMoveEvent {
+  id: number;
+  element: HTMLElement;
+  listId: number;
+}

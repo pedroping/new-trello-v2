@@ -1,0 +1,115 @@
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
+import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import { ICard } from '@new-trello-v2/types-interfaces';
+import { fromEvent, take, timer } from 'rxjs';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
+
+@Directive({
+  selector: '[listCardMove]',
+})
+export class ListCardMoveDirective implements OnInit {
+  card = input.required<ICard>();
+
+  elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+  initialX = 0;
+  initialY = 0;
+  actualYPosition = 0;
+  actualXPosition = 0;
+
+  private readonly boardEnvironmentEventsService = inject(
+    BoardEnvironmentEventsService,
+  );
+  private readonly listElementRef = inject(LIST_ELEMENT);
+
+  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (this.boardEnvironmentEventsService.onUpStart) return;
+
+    this.boardEnvironmentEventsService.onUpStart = true;
+
+    this.startDownEvent(event.clientX, event.clientY);
+  }
+
+  @HostListener('touchstart', ['$event']) onTouchDown(event: TouchEvent) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (this.boardEnvironmentEventsService.onUpStart) return;
+
+    const touch = event.touches[0];
+    this.boardEnvironmentEventsService.onUpStart = true;
+
+    timer(500)
+      .pipe(take(1))
+      .subscribe(() => {
+        if (!this.boardEnvironmentEventsService.onUpStart) return;
+
+        this.startDownEvent(touch.pageX, touch.pageY);
+      });
+  }
+
+  ngOnInit(): void {
+    fromEvent<MouseEvent>(window.document.body, 'mousemove').subscribe(
+      (event) => {
+        if (
+          !this.boardEnvironmentEventsService.actualCardMoving ||
+          this.boardEnvironmentEventsService.actualCardMoving.id !=
+            this.card().id
+        )
+          return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+
+        this.moveEventHandle(event.x, event.y);
+      },
+    );
+  }
+
+  private moveEventHandle(x: number, y: number) {
+    this.actualXPosition = x;
+    this.actualYPosition = y;
+
+    this.elementRef.style.zIndex = '20';
+    this.listElementRef.style.zIndex = '20';
+    this.elementRef.parentElement!.style.zIndex = '20';
+    this.elementRef.style.transform = 'rotate(2deg)';
+    this.elementRef.style.top = y - this.initialY + 'px';
+    this.elementRef.style.left = x - this.initialX + 'px';
+  }
+
+  private startDownEvent(x: number, y: number) {
+    this.boardEnvironmentEventsService.actualCardMoving = {
+      id: this.card().id,
+      listId: this.card().listId,
+      element: this.elementRef,
+    };
+
+    const rect = this.elementRef.getBoundingClientRect();
+
+    this.elementRef.style.top = 'unset';
+    this.elementRef.style.left = 'unset';
+    this.elementRef.style.position = 'fixed';
+    this.elementRef.style.zIndex = '2';
+    this.elementRef.style.width = rect.width + 'px';
+    this.elementRef.style.transform = 'rotate(2deg)';
+    this.elementRef.style.transition = 'none';
+
+    this.actualYPosition = y;
+    this.initialX = x - rect.x;
+    this.initialY = y - rect.y;
+
+    this.elementRef.style.top = y - this.initialY + 'px';
+    this.elementRef.style.left = x - this.initialX + 'px';
+  }
+}
