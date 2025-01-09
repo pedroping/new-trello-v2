@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard } from '@new-trello-v2/types-interfaces';
-import { fromEvent, take, timer } from 'rxjs';
+import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 
 @Directive({
@@ -59,21 +59,18 @@ export class ListCardMoveDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    fromEvent<MouseEvent>(window.document.body, 'mousemove').subscribe(
-      (event) => {
-        if (
-          !this.boardEnvironmentEventsService.actualCardMoving ||
-          this.boardEnvironmentEventsService.actualCardMoving.id !=
-            this.card().id
-        )
-          return;
-
-        event.preventDefault();
-        event.stopImmediatePropagation();
-
+    this.boardEnvironmentEventsService
+      .getGlobalMouseMoveEvent$(this.card().id)
+      .subscribe((event) => {
         this.moveEventHandle(event.x, event.y);
-      },
-    );
+      });
+
+    this.boardEnvironmentEventsService
+      .getGlobalMouseUpEvent$(this.card().id)
+      .subscribe(() => {
+        this.boardEnvironmentEventsService.onUpStart = false;
+        this.upEventHandle();
+      });
   }
 
   private moveEventHandle(x: number, y: number) {
@@ -86,6 +83,17 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.transform = 'rotate(2deg)';
     this.elementRef.style.top = y - this.initialY + 'px';
     this.elementRef.style.left = x - this.initialX + 'px';
+  }
+
+  private upEventHandle() {
+    this.elementRef.style.transform = '';
+    this.elementRef.style.transform = 'rotate(0deg)';
+    this.elementRef.style.position = 'static';
+    this.elementRef.style.width = '100%';
+    this.elementRef.style.zIndex = '2';
+    this.elementRef.style.transition = 'all 200ms ease-in-out';
+
+    this.boardEnvironmentEventsService.actualCardMoving = null;
   }
 
   private startDownEvent(x: number, y: number) {
