@@ -27,7 +27,7 @@ export class ListCardMoveDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
-  private readonly listElementRef = inject(LIST_ELEMENT);
+  private readonly listElements = inject(LIST_ELEMENT);
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
     event.preventDefault();
@@ -74,11 +74,13 @@ export class ListCardMoveDirective implements OnInit {
   }
 
   private moveEventHandle(x: number, y: number) {
+    if (this.boardEnvironmentEventsService.onUpStart) return;
+
     this.actualXPosition = x;
     this.actualYPosition = y;
 
     this.elementRef.style.zIndex = '20';
-    this.listElementRef.style.zIndex = '20';
+    this.listElements.listElementRef.style.zIndex = '20';
     this.elementRef.parentElement!.style.zIndex = '20';
     this.elementRef.style.transform = 'rotate(2deg)';
     this.elementRef.style.top = y - this.initialY + 'px';
@@ -93,6 +95,10 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.zIndex = '2';
     this.elementRef.style.transition = 'all 200ms ease-in-out';
 
+    this.listElements.ulElement.removeChild(
+      this.boardEnvironmentEventsService.previewElement,
+    );
+
     this.boardEnvironmentEventsService.actualCardMoving = null;
   }
 
@@ -104,6 +110,23 @@ export class ListCardMoveDirective implements OnInit {
     };
 
     const rect = this.elementRef.getBoundingClientRect();
+
+    const afterElement =
+      this.boardEnvironmentEventsService.getDragAfterListElement(
+        this.listElements.ulElement,
+        y,
+      );
+
+    if (afterElement) {
+      this.listElements.ulElement.insertBefore(
+        this.boardEnvironmentEventsService.previewElement,
+        afterElement,
+      );
+    } else {
+      this.listElements.ulElement.appendChild(
+        this.boardEnvironmentEventsService.previewElement,
+      );
+    }
 
     this.elementRef.style.top = 'unset';
     this.elementRef.style.left = 'unset';
@@ -119,5 +142,7 @@ export class ListCardMoveDirective implements OnInit {
 
     this.elementRef.style.top = y - this.initialY + 'px';
     this.elementRef.style.left = x - this.initialX + 'px';
+
+    this.boardEnvironmentEventsService.onUpStart = false;
   }
 }

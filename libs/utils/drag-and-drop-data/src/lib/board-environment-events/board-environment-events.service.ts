@@ -8,8 +8,10 @@ export class BoardEnvironmentEventsService {
   private actualCardMoving$ = new BehaviorSubject<ICardMoveEvent | null>(null);
   private mouseUpEvent$ = new Subject<MouseEvent>();
   private mousemoveEvent$ = new Subject<MouseEvent>();
+  public previewElement = document.createElement('li');
 
   constructor() {
+    this.setPreviewClass();
     this.initGlobalEvents();
   }
 
@@ -47,6 +49,38 @@ export class BoardEnvironmentEventsService {
         event.stopImmediatePropagation();
       }),
     );
+  }
+
+  getDragAfterListElement(list: HTMLElement, y: number) {
+    const draggableElements = Array.from(list.children);
+
+    return draggableElements.reduce(
+      (
+        closest: {
+          element?: Element | null;
+          offset: number;
+        },
+        child,
+      ) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return {
+            offset: offset,
+            element: child,
+          };
+        } else {
+          return closest;
+        }
+      },
+      {
+        offset: Number.NEGATIVE_INFINITY,
+      },
+    ).element;
+  }
+
+  private setPreviewClass() {
+    this.previewElement.classList.add('preview-card');
   }
 
   private initGlobalEvents() {

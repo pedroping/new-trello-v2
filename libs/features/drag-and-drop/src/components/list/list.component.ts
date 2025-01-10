@@ -22,7 +22,13 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
     {
       provide: LIST_ELEMENT,
       useFactory: () => {
-        return inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+        const element =
+          inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+          
+        return {
+          listElementRef: element,
+          ulElement: element.children[1].firstChild!.firstChild,
+        };
       },
     },
   ],
