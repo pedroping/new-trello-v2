@@ -85,6 +85,27 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.transform = 'rotate(2deg)';
     this.elementRef.style.top = y - this.initialY + 'px';
     this.elementRef.style.left = x - this.initialX + 'px';
+
+    const afterElement =
+      this.boardEnvironmentEventsService.getDragAfterListElement(
+        this.listElements.ulElement,
+        y,
+        this.elementRef,
+      );
+
+    if (afterElement) {
+      this.listElements.ulElement.insertBefore(
+        this.boardEnvironmentEventsService.previewElement,
+        afterElement,
+      );
+    } else {
+      this.listElements.ulElement.appendChild(
+        this.boardEnvironmentEventsService.previewElement,
+      );
+    }
+
+    
+    console.log(afterElement?.innerHTML, y, this.listElements.ulElement);
   }
 
   private upEventHandle() {
@@ -115,6 +136,7 @@ export class ListCardMoveDirective implements OnInit {
       this.boardEnvironmentEventsService.getDragAfterListElement(
         this.listElements.ulElement,
         y,
+        this.elementRef,
       );
 
     if (afterElement) {

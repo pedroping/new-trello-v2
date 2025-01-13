@@ -51,32 +51,40 @@ export class BoardEnvironmentEventsService {
     );
   }
 
-  getDragAfterListElement(list: HTMLElement, y: number) {
+  getDragAfterListElement(
+    list: HTMLElement,
+    y: number,
+    actualElement?: HTMLElement,
+  ) {
     const draggableElements = Array.from(list.children);
 
-    return draggableElements.reduce(
-      (
-        closest: {
-          element?: Element | null;
-          offset: number;
+    return draggableElements
+      .filter(
+        (element) => element != this.previewElement && element != actualElement,
+      )
+      .reduce(
+        (
+          closest: {
+            element?: Element | null;
+            offset: number;
+          },
+          child,
+        ) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return {
+              offset: offset,
+              element: child,
+            };
+          } else {
+            return closest;
+          }
         },
-        child,
-      ) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        if (offset < 0 && offset > closest.offset) {
-          return {
-            offset: offset,
-            element: child,
-          };
-        } else {
-          return closest;
-        }
-      },
-      {
-        offset: Number.NEGATIVE_INFINITY,
-      },
-    ).element;
+        {
+          offset: Number.NEGATIVE_INFINITY,
+        },
+      ).element;
   }
 
   private setPreviewClass() {
