@@ -104,7 +104,6 @@ export class ListCardMoveDirective implements OnInit {
       );
     }
 
-    
     console.log(afterElement?.innerHTML, y, this.listElements.ulElement);
   }
 
@@ -129,6 +128,12 @@ export class ListCardMoveDirective implements OnInit {
       listId: this.card().listId,
       element: this.elementRef,
     };
+
+    this.listElements.ulElement.style.minHeight =
+      this.listElements.ulElement.offsetHeight + 'px';
+
+    this.listElements.ulElement.style.maxHeight =
+      this.listElements.ulElement.offsetHeight + 'px';
 
     const rect = this.elementRef.getBoundingClientRect();
 
