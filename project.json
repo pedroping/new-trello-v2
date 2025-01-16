@@ -47,12 +47,13 @@
             }
           ],
           "outputHashing": "all",
-          "serviceWorker": "ngsw-config.json"
+          "serviceWorker": true
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "vendorChunk": true
         }
       },
       "defaultConfiguration": "production"
