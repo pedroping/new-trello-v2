@@ -73,55 +73,6 @@ export class ListCardMoveDirective implements OnInit {
       });
   }
 
-  private moveEventHandle(x: number, y: number) {
-    if (this.boardEnvironmentEventsService.onUpStart) return;
-
-    this.actualXPosition = x;
-    this.actualYPosition = y;
-
-    this.elementRef.style.zIndex = '20';
-    this.listElements.listElementRef.style.zIndex = '20';
-    this.elementRef.parentElement!.style.zIndex = '20';
-    this.elementRef.style.transform = 'rotate(2deg)';
-    this.elementRef.style.top = y - this.initialY + 'px';
-    this.elementRef.style.left = x - this.initialX + 'px';
-
-    const afterElement =
-      this.boardEnvironmentEventsService.getDragAfterListElement(
-        this.listElements.ulElement,
-        y,
-        this.elementRef,
-      );
-
-    if (afterElement) {
-      this.listElements.ulElement.insertBefore(
-        this.boardEnvironmentEventsService.previewElement,
-        afterElement,
-      );
-    } else {
-      this.listElements.ulElement.appendChild(
-        this.boardEnvironmentEventsService.previewElement,
-      );
-    }
-
-    console.log(afterElement?.innerHTML, y, this.listElements.ulElement);
-  }
-
-  private upEventHandle() {
-    this.elementRef.style.transform = '';
-    this.elementRef.style.transform = 'rotate(0deg)';
-    this.elementRef.style.position = 'static';
-    this.elementRef.style.width = '100%';
-    this.elementRef.style.zIndex = '2';
-    this.elementRef.style.transition = 'all 200ms ease-in-out';
-
-    this.listElements.ulElement.removeChild(
-      this.boardEnvironmentEventsService.previewElement,
-    );
-
-    this.boardEnvironmentEventsService.actualCardMoving = null;
-  }
-
   private startDownEvent(x: number, y: number) {
     this.boardEnvironmentEventsService.actualCardMoving = {
       id: this.card().id,
@@ -171,5 +122,52 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.left = x - this.initialX + 'px';
 
     this.boardEnvironmentEventsService.onUpStart = false;
+  }
+
+  private moveEventHandle(x: number, y: number) {
+    if (this.boardEnvironmentEventsService.onUpStart) return;
+
+    this.actualXPosition = x;
+    this.actualYPosition = y;
+
+    this.elementRef.style.zIndex = '20';
+    this.listElements.listElementRef.style.zIndex = '20';
+    this.elementRef.parentElement!.style.zIndex = '20';
+    this.elementRef.style.transform = 'rotate(2deg)';
+    this.elementRef.style.top = y - this.initialY + 'px';
+    this.elementRef.style.left = x - this.initialX + 'px';
+
+    const afterElement =
+      this.boardEnvironmentEventsService.getDragAfterListElement(
+        this.listElements.ulElement,
+        y,
+        this.elementRef,
+      );
+
+    if (afterElement) {
+      this.listElements.ulElement.insertBefore(
+        this.boardEnvironmentEventsService.previewElement,
+        afterElement,
+      );
+    } else {
+      this.listElements.ulElement.appendChild(
+        this.boardEnvironmentEventsService.previewElement,
+      );
+    }
+  }
+
+  private upEventHandle() {
+    this.elementRef.style.transform = '';
+    this.elementRef.style.transform = 'rotate(0deg)';
+    this.elementRef.style.position = 'static';
+    this.elementRef.style.width = '100%';
+    this.elementRef.style.zIndex = '2';
+    this.elementRef.style.transition = 'all 200ms ease-in-out';
+
+    this.listElements.ulElement.removeChild(
+      this.boardEnvironmentEventsService.previewElement,
+    );
+
+    this.boardEnvironmentEventsService.actualCardMoving = null;
   }
 }
