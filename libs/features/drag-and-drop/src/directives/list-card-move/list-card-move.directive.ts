@@ -80,6 +80,13 @@ export class ListCardMoveDirective implements OnInit {
       element: this.elementRef,
     };
 
+    const cardRect = this.elementRef.getBoundingClientRect();
+
+    this.boardEnvironmentEventsService.setPreviewSize({
+      height: cardRect.height,
+      width: cardRect.width,
+    });
+
     this.listElements.ulElement.style.minHeight =
       this.listElements.ulElement.offsetHeight + 'px';
 
@@ -163,11 +170,9 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.width = '100%';
     this.elementRef.style.zIndex = '2';
     this.elementRef.style.transition = 'all 200ms ease-in-out';
-
     this.listElements.ulElement.removeChild(
       this.boardEnvironmentEventsService.previewElement,
     );
-
     this.boardEnvironmentEventsService.actualCardMoving = null;
   }
 }

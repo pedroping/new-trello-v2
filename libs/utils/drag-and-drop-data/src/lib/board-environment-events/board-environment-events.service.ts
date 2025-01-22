@@ -31,6 +31,11 @@ export class BoardEnvironmentEventsService {
     this.onUpStart$.next(value);
   }
 
+  setPreviewSize(params: { height?: number; width?: number }) {
+    if (params?.width) this.previewElement.style.width = params.width + 'px';
+    if (params?.height) this.previewElement.style.height = params.height + 'px';
+  }
+
   getGlobalMouseMoveEvent$(id: number) {
     return this.mousemoveEvent$.pipe(
       filter(() => this.actualCardMoving?.id === id),
