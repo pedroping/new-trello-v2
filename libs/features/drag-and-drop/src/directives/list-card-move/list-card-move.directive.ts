@@ -156,11 +156,39 @@ export class ListCardMoveDirective implements OnInit {
         this.boardEnvironmentEventsService.previewElement,
         afterElement,
       );
-    } else {
-      this.listElements.ulElement.appendChild(
-        this.boardEnvironmentEventsService.previewElement,
-      );
+
+      const elementId = Array.from(this.listElements.ulElement.children)
+        .filter((element) => element != this.elementRef)
+        .findIndex(
+          (element) =>
+            element == this.boardEnvironmentEventsService.previewElement,
+        );
+
+      Array.from(this.listElements.ulElement.children)
+        .filter((element) => element != this.elementRef)
+        .forEach((_element, i) => {
+          const element = _element as HTMLElement;
+          if (elementId < i) {
+            element.style.transform = 'translateY(38px)';
+            return;
+          }
+          element.style.transform = 'translateY(0px)';
+        });
+
+      return;
     }
+
+    this.listElements.ulElement.appendChild(
+      this.boardEnvironmentEventsService.previewElement,
+    );
+
+    Array.from(this.listElements.ulElement.children)
+      .filter((element) => element != this.elementRef)
+      .forEach((_element, i) => {
+        const element = _element as HTMLElement;
+
+        element.style.transform = 'translateY(0px)';
+      });
   }
 
   private upEventHandle() {
