@@ -95,23 +95,7 @@ export class ListCardMoveDirective implements OnInit {
 
     const rect = this.elementRef.getBoundingClientRect();
 
-    const afterElement =
-      this.boardEnvironmentEventsService.getDragAfterListElement(
-        this.listElements.ulElement,
-        y,
-        this.elementRef,
-      );
-
-    if (afterElement) {
-      this.listElements.ulElement.insertBefore(
-        this.boardEnvironmentEventsService.previewElement,
-        afterElement,
-      );
-    } else {
-      this.listElements.ulElement.appendChild(
-        this.boardEnvironmentEventsService.previewElement,
-      );
-    }
+    this.handleCardsTransform(this.elementRef.nextElementSibling);
 
     this.elementRef.style.top = 'unset';
     this.elementRef.style.left = 'unset';
@@ -151,33 +135,62 @@ export class ListCardMoveDirective implements OnInit {
         this.elementRef,
       );
 
-    if (afterElement) {
-      this.listElements.ulElement.insertBefore(
+    this.handleCardsTransform(afterElement);
+  }
+
+  private upEventHandle() {
+    this.elementRef.style.transform = '';
+    this.elementRef.style.transform = 'rotate(0deg)';
+    this.elementRef.style.position = 'static';
+    this.elementRef.style.width = '100%';
+    this.elementRef.style.zIndex = '2';
+    this.elementRef.style.transition = 'all 200ms ease-in-out';
+    if (
+      this.listElements.ulElement.contains(
         this.boardEnvironmentEventsService.previewElement,
-        afterElement,
+      )
+    )
+      this.listElements.ulElement.removeChild(
+        this.boardEnvironmentEventsService.previewElement,
+      );
+    Array.from(this.listElements.ulElement.children).forEach((_element) => {
+      const element = _element as HTMLElement;
+      element.style.transform = 'translateY(0px)';
+      element.style.transition = 'none';
+    });
+    this.boardEnvironmentEventsService.actualCardMoving = null;
+  }
+
+  private handleCardsTransform(afterElement: Element | null | undefined) {
+    if (!afterElement) return this.handleLastCardTransform();
+
+    this.listElements.ulElement.insertBefore(
+      this.boardEnvironmentEventsService.previewElement,
+      afterElement,
+    );
+
+    const elementId = Array.from(this.listElements.ulElement.children)
+      .filter((element) => element != this.elementRef)
+      .findIndex(
+        (element) =>
+          element == this.boardEnvironmentEventsService.previewElement,
       );
 
-      const elementId = Array.from(this.listElements.ulElement.children)
-        .filter((element) => element != this.elementRef)
-        .findIndex(
-          (element) =>
-            element == this.boardEnvironmentEventsService.previewElement,
-        );
+    const elementHeight = this.elementRef.offsetHeight;
 
-      Array.from(this.listElements.ulElement.children)
-        .filter((element) => element != this.elementRef)
-        .forEach((_element, i) => {
-          const element = _element as HTMLElement;
-          if (elementId < i) {
-            element.style.transform = 'translateY(38px)';
-            return;
-          }
-          element.style.transform = 'translateY(0px)';
-        });
+    Array.from(this.listElements.ulElement.children)
+      .filter((element) => element != this.elementRef)
+      .forEach((_element, i) => {
+        const element = _element as HTMLElement;
+        if (elementId < i) {
+          element.style.transform = `translateY(${elementHeight}px)`;
+          return;
+        }
+        element.style.transform = 'translateY(0px)';
+      });
+  }
 
-      return;
-    }
-
+  private handleLastCardTransform() {
     this.listElements.ulElement.appendChild(
       this.boardEnvironmentEventsService.previewElement,
     );
@@ -189,18 +202,5 @@ export class ListCardMoveDirective implements OnInit {
 
         element.style.transform = 'translateY(0px)';
       });
-  }
-
-  private upEventHandle() {
-    this.elementRef.style.transform = '';
-    this.elementRef.style.transform = 'rotate(0deg)';
-    this.elementRef.style.position = 'static';
-    this.elementRef.style.width = '100%';
-    this.elementRef.style.zIndex = '2';
-    this.elementRef.style.transition = 'all 200ms ease-in-out';
-    this.listElements.ulElement.removeChild(
-      this.boardEnvironmentEventsService.previewElement,
-    );
-    this.boardEnvironmentEventsService.actualCardMoving = null;
   }
 }
