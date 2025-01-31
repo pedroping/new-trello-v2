@@ -28,6 +28,14 @@
         position: relative;
         width: 100%;
         overflow: hidden;
+
+        ::ng-deep {
+          li:first-child, li:nth-child(2) {
+            &.preview-card {
+              margin-top: 5px;
+            }
+          }
+        }
       }
     }
   }

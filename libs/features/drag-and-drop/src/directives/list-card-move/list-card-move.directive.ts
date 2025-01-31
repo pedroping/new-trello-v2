@@ -1,4 +1,5 @@
 import {
+  DestroyRef,
   Directive,
   ElementRef,
   HostListener,
@@ -6,6 +7,7 @@ import {
   input,
   OnInit,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard } from '@new-trello-v2/types-interfaces';
 import { take, timer } from 'rxjs';
@@ -27,6 +29,7 @@ export class ListCardMoveDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
+  private readonly destroyRef = inject(DestroyRef);
   private readonly listElements = inject(LIST_ELEMENT);
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
@@ -61,24 +64,21 @@ export class ListCardMoveDirective implements OnInit {
   ngOnInit(): void {
     this.boardEnvironmentEventsService
       .getGlobalMouseMoveEvent$(this.card().id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         this.moveEventHandle(event.x, event.y);
       });
 
     this.boardEnvironmentEventsService
       .getGlobalMouseUpEvent$(this.card().id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.boardEnvironmentEventsService.onUpStart = false;
         this.upEventHandle();
       });
   }
 
   private startDownEvent(x: number, y: number) {
-    this.boardEnvironmentEventsService.actualCardMoving = {
-      id: this.card().id,
-      listId: this.card().listId,
-      element: this.elementRef,
-    };
+    this.boardEnvironmentEventsService.onUpStart = true;
 
     const cardRect = this.elementRef.getBoundingClientRect();
 
@@ -95,12 +95,10 @@ export class ListCardMoveDirective implements OnInit {
 
     const rect = this.elementRef.getBoundingClientRect();
 
-    this.handleCardsTransform(this.elementRef.nextElementSibling);
-
+    this.elementRef.style.zIndex = '20';
     this.elementRef.style.top = 'unset';
     this.elementRef.style.left = 'unset';
     this.elementRef.style.position = 'fixed';
-    this.elementRef.style.zIndex = '2';
     this.elementRef.style.width = rect.width + 'px';
     this.elementRef.style.transform = 'rotate(2deg)';
     this.elementRef.style.transition = 'none';
@@ -112,16 +110,26 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.top = y - this.initialY + 'px';
     this.elementRef.style.left = x - this.initialX + 'px';
 
+    this.handleCardsTransform(this.elementRef.nextElementSibling);
+
+    this.boardEnvironmentEventsService.actualCardMoving = {
+      id: this.card().id,
+      listId: this.card().listId,
+      element: this.elementRef,
+    };
     this.boardEnvironmentEventsService.onUpStart = false;
   }
 
   private moveEventHandle(x: number, y: number) {
-    if (this.boardEnvironmentEventsService.onUpStart) return;
+    if (
+      this.boardEnvironmentEventsService.onUpStart ||
+      !this.boardEnvironmentEventsService.actualCardMoving
+    )
+      return;
 
     this.actualXPosition = x;
     this.actualYPosition = y;
 
-    this.elementRef.style.zIndex = '20';
     this.listElements.listElementRef.style.zIndex = '20';
     this.elementRef.parentElement!.style.zIndex = '20';
     this.elementRef.style.transform = 'rotate(2deg)';
@@ -135,7 +143,7 @@ export class ListCardMoveDirective implements OnInit {
         this.elementRef,
       );
 
-    this.handleCardsTransform(afterElement);
+    this.handleCardsTransform(afterElement, true);
   }
 
   private upEventHandle() {
@@ -145,6 +153,8 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.width = '100%';
     this.elementRef.style.zIndex = '2';
     this.elementRef.style.transition = 'all 200ms ease-in-out';
+    this.elementRef.style.zIndex = '0';
+
     if (
       this.listElements.ulElement.contains(
         this.boardEnvironmentEventsService.previewElement,
@@ -158,11 +168,16 @@ export class ListCardMoveDirective implements OnInit {
       element.style.transform = 'translateY(0px)';
       element.style.transition = 'none';
     });
+
     this.boardEnvironmentEventsService.actualCardMoving = null;
+    this.boardEnvironmentEventsService.onUpStart = false;
   }
 
-  private handleCardsTransform(afterElement: Element | null | undefined) {
-    if (!afterElement) return this.handleLastCardTransform();
+  private handleCardsTransform(
+    afterElement: Element | null | undefined,
+    fromMove = false,
+  ) {
+    if (!afterElement) return this.handleLastCardTransform(fromMove);
 
     this.listElements.ulElement.insertBefore(
       this.boardEnvironmentEventsService.previewElement,
@@ -182,15 +197,16 @@ export class ListCardMoveDirective implements OnInit {
       .filter((element) => element != this.elementRef)
       .forEach((_element, i) => {
         const element = _element as HTMLElement;
-        if (elementId < i) {
-          element.style.transform = `translateY(${elementHeight}px)`;
-          return;
-        }
-        element.style.transform = 'translateY(0px)';
+
+        if (elementId < i)
+          element.style.transform = `translateY(${elementHeight + 4}px)`;
+        else element.style.transform = 'translateY(0px)';
       });
+
+    if (fromMove) this.setTransitions(true);
   }
 
-  private handleLastCardTransform() {
+  private handleLastCardTransform(fromMove = false) {
     this.listElements.ulElement.appendChild(
       this.boardEnvironmentEventsService.previewElement,
     );
@@ -201,6 +217,22 @@ export class ListCardMoveDirective implements OnInit {
         const element = _element as HTMLElement;
 
         element.style.transform = 'translateY(0px)';
+      });
+
+    if (fromMove) this.setTransitions(true);
+  }
+
+  private setTransitions(set: boolean) {
+    timer(1)
+      .pipe(take(1))
+      .subscribe(() => {
+        Array.from(this.listElements.ulElement.children)
+          .filter((element) => element != this.elementRef)
+          .forEach((_element) => {
+            const element = _element as HTMLElement;
+
+            element.style.transition = set ? 'all 200ms ease-in-out' : 'none';
+          });
       });
   }
 }
