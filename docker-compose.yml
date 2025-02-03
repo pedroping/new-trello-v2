@@ -1,0 +1,8 @@
+version: '1.0'
+
+services:
+    app:
+        image: 'my-angular-app'
+        build: '.'
+        ports:
+          - 4200:80
