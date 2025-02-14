@@ -9,3 +9,8 @@ export interface ICardMoveEvent {
   element: HTMLElement;
   listId: number;
 }
+
+export interface IMoveEvent {
+  x: number;
+  y: number;
+}

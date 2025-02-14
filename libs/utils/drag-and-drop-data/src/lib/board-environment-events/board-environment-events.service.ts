@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ICardMoveEvent } from '@new-trello-v2/types-interfaces';
+import { ICardMoveEvent, IMoveEvent } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject, filter, fromEvent, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {
   private onUpStart$ = new BehaviorSubject<boolean>(false);
+  private moveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
   private actualCardMoving$ = new BehaviorSubject<ICardMoveEvent | null>(null);
   private mouseUpEvent$ = new Subject<MouseEvent>();
   private mousemoveEvent$ = new Subject<MouseEvent>();
@@ -21,6 +22,22 @@ export class BoardEnvironmentEventsService {
 
   set actualCardMoving(event: ICardMoveEvent | null) {
     this.actualCardMoving$.next(event);
+  }
+
+  get actualCardMoving$$() {
+    return this.actualCardMoving$.asObservable();
+  }
+
+  get moveEvent$$() {
+    return this.moveEvent$.asObservable();
+  }
+
+  get moveEvent() {
+    return this.moveEvent$.value;
+  }
+
+  set moveEvent(event: IMoveEvent | null) {
+    this.moveEvent$.next(event);
   }
 
   get onUpStart() {
@@ -101,7 +118,7 @@ export class BoardEnvironmentEventsService {
       this.mousemoveEvent$.next(e),
     );
 
-    fromEvent<MouseEvent>(window.document.body, 'mouseup').subscribe((e) =>
+    fromEvent<MouseEvent>(window, 'mouseup').subscribe((e) =>
       this.mouseUpEvent$.next(e),
     );
   }

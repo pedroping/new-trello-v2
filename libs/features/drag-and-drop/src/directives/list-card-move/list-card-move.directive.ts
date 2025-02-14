@@ -144,6 +144,8 @@ export class ListCardMoveDirective implements OnInit {
       );
 
     this.handleCardsTransform(afterElement, true);
+
+    this.boardEnvironmentEventsService.moveEvent = { x, y };
   }
 
   private upEventHandle() {
@@ -171,6 +173,7 @@ export class ListCardMoveDirective implements OnInit {
 
     this.boardEnvironmentEventsService.actualCardMoving = null;
     this.boardEnvironmentEventsService.onUpStart = false;
+    this.boardEnvironmentEventsService.moveEvent = null;
   }
 
   private handleCardsTransform(

@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { ListDataService } from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
+import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListCardComponent } from '../list-card/list-card.component';
 import { ListHeaderComponent } from '../list-header/list-header.component';
@@ -24,12 +25,18 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
       useFactory: () => {
         const element =
           inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
-          
+
         return {
           listElementRef: element,
           ulElement: element.children[1].firstChild!.firstChild,
         };
       },
+    },
+  ],
+  hostDirectives: [
+    {
+      directive: ListAutoScrollDirective,
+      inputs: ['list'],
     },
   ],
 })
