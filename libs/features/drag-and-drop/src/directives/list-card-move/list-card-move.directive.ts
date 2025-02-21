@@ -8,7 +8,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import {
+  BoardEnvironmentDataService,
+  BoardEnvironmentEventsService,
+} from '@new-trello-v2/drag-and-drop-data';
 import { ICard } from '@new-trello-v2/types-interfaces';
 import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -28,6 +31,9 @@ export class ListCardMoveDirective implements OnInit {
 
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
+  );
+  private readonly boardEnvironmentDataService = inject(
+    BoardEnvironmentDataService,
   );
   private readonly destroyRef = inject(DestroyRef);
   private readonly listElements = inject(LIST_ELEMENT);
@@ -149,12 +155,31 @@ export class ListCardMoveDirective implements OnInit {
   }
 
   private upEventHandle() {
-    this.elementRef.style.transform = '';
+    this.boardEnvironmentEventsService.actualCardMoving = null;
+    this.boardEnvironmentEventsService.onUpStart = false;
+    this.boardEnvironmentEventsService.moveEvent = null;
+
+    this.elementRef.style.transition = 'all 200ms ease-in-out';
+
+    const previewElementId = Array.from(
+      this.listElements.ulElement.children,
+    ).indexOf(this.boardEnvironmentEventsService.previewElement);
+    const previewElementRect =
+      this.boardEnvironmentEventsService.previewElement.getBoundingClientRect();
+
     this.elementRef.style.transform = 'rotate(0deg)';
+    this.elementRef.style.left = previewElementRect.x + 'px';
+    this.elementRef.style.top = previewElementRect.y - 5 + 'px';
+
+    this.boardEnvironmentDataService.moveCard(
+      this.card().id,
+      this.card().listId,
+      previewElementId,
+    );
+
     this.elementRef.style.position = 'static';
     this.elementRef.style.width = '100%';
     this.elementRef.style.zIndex = '2';
-    this.elementRef.style.transition = 'all 200ms ease-in-out';
     this.elementRef.style.zIndex = '0';
 
     if (
@@ -165,15 +190,12 @@ export class ListCardMoveDirective implements OnInit {
       this.listElements.ulElement.removeChild(
         this.boardEnvironmentEventsService.previewElement,
       );
+
     Array.from(this.listElements.ulElement.children).forEach((_element) => {
       const element = _element as HTMLElement;
       element.style.transform = 'translateY(0px)';
       element.style.transition = 'none';
     });
-
-    this.boardEnvironmentEventsService.actualCardMoving = null;
-    this.boardEnvironmentEventsService.onUpStart = false;
-    this.boardEnvironmentEventsService.moveEvent = null;
   }
 
   private handleCardsTransform(

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentDataService {
@@ -18,5 +18,29 @@ export class BoardEnvironmentDataService {
 
   get boardEnvironment$$() {
     return this.boardEnvironment$.asObservable();
+  }
+
+  moveCard(cardId: number, listId: number, newCardPositon: number) {
+    const list = this.boardEnvironment.lists.find((list) => list.id == listId);
+    const listIndex = this.boardEnvironment.lists.findIndex(
+      (list) => list.id == listId,
+    );
+
+    if (!list) return;
+
+    const card = list.cards.find((card) => card.id == cardId);
+
+    if (!card) return;
+
+    list.cards = list.cards.filter((card) => card.id != cardId);
+
+    list.cards.splice(Math.max(0, newCardPositon - 1), 0, card);
+
+    const newData = this.boardEnvironment;
+
+    if (newData.lists[listIndex])
+      newData.lists[listIndex].cards = [...newData.lists[listIndex].cards];
+
+    this.boardEnvironment = newData;
   }
 }

@@ -4,6 +4,7 @@ import {
   ElementRef,
   inject,
   input,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -26,7 +27,7 @@ const SIZE_GAP = 200;
 @Directive({
   selector: '[listAutoScroll]',
 })
-export class ListAutoScrollDirective implements OnInit {
+export class ListAutoScrollDirective implements OnInit, OnDestroy {
   list = input.required<IList>();
 
   private readonly boardEnvironmentEventsService = inject(
@@ -54,6 +55,7 @@ export class ListAutoScrollDirective implements OnInit {
           return this.boardEnvironmentEventsService.moveEvent$$.pipe(
             filter(Boolean),
             throttleTime(10),
+            takeUntilDestroyed(this.destroyRef),
             map((moveEvent) => ({ cardEvent, moveEvent })),
           );
         }),
@@ -110,5 +112,9 @@ export class ListAutoScrollDirective implements OnInit {
       .subscribe(() => {
         contentElement.scrollTop += 1;
       });
+  }
+
+  ngOnDestroy(): void {
+    this.destroyEvents$.next();
   }
 }
