@@ -1,17 +1,12 @@
 import {
   Component,
-  DestroyRef,
   effect,
   ElementRef,
   inject,
-  input,
-  OnInit,
-  signal
+  input
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  BoardEnvironmentDataService,
-  ListDataService,
+  ListDataService
 } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
@@ -46,32 +41,15 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
     },
   ],
 })
-export class ListComponent implements OnInit {
+export class ListComponent   {
   list = input.required<IList>();
-  cards = signal<ICard[]>([]);
+  cards = input.required<ICard[]>();
 
-  private readonly destroyRef = inject(DestroyRef);
   private readonly listDataService = inject(ListDataService);
-  private readonly boardEnvironmentDataService = inject(
-    BoardEnvironmentDataService,
-  );
 
   constructor() {
     effect(() => {
       this.listDataService.cards = this.cards();
     });
-  }
-
-  ngOnInit(): void {
-    this.cards.set(this.list().cards);
-
-    this.boardEnvironmentDataService.boardEnvironment$$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((board) => {
-        const listIndex = board.lists.findIndex(
-          (list) => list.id == this.list().id,
-        );
-        this.cards.set(board.lists[listIndex].cards);
-      });
   }
 }

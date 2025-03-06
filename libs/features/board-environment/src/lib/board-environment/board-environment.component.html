@@ -1,6 +1,6 @@
 @if (boardEnvironment$ | async; as boardEnvironment) {
 @for (list of boardEnvironment.lists; track list) {
-<lib-list [list]="list" />
+<lib-list [list]="list" [cards]="list.cards" />
 }
 }
 

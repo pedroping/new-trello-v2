@@ -34,7 +34,7 @@ export class BoardEnvironmentDataService {
 
     list.cards = list.cards.filter((card) => card.id != cardId);
 
-    list.cards.splice(Math.max(0, newCardPositon - 1), 0, card);
+    list.cards.splice(Math.max(0, newCardPositon), 0, card);
 
     const newData = this.boardEnvironment;
 

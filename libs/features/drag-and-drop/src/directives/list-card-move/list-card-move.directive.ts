@@ -161,9 +161,9 @@ export class ListCardMoveDirective implements OnInit {
 
     this.elementRef.style.transition = 'all 200ms ease-in-out';
 
-    const previewElementId = Array.from(
-      this.listElements.ulElement.children,
-    ).indexOf(this.boardEnvironmentEventsService.previewElement);
+    const previewElementId = Array.from(this.listElements.ulElement.children)
+      .filter((element) => element != this.elementRef)
+      .indexOf(this.boardEnvironmentEventsService.previewElement);
     const previewElementRect =
       this.boardEnvironmentEventsService.previewElement.getBoundingClientRect();
 

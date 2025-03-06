@@ -104,6 +104,7 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
         contentElement.scrollTop += -1;
       });
   }
+  
   private startDownEvent() {
     const contentElement = this.scrollElement.children[1];
 
