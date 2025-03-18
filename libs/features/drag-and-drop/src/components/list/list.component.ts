@@ -1,13 +1,5 @@
-import {
-  Component,
-  effect,
-  ElementRef,
-  inject,
-  input
-} from '@angular/core';
-import {
-  ListDataService
-} from '@new-trello-v2/drag-and-drop-data';
+import { Component, effect, ElementRef, inject, input } from '@angular/core';
+import { ListDataService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -41,7 +33,7 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
     },
   ],
 })
-export class ListComponent   {
+export class ListComponent {
   list = input.required<IList>();
   cards = input.required<ICard[]>();
 

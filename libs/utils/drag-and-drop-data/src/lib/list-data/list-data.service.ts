@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ICard } from '@new-trello-v2/types-interfaces';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'platform' })
 export class ListDataService {
   private cards$ = new BehaviorSubject<ICard[]>([]);
+  private _scrollEvent$ = new Subject<number>();
 
   set cards(cards: ICard[]) {
     this.cards$.next(cards);
@@ -16,5 +17,13 @@ export class ListDataService {
 
   get cards$$() {
     return this.cards$.asObservable();
+  }
+
+  setScrollEvent(scroll: number) {
+    this._scrollEvent$.next(scroll);
+  }
+
+  get scrollEvent$$() {
+    return this._scrollEvent$.asObservable();
   }
 }

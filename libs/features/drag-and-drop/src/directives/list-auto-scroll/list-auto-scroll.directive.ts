@@ -8,7 +8,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import {
+  BoardEnvironmentEventsService,
+  ListDataService,
+} from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
 import {
   filter,
@@ -36,6 +39,7 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly listDataService = inject(ListDataService);
 
   private upHasStart = false;
   private downHasStart = false;
@@ -49,8 +53,6 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
         tap((event) => {
           if (!event) this.destroyEvents$.next();
         }),
-        filter(Boolean),
-        filter((cardEvent) => cardEvent.listId == this.list().id),
         switchMap((cardEvent) => {
           return this.boardEnvironmentEventsService.moveEvent$$.pipe(
             filter(Boolean),
@@ -59,6 +61,8 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
             map((moveEvent) => ({ cardEvent, moveEvent })),
           );
         }),
+        filter(Boolean),
+        filter((event) => event.cardEvent?.listId == this.list().id),
       )
       .subscribe(({ moveEvent }) => {
         const downSize = window.innerHeight - SIZE_GAP;
@@ -102,9 +106,10 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += -1;
+        this.listDataService.setScrollEvent(contentElement.scrollTop);
       });
   }
-  
+
   private startDownEvent() {
     const contentElement = this.scrollElement.children[1];
 
@@ -112,6 +117,7 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += 1;
+        this.listDataService.setScrollEvent(contentElement.scrollTop);
       });
   }
 

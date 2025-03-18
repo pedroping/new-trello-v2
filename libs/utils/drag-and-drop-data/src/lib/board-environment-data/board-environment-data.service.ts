@@ -28,6 +28,10 @@ export class BoardEnvironmentDataService {
 
     if (!list) return;
 
+    const cardIndex = list.cards.findIndex((card) => card.id == cardId);
+
+    if (cardIndex === newCardPositon) return;
+
     const card = list.cards.find((card) => card.id == cardId);
 
     if (!card) return;
