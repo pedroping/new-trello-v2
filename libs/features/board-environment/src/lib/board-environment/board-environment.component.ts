@@ -1,5 +1,11 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  viewChild,
+  ViewContainerRef,
+} from '@angular/core';
 import { ListComponent } from '@new-trello-v2/drag-and-drop';
 import { BoardEnvironmentDataService } from '@new-trello-v2/drag-and-drop-data';
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
@@ -20,6 +26,8 @@ export class BoardEnvironmentComponent implements OnInit {
   readonly boardEnvironment$ =
     this.boardEnvironmentDataService.boardEnvironment$$;
 
+  vcr = viewChild.required('vcr', { read: ViewContainerRef });
+
   ngOnInit(): void {
     const newData: IBoardEnvironmentData = {
       id: 1,
@@ -31,25 +39,6 @@ export class BoardEnvironmentComponent implements OnInit {
         cards: Array.from({ length: 20 }).map((_, y) => ({
           name: 'Card ' + (y + 1),
           id: +`${i + 1}${y}`,
-          listId: i,
-        })),
-      })),
-    };
-
-    this.boardEnvironmentDataService.boardEnvironment = newData;
-  }
-
-  change() {
-    const newData: IBoardEnvironmentData = {
-      id: 1,
-      name: 'Initial Board',
-      lists: Array.from({ length: 10 }).map((_, i) => ({
-        id: i,
-        name: 'List ' + (i + 1),
-        environmentId: 1,
-        cards: Array.from({ length: 15 }).map((_, y) => ({
-          name: 'Card ' + (y + 1),
-          id: y,
           listId: i,
         })),
       })),

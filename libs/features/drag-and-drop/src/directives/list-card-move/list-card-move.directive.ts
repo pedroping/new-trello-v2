@@ -8,7 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import { BoardEnvironmentEventsService, ListDataService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard } from '@new-trello-v2/types-interfaces';
 import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -31,6 +31,7 @@ export class ListCardMoveDirective implements OnInit {
   );
   private readonly destroyRef = inject(DestroyRef);
   private readonly listElements = inject(LIST_ELEMENT);
+  private readonly listDataService = inject(ListDataService);
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
     event.preventDefault();
@@ -74,6 +75,24 @@ export class ListCardMoveDirective implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.upEventHandle();
+      });
+
+    this.listDataService.scrollEvent$$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        if (
+          this.boardEnvironmentEventsService.onUpStart ||
+          this.boardEnvironmentEventsService.moveEvent == null ||
+          this.boardEnvironmentEventsService.actualCardMoving == null ||
+          this.boardEnvironmentEventsService.actualCardMoving.id !=
+            this.card().id
+        )
+          return;
+
+        this.moveEventHandle(
+          this.boardEnvironmentEventsService.moveEvent.x,
+          this.boardEnvironmentEventsService.moveEvent.y,
+        );
       });
   }
 
