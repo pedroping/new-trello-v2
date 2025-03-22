@@ -179,13 +179,6 @@ export class ListCardMoveDirective implements OnInit {
     this.boardEnvironmentEventsService.moveEvent = null;
     this.boardEnvironmentEventsService.onUpStart = false;
 
-    const parentListElement = this.listElements.listElementRef
-      .children[1] as HTMLElement;
-    const lastScroll = parentListElement.scrollTop;
-
-    parentListElement.style.opacity = '0';
-    parentListElement.style.transition = 'all 25ms ease';
-
     this.elementRef.style.transition = 'all 200ms ease-in-out';
 
     const previewElementId = Array.from(this.listElements.ulElement.children)
@@ -194,14 +187,15 @@ export class ListCardMoveDirective implements OnInit {
     const previewElementRect =
       this.boardEnvironmentEventsService.previewElement.getBoundingClientRect();
 
+    this.boardEnvironmentDataService.moveCard(
+      this.card().id,
+      this.card().listId,
+      previewElementId,
+    );
+
     this.elementRef.style.transform = 'rotate(0deg)';
     this.elementRef.style.left = previewElementRect.x + 'px';
     this.elementRef.style.top = previewElementRect.y - 5 + 'px';
-
-    this.elementRef.style.position = 'static';
-    this.elementRef.style.width = '100%';
-    this.elementRef.style.zIndex = '2';
-    this.elementRef.style.zIndex = '0';
 
     if (
       this.listElements.ulElement.contains(
@@ -212,29 +206,19 @@ export class ListCardMoveDirective implements OnInit {
         this.boardEnvironmentEventsService.previewElement,
       );
 
-    timer(24)
+    Array.from(this.listElements.ulElement.children).forEach((_element) => {
+      const element = _element as HTMLElement;
+      element.style.transition = 'none';
+      element.style.transform = 'translateY(0px)';
+    });
+
+    timer(10)
       .pipe(take(1))
       .subscribe(() => {
-        this.boardEnvironmentDataService.moveCard(
-          this.card().id,
-          this.card().listId,
-          previewElementId,
-        );
-
-        timer(10)
-          .pipe(take(1))
-          .subscribe(() => {
-            this.listElements.listElementRef.children[1].scrollTop = lastScroll;
-            parentListElement.style.opacity = '1';
-
-            Array.from(this.listElements.ulElement.children).forEach(
-              (_element) => {
-                const element = _element as HTMLElement;
-                element.style.transition = 'none';
-                element.style.transform = 'translateY(0px)';
-              },
-            );
-          });
+        this.elementRef.style.position = 'static';
+        this.elementRef.style.width = '100%';
+        this.elementRef.style.zIndex = '2';
+        this.elementRef.style.zIndex = '0';
       });
   }
 

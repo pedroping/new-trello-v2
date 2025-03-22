@@ -36,14 +36,16 @@ export class BoardEnvironmentDataService {
 
     if (!card) return;
 
-    list.cards = list.cards.filter((card) => card.id != cardId);
+    let newCardList = [...list.cards]
 
-    list.cards.splice(Math.max(0, newCardPositon), 0, card);
+    newCardList = newCardList.filter((card) => card.id != cardId);
+
+    newCardList.splice(Math.max(0, newCardPositon), 0, card);
 
     const newData = this.boardEnvironment;
 
     if (newData.lists[listIndex])
-      newData.lists[listIndex].cards = [...newData.lists[listIndex].cards];
+      newData.lists[listIndex].cards = newCardList;
 
     this.boardEnvironment = newData;
   }
