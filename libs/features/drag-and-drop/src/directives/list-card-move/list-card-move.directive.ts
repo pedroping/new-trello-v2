@@ -14,7 +14,7 @@ import {
   ListDataService,
 } from '@new-trello-v2/drag-and-drop-data';
 import { ICard } from '@new-trello-v2/types-interfaces';
-import { take, timer } from 'rxjs';
+import { take, throttleTime, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 
 @Directive({
@@ -85,7 +85,7 @@ export class ListCardMoveDirective implements OnInit {
       });
 
     this.listDataService.scrollEvent$$
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(200))
       .subscribe(() => {
         if (
           this.boardEnvironmentEventsService.onUpStart ||
@@ -206,15 +206,15 @@ export class ListCardMoveDirective implements OnInit {
         this.boardEnvironmentEventsService.previewElement,
       );
 
-    Array.from(this.listElements.ulElement.children).forEach((_element) => {
-      const element = _element as HTMLElement;
-      element.style.transition = 'none';
-      element.style.transform = 'translateY(0px)';
-    });
-
     timer(10)
       .pipe(take(1))
       .subscribe(() => {
+        Array.from(this.listElements.ulElement.children).forEach((_element) => {
+          const element = _element as HTMLElement;
+          element.style.transition = 'none';
+          element.style.transform = 'translateY(0px)';
+        });
+
         this.elementRef.style.position = 'static';
         this.elementRef.style.width = '100%';
         this.elementRef.style.zIndex = '2';
