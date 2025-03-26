@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
-import { ICardMoveEvent, IMoveEvent } from '@new-trello-v2/types-interfaces';
+import { IDragMoveEvent, IMoveEvent } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject, filter, fromEvent, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {
-  private onUpStart$ = new BehaviorSubject<boolean>(false);
-  private moveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
-  private actualCardMoving$ = new BehaviorSubject<ICardMoveEvent | null>(null);
   private mouseUpEvent$ = new Subject<MouseEvent>();
   private mousemoveEvent$ = new Subject<MouseEvent>();
+  private onUpStart$ = new BehaviorSubject<boolean>(false);
+  private moveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
+  private actualCardMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
+  private actualListMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
+
   public previewElement = document.createElement('li');
 
   constructor() {
@@ -20,12 +22,24 @@ export class BoardEnvironmentEventsService {
     return this.actualCardMoving$.value;
   }
 
-  set actualCardMoving(event: ICardMoveEvent | null) {
+  set actualCardMoving(event: IDragMoveEvent | null) {
     this.actualCardMoving$.next(event);
   }
 
   get actualCardMoving$$() {
     return this.actualCardMoving$.asObservable();
+  }
+
+  get actualListMoving() {
+    return this.actualListMoving$.value;
+  }
+
+  set actualListMoving(event: IDragMoveEvent | null) {
+    this.actualListMoving$.next(event);
+  }
+
+  get actualListMoving$$() {
+    return this.actualListMoving$.asObservable();
   }
 
   get moveEvent$$() {
@@ -73,7 +87,7 @@ export class BoardEnvironmentEventsService {
     );
   }
 
-  getDragAfterListElement(
+  getDragAfterCardElement(
     list: HTMLElement,
     y: number,
     actualElement?: HTMLElement,
@@ -108,6 +122,43 @@ export class BoardEnvironmentEventsService {
         },
       ).element;
   }
+
+  getDragAfterListElement(
+    list: HTMLElement,
+    x: number,
+    actualElement?: HTMLElement,
+  ) {
+    const draggableElements = Array.from(list.children);
+
+    return draggableElements
+      .filter(
+        (element) => element != this.previewElement && element != actualElement,
+      )
+      .reduce(
+        (
+          closest: {
+            element?: Element | null;
+            offset: number;
+          },
+          child,
+        ) => {
+          const box = child.getBoundingClientRect();
+          const offset = x - box.left - box.width / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return {
+              offset: offset,
+              element: child,
+            };
+          } else {
+            return closest;
+          }
+        },
+        {
+          offset: Number.NEGATIVE_INFINITY,
+        },
+      ).element;
+  }
+
 
   private setPreviewClass() {
     this.previewElement.classList.add('preview-card');

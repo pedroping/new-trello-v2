@@ -5,7 +5,12 @@ import { ListMoveDirective } from '../../directives/list-move/list-move.directiv
   selector: 'lib-list-header',
   templateUrl: './list-header.component.html',
   styleUrls: ['./list-header.component.scss'],
-  hostDirectives: [ListMoveDirective],
+  hostDirectives: [
+    {
+      directive: ListMoveDirective,
+      inputs: ['list'],
+    },
+  ],
 })
 export class ListHeaderComponent {
   headerName = input.required<string>();

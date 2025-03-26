@@ -4,13 +4,16 @@ export interface ICard {
   listId: number;
 }
 
-export interface ICardMoveEvent {
+export interface IDragMoveEvent {
   id: number;
   element: HTMLElement;
   listId: number;
+  type: TEventType;
 }
 
 export interface IMoveEvent {
   x: number;
   y: number;
 }
+
+export type TEventType = 'card' | 'list';

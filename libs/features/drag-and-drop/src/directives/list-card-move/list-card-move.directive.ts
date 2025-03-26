@@ -142,6 +142,7 @@ export class ListCardMoveDirective implements OnInit {
       id: this.card().id,
       listId: this.card().listId,
       element: this.elementRef,
+      type: 'card',
     };
     this.boardEnvironmentEventsService.onUpStart = false;
   }
@@ -163,7 +164,7 @@ export class ListCardMoveDirective implements OnInit {
     this.elementRef.style.left = x - this.initialX + 'px';
 
     const afterElement =
-      this.boardEnvironmentEventsService.getDragAfterListElement(
+      this.boardEnvironmentEventsService.getDragAfterCardElement(
         this.listElements.ulElement,
         y,
         this.elementRef,
