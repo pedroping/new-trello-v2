@@ -1,4 +1,11 @@
-import { DestroyRef, Directive, inject, input, OnInit } from '@angular/core';
+import {
+  DestroyRef,
+  Directive,
+  HostListener,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
@@ -13,6 +20,28 @@ export class ListMoveDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
+
+  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+    // event.preventDefault();
+    // event.stopImmediatePropagation();
+    // if (this.boardEnvironmentEventsService.onUpStart) return;
+    // this.boardEnvironmentEventsService.onUpStart = true;
+    // this.startDownEvent(event.clientX, event.clientY);
+  }
+
+  @HostListener('touchstart', ['$event']) onTouchDown(event: TouchEvent) {
+    // event.preventDefault();
+    // event.stopImmediatePropagation();
+    // if (this.boardEnvironmentEventsService.onUpStart) return;
+    // const touch = event.touches[0];
+    // this.boardEnvironmentEventsService.onUpStart = true;
+    // timer(500)
+    //   .pipe(take(1))
+    //   .subscribe(() => {
+    //     if (!this.boardEnvironmentEventsService.onUpStart) return;
+    //     this.startDownEvent(touch.pageX, touch.pageY);
+    //   });
+  }
 
   ngOnInit(): void {
     this.boardEnvironmentEventsService
