@@ -71,14 +71,14 @@ export class ListCardMoveDirective implements OnInit {
 
   ngOnInit(): void {
     this.boardEnvironmentEventsService
-      .getGlobalMouseMoveEvent$(this.card().id)
+      .getGlobalMouseMoveEvent$(this.card().id, 'card')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         this.moveEventHandle(event.x, event.y);
       });
 
     this.boardEnvironmentEventsService
-      .getGlobalMouseUpEvent$(this.card().id)
+      .getGlobalMouseUpEvent$(this.card().id, 'card')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.upEventHandle();

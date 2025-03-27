@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { IDragMoveEvent, IMoveEvent } from '@new-trello-v2/types-interfaces';
+import {
+  IDragMoveEvent,
+  IMoveEvent,
+  TEventType,
+} from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject, filter, fromEvent, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -67,9 +71,13 @@ export class BoardEnvironmentEventsService {
     if (params?.height) this.previewElement.style.height = params.height + 'px';
   }
 
-  getGlobalMouseMoveEvent$(id: number) {
+  getGlobalMouseMoveEvent$(id: number, type: TEventType) {
     return this.mousemoveEvent$.pipe(
-      filter(() => this.actualCardMoving?.id === id),
+      filter(() =>
+        type == 'card'
+          ? this.actualCardMoving?.id === id
+          : this.actualListMoving?.id == id,
+      ),
       tap((event) => {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -77,9 +85,13 @@ export class BoardEnvironmentEventsService {
     );
   }
 
-  getGlobalMouseUpEvent$(id: number) {
+  getGlobalMouseUpEvent$(id: number, type: TEventType) {
     return this.mouseUpEvent$.pipe(
-      filter(() => this.actualCardMoving?.id === id),
+      filter(() =>
+        type == 'card'
+          ? this.actualCardMoving?.id === id
+          : this.actualListMoving?.id == id,
+      ),
       tap((event) => {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -158,7 +170,6 @@ export class BoardEnvironmentEventsService {
         },
       ).element;
   }
-
 
   private setPreviewClass() {
     this.previewElement.classList.add('preview-card');
