@@ -8,13 +8,17 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/angular:webpack-browser",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
         "outputPath": "dist/new-trello-v2",
         "index": "./src/index.html",
-        "main": "./src/main.ts",
-        "polyfills": ["zone.js"],
+        "browser": "./src/main.ts",
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "aot": true,
@@ -24,14 +28,21 @@
             "input": "public"
           }
         ],
-        "styles": ["./src/styles.scss"],
-        "customWebpackConfig": {
-          "path": "./webpack.config.js"
-        },
+        "styles": [
+          "./src/styles.scss"
+        ],
+
         "stylePreprocessorOptions": {
-          "includePaths": ["libs/utils/styles/src/lib"]
+          "includePaths": [
+            "libs/utils/styles/src/lib"
+          ]
         },
-        "scripts": []
+        "scripts": [],
+        "server": "./src/main.server.ts",
+        "prerender": true,
+        "ssr": {
+          "entry": "./src/server.ts"
+        }
       },
       "configurations": {
         "production": {
@@ -48,19 +59,18 @@
             }
           ],
           "outputHashing": "all",
-          "serviceWorker": true
+          "serviceWorker": "ngsw-config.json"
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true,
-          "vendorChunk": true
+          "sourceMap": true
         }
       },
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@nx/angular:dev-server",
+      "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
           "buildTarget": "new-trello-v2:build:production"
@@ -80,12 +90,16 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": ["./src"]
+        "lintFilePatterns": [
+          "./src"
+        ]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectName}"
+      ],
       "options": {
         "jestConfig": "jest.config.app.ts"
       }
@@ -114,6 +128,64 @@
         "standalone": true,
         "prefix": ""
       }
+    },
+    "server": {
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/new-trello-v2",
+        "main": "./src/server.ts",
+        "tsConfig": "tsconfig.server.json",
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "libs/utils/styles/src/lib"
+          ]
+        },
+        "inlineStyleLanguage": "scss"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media"
+        },
+        "development": {
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve-ssr": {
+      "executor": "@angular-devkit/build-angular:ssr-dev-server",
+      "configurations": {
+        "development": {
+          "browserTarget": "new-trello-v2:build:development",
+          "serverTarget": "new-trello-v2:server:development"
+        },
+        "production": {
+          "browserTarget": "new-trello-v2:build:production",
+          "serverTarget": "new-trello-v2:server:production"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "prerender": {
+      "executor": "@angular-devkit/build-angular:prerender",
+      "options": {
+        "routes": [
+          "/"
+        ]
+      },
+      "configurations": {
+        "production": {
+          "browserTarget": "new-trello-v2:build:production",
+          "serverTarget": "new-trello-v2:server:production"
+        },
+        "development": {
+          "browserTarget": "new-trello-v2:build:development",
+          "serverTarget": "new-trello-v2:server:development"
+        }
+      },
+      "defaultConfiguration": "production"
     }
   }
 }
