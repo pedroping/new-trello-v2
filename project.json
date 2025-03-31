@@ -154,20 +154,6 @@
       },
       "defaultConfiguration": "production"
     },
-    "serve-ssr": {
-      "executor": "@angular-devkit/build-angular:ssr-dev-server",
-      "configurations": {
-        "development": {
-          "browserTarget": "new-trello-v2:build:development",
-          "serverTarget": "new-trello-v2:server:development"
-        },
-        "production": {
-          "browserTarget": "new-trello-v2:build:production",
-          "serverTarget": "new-trello-v2:server:production"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
     "prerender": {
       "executor": "@angular-devkit/build-angular:prerender",
       "options": {

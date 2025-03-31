@@ -8,7 +8,7 @@
     "build:analyzer": "nx build --stats-json && webpack-bundle-analyzer dist/new-trello-v2/stats.json",
     "test": "nx test",
     "serve:ssr": "npx nx build && node dist/new-trello-v2/server/server.mjs",
-    "prerender": "ng run new-trello-v2:prerender"
+    "prerender": "npx nx run new-trello-v2:prerender"
   },
   "private": true,
   "dependencies": {
