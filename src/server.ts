@@ -10,14 +10,11 @@ import bootstrap from './main.server';
 // The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-
-  console.log(process.cwd());
   
   const distFolder = join(process.cwd(), './dist/new-trello-v2/browser');
 
-  console.log(distFolder);
-  const indexHtml = existsSync(join(distFolder, 'index.original.html'))
-    ? join(distFolder, 'index.original.html')
+  const indexHtml = existsSync(join(distFolder, 'index.csr.html'))
+    ? join(distFolder, 'index.csr.html')
     : join(distFolder, 'index.html');
 
   const commonEngine = new CommonEngine();

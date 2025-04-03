@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { afterNextRender, Injectable } from '@angular/core';
 import {
   IDragMoveEvent,
   IMoveEvent,
@@ -15,11 +15,14 @@ export class BoardEnvironmentEventsService {
   private actualCardMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
   private actualListMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
 
-  public previewElement = document.createElement('li');
+  private _previewElement?: HTMLLIElement;
 
-  constructor() {
-    this.setPreviewClass();
-    this.initGlobalEvents();
+  constructor() {    
+    afterNextRender(() => {
+      this._previewElement = document.createElement('li');
+      this.setPreviewClass();
+      this.initGlobalEvents();
+    });
   }
 
   get actualCardMoving() {
@@ -66,9 +69,16 @@ export class BoardEnvironmentEventsService {
     this.onUpStart$.next(value);
   }
 
+  get previewElement() {
+    return this._previewElement as HTMLElement;
+  }
+
   setPreviewSize(params: { height?: number; width?: number }) {
-    if (params?.width) this.previewElement.style.width = params.width + 'px';
-    if (params?.height) this.previewElement.style.height = params.height + 'px';
+    if (!this._previewElement) return;
+
+    if (params?.width) this._previewElement.style.width = params.width + 'px';
+    if (params?.height)
+      this._previewElement.style.height = params.height + 'px';
   }
 
   getGlobalMouseMoveEvent$(id: number, type: TEventType) {
@@ -108,7 +118,8 @@ export class BoardEnvironmentEventsService {
 
     return draggableElements
       .filter(
-        (element) => element != this.previewElement && element != actualElement,
+        (element) =>
+          element != this._previewElement && element != actualElement,
       )
       .reduce(
         (
@@ -144,7 +155,8 @@ export class BoardEnvironmentEventsService {
 
     return draggableElements
       .filter(
-        (element) => element != this.previewElement && element != actualElement,
+        (element) =>
+          element != this._previewElement && element != actualElement,
       )
       .reduce(
         (
@@ -172,7 +184,8 @@ export class BoardEnvironmentEventsService {
   }
 
   private setPreviewClass() {
-    this.previewElement.classList.add('preview-card');
+    if (!this._previewElement) return;
+    this._previewElement.classList.add('preview-card');
   }
 
   private initGlobalEvents() {

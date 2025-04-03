@@ -11,6 +11,7 @@ import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
   styleUrl: './board-environment.component.scss',
   imports: [ListComponent, AsyncPipe],
   hostDirectives: [MousePageMoveDirective],
+  providers: [BoardEnvironmentDataService]
 })
 export class BoardEnvironmentComponent implements OnInit {
   private readonly boardEnvironmentDataService = inject(
@@ -18,7 +19,7 @@ export class BoardEnvironmentComponent implements OnInit {
   );
 
   readonly boardEnvironment$ =
-    this.boardEnvironmentDataService.boardEnvironment$$;
+    this.boardEnvironmentDataService?.boardEnvironment$$;
 
   ngOnInit(): void {
     const newData: IBoardEnvironmentData = {
