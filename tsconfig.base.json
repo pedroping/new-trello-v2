@@ -33,5 +33,7 @@
       ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "include": ["src/main.server.ts", "src/server.ts"],
+  "files": ["src/main.server.ts", "src/server.ts"]
 }

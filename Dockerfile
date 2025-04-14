@@ -1,13 +1,18 @@
-FROM node:alpine AS builder
+FROM node:20-alpine as build
+WORKDIR /app/src
 
-WORKDIR /usr/src/app
-COPY . .
-RUN npm install && npm run build
+COPY package*.json ./
+RUN npm ci
 
-FROM nginx:stable-alpine
-LABEL version="1.0"
+COPY . ./
+RUN npm run build
 
-COPY nginx.conf /etc/nginx/nginx.conf
+FROM node:20-alpine
+WORKDIR /usr/app
 
-WORKDIR /usr/share/nginx/html
-COPY --from=builder /usr/src/app/dist/new-trello-v2/ .
+COPY --from=build /app/src/dist/new-trello-v2 /usr/app/dist/new-trello-v2
+
+EXPOSE 80
+
+CMD ["node", "dist/new-trello-v2/server/server.mjs"]
+
