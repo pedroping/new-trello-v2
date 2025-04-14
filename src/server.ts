@@ -1,63 +1,60 @@
-import 'zone.js/node';
-
-import { APP_BASE_HREF } from '@angular/common';
-import { CommonEngine } from '@angular/ssr/node';
+import {
+  AngularNodeAppEngine,
+  createNodeRequestHandler,
+  isMainModule,
+  writeResponseToNodeResponse,
+} from '@angular/ssr/node';
 import express from 'express';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
-import bootstrap from './main.server';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-// The Express app is exported so that it can be used by serverless Functions.
 export function app(): express.Express {
   const server = express();
-  
-  const distFolder = join(process.cwd(), './dist/new-trello-v2/browser');
+  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
+  const browserDistFolder = resolve(serverDistFolder, '../browser');
 
-  const indexHtml = existsSync(join(distFolder, 'index.csr.html'))
-    ? join(distFolder, 'index.csr.html')
-    : join(distFolder, 'index.html');
+  // Here, we now use the `AngularNodeAppEngine` instead of the `CommonEngine`
+  const angularNodeAppEngine = new AngularNodeAppEngine();
 
-  const commonEngine = new CommonEngine();
+  server.use('/api/**', (req, res) => res.json({ hello: 'foo' }));
 
-  server.set('view engine', 'html');
-  server.set('views', distFolder);
+  server.get(
+    '**',
+    express.static(browserDistFolder, {
+      maxAge: '1y',
+      index: 'index.html',
+    })
+  );
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
-  // Serve static files from /browser
-  server.get('*.*', express.static(distFolder, {
-    maxAge: '1y'
-  }));
+  // With this config, /404 will not reach the Angular app
+  server.get('/404', (req, res) => {
+    res.send('Express is serving this server only error');
+  });
 
-  // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
+  server.get('**', (req, res, next) => {
+    // Yes, this is executed in devMode via the Vite DevServer
+    console.log('request', req.url, res.status);
 
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
-        publicPath: distFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
-      })
-      .then((html) => res.send(html))
-      .catch((err) => next(err));
+    angularNodeAppEngine
+      .handle(req, { server: 'express' })
+      .then((response) =>
+        response ? writeResponseToNodeResponse(response, res) : next()
+      )
+      .catch(next);
   });
 
   return server;
 }
 
-function run(): void {
-  const port = process.env['PORT'] || 4000;
-
-  // Start up the Node server
-  const server = app();
+const server = app();
+if (isMainModule(import.meta.url)) {
+  const port = process.env['PORT'] || 80;
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
   });
 }
 
-run();
+console.warn('Node Express server started');
 
-export default bootstrap;
+// This exposes the RequestHandler
+export const reqHandler = createNodeRequestHandler(server);
