@@ -31,6 +31,9 @@ module.exports = [
           style: 'kebab-case',
         },
       ],
+      '@nx/enforce-module-boundaries': [
+        'off'
+      ],
     },
   },
   {
