@@ -1,18 +1,27 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { ICard } from '@new-trello-v2/types-interfaces';
-import { ListCardMoveDirective } from '../../directives/list-card-move/list-card-move.directive';
+import { CardMoveStartDirective } from '../../directives/card-move-start/card-move-start.directive';
+import { CardMoveStopDirective } from '../../directives/card-move-stop/card-move-stop.directive';
+import { CardMoveDirective } from '../../directives/card-move/card-move.directive';
+import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Component({
   selector: '[lib-list-card]',
   templateUrl: './list-card.component.html',
   styleUrls: ['./list-card.component.scss'],
+  providers: [CardDataService],
   hostDirectives: [
-    {
-      directive: ListCardMoveDirective,
-      inputs: ['card'],
-    },
+    CardMoveDirective,
+    CardMoveStartDirective,
+    CardMoveStopDirective,
   ],
 })
 export class ListCardComponent {
   card = input.required<ICard>();
+
+  private readonly cardDataHandleService = inject(CardDataService);
+
+  constructor() {
+    this.cardDataHandleService.startDomain(this.card);
+  }
 }

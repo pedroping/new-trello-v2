@@ -1,10 +1,10 @@
 /* tslint:disable:no-unused-variable */
 
-import { ListCardMoveDirective } from './list-card-move.directive';
+import { CardMoveDirective } from './card-move.directive';
 
 describe('Directive: ListCardMove', () => {
   it('should create an instance', () => {
-    const directive = new ListCardMoveDirective();
+    const directive = new CardMoveDirective();
     expect(directive).toBeTruthy();
   });
 });
