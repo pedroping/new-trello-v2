@@ -1,9 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  inject
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -17,7 +12,6 @@ export class ListMoveStartDirective {
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly listDataService = inject(ListDataService);
   private readonly listActionsService = inject(ListActionsService);
-  elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
@@ -85,15 +79,15 @@ export class ListMoveStartDirective {
     this.listElements.listElementRef.style.left =
       x - this.listDataService.initialX + 'px';
 
-    //   this.cardActionsService.handleCardsTransform(
-    //     this.elementRef,
-    //     this.listElements.ulElement,
-    //     this.elementRef.nextElementSibling,
-    //   );
+    this.listActionsService.handleCardsTransform(
+      this.listElements.listElementRef,
+      this.listElements.listElementRef.parentElement as HTMLElement,
+      this.listElements.listElementRef,
+    );
 
     this.boardEnvironmentEventsService.actualListMoving = {
       id: this.listDataService.list.id,
-      element: this.elementRef,
+      element: this.listElements.listElementRef,
       type: 'list',
     };
     this.boardEnvironmentEventsService.onListUpStart = false;

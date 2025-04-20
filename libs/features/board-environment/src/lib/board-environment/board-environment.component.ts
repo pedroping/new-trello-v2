@@ -39,23 +39,4 @@ export class BoardEnvironmentComponent implements OnInit {
 
     this.boardEnvironmentDataService.boardEnvironment = newData;
   }
-
-  change() {
-    const newData: IBoardEnvironmentData = {
-      id: 1,
-      name: 'Initial Board',
-      lists: Array.from({ length: 10 }).map((_, i) => ({
-        id: i,
-        name: 'List ' + (i + 1),
-        environmentId: 1,
-        cards: Array.from({ length: 15 }).map((_, y) => ({
-          name: 'Card ' + (y + 1),
-          id: y,
-          listId: i,
-        })),
-      })),
-    };
-
-    this.boardEnvironmentDataService.boardEnvironment = newData;
-  }
 }

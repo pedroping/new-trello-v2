@@ -1,7 +1,5 @@
 @if (boardEnvironment$ | async; as boardEnvironment) {
 @for (list of boardEnvironment.lists; track list) {
-<lib-list [list]="list" [cards]="list.cards" />
+<lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
 }
 }
-
-<button (click)="change()">Change</button>

@@ -12,6 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListDataService } from '../../services/list-data/list-data.service';
+import { ListActionsService } from '../../services/list-actions/list-actions.service';
 
 @Directive({
   selector: '[listMove]',
@@ -24,6 +25,7 @@ export class ListMoveDirective implements OnInit {
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly listDataService = inject(ListDataService);
   private readonly injector = inject(Injector);
+  private readonly listActionsService = inject(ListActionsService);
 
   ngOnInit(): void {
     runInInjectionContext(this.injector, () => {
@@ -65,18 +67,16 @@ export class ListMoveDirective implements OnInit {
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterListElement(
         this.listElements.listElementRef.parentElement as HTMLElement,
-        y,
+        x,
         this.listElements.listElementRef,
       );
 
-    // console.log(afterElement);
-
-    // this.cardActionsService.handleCardsTransform(
-    //   this.elementRef,
-    //   this.listElements.ulElement,
-    //   afterElement,
-    //   true,
-    // );
+    this.listActionsService.handleCardsTransform(
+      this.listElements.listElementRef,
+      this.listElements.listElementRef.parentElement as HTMLElement,
+      afterElement,
+      true,
+    );
 
     this.boardEnvironmentEventsService.listMoveEvent = { x, y };
   }

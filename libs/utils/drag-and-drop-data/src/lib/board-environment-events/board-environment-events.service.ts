@@ -194,7 +194,7 @@ export class BoardEnvironmentEventsService {
     return draggableElements
       .filter(
         (element) =>
-          element != this._cardPreviewElement && element != actualElement,
+          element != this._listPreviewElement && element != actualElement,
       )
       .reduce(
         (
