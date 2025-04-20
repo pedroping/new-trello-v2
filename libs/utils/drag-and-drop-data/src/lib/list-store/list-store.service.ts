@@ -3,7 +3,7 @@ import { ICard } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'platform' })
-export class ListDataService {
+export class ListStoreService {
   private cards$ = new BehaviorSubject<ICard[]>([]);
   private _scrollEvent$ = new Subject<number>();
 

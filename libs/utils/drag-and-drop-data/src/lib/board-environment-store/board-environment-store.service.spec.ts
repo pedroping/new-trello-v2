@@ -1,18 +1,18 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, inject } from '@angular/core/testing';
-import { BoardEnvironmentDataService } from './board-environment-data.service';
+import { BoardEnvironmentStoreService } from './board-environment-store.service';
 
 describe('Service: BoardEnvironmentData', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [BoardEnvironmentDataService],
+      providers: [BoardEnvironmentStoreService],
     });
   });
 
   it('should ...', inject(
-    [BoardEnvironmentDataService],
-    (service: BoardEnvironmentDataService) => {
+    [BoardEnvironmentStoreService],
+    (service: BoardEnvironmentStoreService) => {
       expect(service).toBeTruthy();
     },
   ));

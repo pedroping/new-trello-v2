@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ListComponent } from '@new-trello-v2/drag-and-drop';
-import { BoardEnvironmentDataService } from '@new-trello-v2/drag-and-drop-data';
+import { BoardEnvironmentStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
 import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
 
@@ -11,11 +11,11 @@ import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
   styleUrl: './board-environment.component.scss',
   imports: [ListComponent, AsyncPipe],
   hostDirectives: [MousePageMoveDirective],
-  providers: [BoardEnvironmentDataService]
+  providers: [BoardEnvironmentStoreService]
 })
 export class BoardEnvironmentComponent implements OnInit {
   private readonly boardEnvironmentDataService = inject(
-    BoardEnvironmentDataService,
+    BoardEnvironmentStoreService,
   );
 
   readonly boardEnvironment$ =

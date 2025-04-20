@@ -8,7 +8,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   BoardEnvironmentEventsService,
-  ListDataService
+  ListStoreService
 } from '@new-trello-v2/drag-and-drop-data';
 import { throttleTime } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -24,7 +24,7 @@ export class CardMoveDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
-  private readonly listDataService = inject(ListDataService);
+  private readonly listDataService = inject(ListStoreService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly cardActionsService = inject(CardActionsService);
@@ -42,8 +42,8 @@ export class CardMoveDirective implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(200))
       .subscribe(() => {
         if (
-          this.boardEnvironmentEventsService.onUpStart ||
-          this.boardEnvironmentEventsService.moveEvent == null ||
+          this.boardEnvironmentEventsService.onCardUpStart ||
+          this.boardEnvironmentEventsService.cardMoveEvent == null ||
           this.boardEnvironmentEventsService.actualCardMoving == null ||
           this.boardEnvironmentEventsService.actualCardMoving.id !=
             this.cardDataHandleService.card.id
@@ -51,15 +51,15 @@ export class CardMoveDirective implements OnInit {
           return;
 
         this.moveEventHandle(
-          this.boardEnvironmentEventsService.moveEvent.x,
-          this.boardEnvironmentEventsService.moveEvent.y,
+          this.boardEnvironmentEventsService.cardMoveEvent.x,
+          this.boardEnvironmentEventsService.cardMoveEvent.y,
         );
       });
   }
 
   private moveEventHandle(x: number, y: number) {
     if (
-      this.boardEnvironmentEventsService.onUpStart ||
+      this.boardEnvironmentEventsService.onCardUpStart ||
       !this.boardEnvironmentEventsService.actualCardMoving
     )
       return;
@@ -87,6 +87,6 @@ export class CardMoveDirective implements OnInit {
       true,
     );
 
-    this.boardEnvironmentEventsService.moveEvent = { x, y };
+    this.boardEnvironmentEventsService.cardMoveEvent = { x, y };
   }
 }

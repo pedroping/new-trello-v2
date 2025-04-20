@@ -18,7 +18,7 @@ export class CardActionsService {
       return this.handleLastCardTransform(elementRef, listElement, fromMove);
 
     listElement.insertBefore(
-      this.boardEnvironmentEventsService.previewElement,
+      this.boardEnvironmentEventsService.cardPreviewElement,
       afterElement,
     );
 
@@ -26,7 +26,7 @@ export class CardActionsService {
       .filter((element) => element != elementRef)
       .findIndex(
         (element) =>
-          element == this.boardEnvironmentEventsService.previewElement,
+          element == this.boardEnvironmentEventsService.cardPreviewElement,
       );
 
     const elementHeight = elementRef.offsetHeight;
@@ -49,7 +49,7 @@ export class CardActionsService {
     listElement: HTMLElement,
     fromMove = false,
   ) {
-    listElement.appendChild(this.boardEnvironmentEventsService.previewElement);
+    listElement.appendChild(this.boardEnvironmentEventsService.cardPreviewElement);
 
     Array.from(listElement.children)
       .filter((element) => element != elementRef)

@@ -1,10 +1,11 @@
 import { Component, effect, ElementRef, inject, input } from '@angular/core';
-import { ListDataService } from '@new-trello-v2/drag-and-drop-data';
+import { ListStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListCardComponent } from '../list-card/list-card.component';
 import { ListHeaderComponent } from '../list-header/list-header.component';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Component({
   selector: 'lib-list',
@@ -12,6 +13,7 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
   styleUrls: ['./list.component.scss'],
   imports: [ListHeaderComponent, ListCardComponent],
   providers: [
+    ListStoreService,
     ListDataService,
     {
       provide: LIST_ELEMENT,
@@ -21,7 +23,7 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
 
         return {
           listElementRef: element,
-          ulElement: element.children[1].firstChild!.firstChild,
+          ulElement: element.children[1]?.firstChild!.firstChild,
         };
       },
     },
@@ -37,11 +39,11 @@ export class ListComponent {
   list = input.required<IList>();
   cards = input.required<ICard[]>();
 
-  private readonly listDataService = inject(ListDataService);
+  private readonly listStoreService = inject(ListStoreService);
 
   constructor() {
     effect(() => {
-      this.listDataService.cards = this.cards();
+      this.listStoreService.cards = this.cards();
     });
   }
 }

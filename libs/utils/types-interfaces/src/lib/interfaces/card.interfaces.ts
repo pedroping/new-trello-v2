@@ -7,7 +7,7 @@ export interface ICard {
 export interface IDragMoveEvent {
   id: number;
   element: HTMLElement;
-  listId: number;
+  listId?: number;
   type: TEventType;
 }
 

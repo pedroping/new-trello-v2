@@ -1,66 +1,84 @@
 import {
+  afterNextRender,
+  AfterViewInit,
   DestroyRef,
   Directive,
-  HostListener,
   inject,
-  input,
+  Injector,
   OnInit,
+  runInInjectionContext,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
-import { IList } from '@new-trello-v2/types-interfaces';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Directive({
   selector: '[listMove]',
 })
 export class ListMoveDirective implements OnInit {
-  list = input.required<IList>();
-
   private readonly destroyRef = inject(DestroyRef);
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
-
-  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
-    // event.preventDefault();
-    // event.stopImmediatePropagation();
-    // if (this.boardEnvironmentEventsService.onUpStart) return;
-    // this.boardEnvironmentEventsService.onUpStart = true;
-    // this.startDownEvent(event.clientX, event.clientY);
-  }
-
-  @HostListener('touchstart', ['$event']) onTouchDown(event: TouchEvent) {
-    // event.preventDefault();
-    // event.stopImmediatePropagation();
-    // if (this.boardEnvironmentEventsService.onUpStart) return;
-    // const touch = event.touches[0];
-    // this.boardEnvironmentEventsService.onUpStart = true;
-    // timer(500)
-    //   .pipe(take(1))
-    //   .subscribe(() => {
-    //     if (!this.boardEnvironmentEventsService.onUpStart) return;
-    //     this.startDownEvent(touch.pageX, touch.pageY);
-    //   });
-  }
+  private readonly listElements = inject(LIST_ELEMENT);
+  private readonly listDataService = inject(ListDataService);
+  private readonly injector = inject(Injector);
 
   ngOnInit(): void {
-    this.boardEnvironmentEventsService
-      .getGlobalMouseMoveEvent$(this.list().id, 'list')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((event) => {
-        this.moveEventHandle(event.x, event.y);
-      });
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        this.boardEnvironmentEventsService
+          .getGlobalMouseMoveEvent$(this.listDataService.list.id, 'list')
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe((event) => {
+            this.moveEventHandle(event.x, event.y);
+          });
 
-    this.boardEnvironmentEventsService
-      .getGlobalMouseUpEvent$(this.list().id, 'list')
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        this.upEventHandle();
+        this.boardEnvironmentEventsService
+          .getGlobalMouseUpEvent$(this.listDataService.list.id, 'list')
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.upEventHandle();
+          });
       });
+    });
   }
 
   private moveEventHandle(x: number, y: number) {
-    console.log(x, y);
+    if (
+      this.boardEnvironmentEventsService.onListUpStart ||
+      !this.boardEnvironmentEventsService.actualListMoving
+    )
+      return;
+
+    this.listDataService.actualXPosition = x;
+    this.listDataService.actualYPosition = y;
+
+    this.listElements.listElementRef.style.zIndex = '20';
+    this.listElements.listElementRef.style.transform = 'rotate(2deg)';
+    this.listElements.listElementRef.style.top =
+      y - this.listDataService.initialY + 'px';
+    this.listElements.listElementRef.style.left =
+      x - this.listDataService.initialX + 'px';
+
+    const afterElement =
+      this.boardEnvironmentEventsService.getDragAfterListElement(
+        this.listElements.listElementRef.parentElement as HTMLElement,
+        y,
+        this.listElements.listElementRef,
+      );
+
+    // console.log(afterElement);
+
+    // this.cardActionsService.handleCardsTransform(
+    //   this.elementRef,
+    //   this.listElements.ulElement,
+    //   afterElement,
+    //   true,
+    // );
+
+    this.boardEnvironmentEventsService.listMoveEvent = { x, y };
   }
 
   private upEventHandle() {}

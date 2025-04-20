@@ -10,7 +10,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   BoardEnvironmentEventsService,
-  ListDataService,
+  ListStoreService,
 } from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
 import {
@@ -39,7 +39,7 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
   private readonly destroyRef = inject(DestroyRef);
-  private readonly listDataService = inject(ListDataService);
+  private readonly listDataService = inject(ListStoreService);
 
   private upHasStart = false;
   private downHasStart = false;
@@ -54,7 +54,7 @@ export class ListAutoScrollDirective implements OnInit, OnDestroy {
           if (!event) this.destroyEvents$.next();
         }),
         switchMap((cardEvent) => {
-          return this.boardEnvironmentEventsService.moveEvent$$.pipe(
+          return this.boardEnvironmentEventsService.cardMoveEvent$$.pipe(
             filter(Boolean),
             throttleTime(10),
             takeUntilDestroyed(this.destroyRef),

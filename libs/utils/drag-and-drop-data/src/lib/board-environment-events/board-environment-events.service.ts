@@ -10,16 +10,20 @@ import { BehaviorSubject, filter, fromEvent, Subject, tap } from 'rxjs';
 export class BoardEnvironmentEventsService {
   private mouseUpEvent$ = new Subject<MouseEvent>();
   private mousemoveEvent$ = new Subject<MouseEvent>();
-  private onUpStart$ = new BehaviorSubject<boolean>(false);
-  private moveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
+  private onCardUpStart$ = new BehaviorSubject<boolean>(false);
+  private onListUpStart$ = new BehaviorSubject<boolean>(false);
+  private cardMoveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
+  private listMoveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
   private actualCardMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
   private actualListMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
 
-  private _previewElement?: HTMLLIElement;
+  private _cardPreviewElement?: HTMLLIElement;
+  private _listPreviewElement?: HTMLDivElement;
 
-  constructor() {    
+  constructor() {
     afterNextRender(() => {
-      this._previewElement = document.createElement('li');
+      this._cardPreviewElement = document.createElement('li');
+      this._listPreviewElement = document.createElement('div');
       this.setPreviewClass();
       this.initGlobalEvents();
     });
@@ -49,36 +53,70 @@ export class BoardEnvironmentEventsService {
     return this.actualListMoving$.asObservable();
   }
 
-  get moveEvent$$() {
-    return this.moveEvent$.asObservable();
+  get cardMoveEvent$$() {
+    return this.cardMoveEvent$.asObservable();
   }
 
-  get moveEvent() {
-    return this.moveEvent$.value;
+  get cardMoveEvent() {
+    return this.cardMoveEvent$.value;
   }
 
-  set moveEvent(event: IMoveEvent | null) {
-    this.moveEvent$.next(event);
+  set cardMoveEvent(event: IMoveEvent | null) {
+    this.cardMoveEvent$.next(event);
   }
 
-  get onUpStart() {
-    return this.onUpStart$.value;
+  get listMoveEvent$$() {
+    return this.listMoveEvent$.asObservable();
   }
 
-  set onUpStart(value: boolean) {
-    this.onUpStart$.next(value);
+  get listMoveEvent() {
+    return this.listMoveEvent$.value;
   }
 
-  get previewElement() {
-    return this._previewElement as HTMLElement;
+  set listMoveEvent(event: IMoveEvent | null) {
+    this.listMoveEvent$.next(event);
   }
 
-  setPreviewSize(params: { height?: number; width?: number }) {
-    if (!this._previewElement) return;
+  get onCardUpStart() {
+    return this.onCardUpStart$.value;
+  }
 
-    if (params?.width) this._previewElement.style.width = params.width + 'px';
+  set onCardUpStart(value: boolean) {
+    this.onCardUpStart$.next(value);
+  }
+
+  get onListUpStart() {
+    return this.onListUpStart$.value;
+  }
+
+  set onListUpStart(value: boolean) {
+    this.onListUpStart$.next(value);
+  }
+
+  get cardPreviewElement() {
+    return this._cardPreviewElement as HTMLElement;
+  }
+
+  get listPreviewElement() {
+    return this._listPreviewElement as HTMLElement;
+  }
+
+  setCardPreviewSize(params: { height?: number; width?: number }) {
+    if (!this._cardPreviewElement) return;
+
+    if (params?.width)
+      this._cardPreviewElement.style.width = params.width + 'px';
     if (params?.height)
-      this._previewElement.style.height = params.height + 'px';
+      this._cardPreviewElement.style.height = params.height + 'px';
+  }
+
+  setListPreviewSize(params: { height?: number; width?: number }) {
+    if (!this._listPreviewElement) return;
+
+    if (params?.width)
+      this._listPreviewElement.style.width = params.width + 'px';
+    if (params?.height)
+      this._listPreviewElement.style.height = params.height + 'px';
   }
 
   getGlobalMouseMoveEvent$(id: number, type: TEventType) {
@@ -86,7 +124,7 @@ export class BoardEnvironmentEventsService {
       filter(() =>
         type == 'card'
           ? this.actualCardMoving?.id === id
-          : this.actualListMoving?.id == id,
+          : this.actualListMoving?.id === id,
       ),
       tap((event) => {
         event.preventDefault();
@@ -119,7 +157,7 @@ export class BoardEnvironmentEventsService {
     return draggableElements
       .filter(
         (element) =>
-          element != this._previewElement && element != actualElement,
+          element != this._cardPreviewElement && element != actualElement,
       )
       .reduce(
         (
@@ -156,7 +194,7 @@ export class BoardEnvironmentEventsService {
     return draggableElements
       .filter(
         (element) =>
-          element != this._previewElement && element != actualElement,
+          element != this._cardPreviewElement && element != actualElement,
       )
       .reduce(
         (
@@ -184,8 +222,9 @@ export class BoardEnvironmentEventsService {
   }
 
   private setPreviewClass() {
-    if (!this._previewElement) return;
-    this._previewElement.classList.add('preview-card');
+    if (!this._cardPreviewElement || !this._listPreviewElement) return;
+    this._listPreviewElement.classList.add('preview-list');
+    this._cardPreviewElement.classList.add('preview-card');
   }
 
   private initGlobalEvents() {

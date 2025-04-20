@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  BoardEnvironmentDataService,
+  BoardEnvironmentStoreService,
   BoardEnvironmentEventsService,
 } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
@@ -25,7 +25,7 @@ export class CardMoveStopDirective implements OnInit {
     BoardEnvironmentEventsService,
   );
   private readonly boardEnvironmentDataService = inject(
-    BoardEnvironmentDataService,
+    BoardEnvironmentStoreService,
   );
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
@@ -40,16 +40,16 @@ export class CardMoveStopDirective implements OnInit {
 
   private upEventHandle() {
     this.boardEnvironmentEventsService.actualCardMoving = null;
-    this.boardEnvironmentEventsService.moveEvent = null;
-    this.boardEnvironmentEventsService.onUpStart = false;
+    this.boardEnvironmentEventsService.cardMoveEvent = null;
+    this.boardEnvironmentEventsService.onCardUpStart = false;
 
     this.elementRef.style.transition = 'all 200ms ease-in-out';
 
     const previewElementId = Array.from(this.listElements.ulElement.children)
       .filter((element) => element != this.elementRef)
-      .indexOf(this.boardEnvironmentEventsService.previewElement);
+      .indexOf(this.boardEnvironmentEventsService.cardPreviewElement);
     const previewElementRect =
-      this.boardEnvironmentEventsService.previewElement.getBoundingClientRect();
+      this.boardEnvironmentEventsService.cardPreviewElement.getBoundingClientRect();
 
     this.boardEnvironmentDataService.moveCard(
       this.cardDataHandleService.card.id,
@@ -63,11 +63,11 @@ export class CardMoveStopDirective implements OnInit {
 
     if (
       this.listElements.ulElement.contains(
-        this.boardEnvironmentEventsService.previewElement,
+        this.boardEnvironmentEventsService.cardPreviewElement,
       )
     )
       this.listElements.ulElement.removeChild(
-        this.boardEnvironmentEventsService.previewElement,
+        this.boardEnvironmentEventsService.cardPreviewElement,
       );
 
     timer(10)

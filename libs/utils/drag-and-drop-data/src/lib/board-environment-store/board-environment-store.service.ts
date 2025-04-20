@@ -3,7 +3,7 @@ import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class BoardEnvironmentDataService {
+export class BoardEnvironmentStoreService {
   private boardEnvironment$ = new BehaviorSubject<IBoardEnvironmentData>(
     <IBoardEnvironmentData>{},
   );

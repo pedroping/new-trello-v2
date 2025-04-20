@@ -18,7 +18,7 @@ import { CardDataService } from '../../services/card-data/card-data.service';
 export class CardMoveStartDirective {
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly cardActionsService = inject(CardActionsService);
-  private readonly cardDataHandleService = inject(CardDataService);
+  private readonly cardDataService = inject(CardDataService);
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
@@ -28,9 +28,9 @@ export class CardMoveStartDirective {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    if (this.boardEnvironmentEventsService.onUpStart) return;
+    if (this.boardEnvironmentEventsService.onCardUpStart) return;
 
-    this.boardEnvironmentEventsService.onUpStart = true;
+    this.boardEnvironmentEventsService.onCardUpStart = true;
 
     this.startDownEvent(event.clientX, event.clientY);
   }
@@ -39,26 +39,26 @@ export class CardMoveStartDirective {
     event.preventDefault();
     event.stopImmediatePropagation();
 
-    if (this.boardEnvironmentEventsService.onUpStart) return;
+    if (this.boardEnvironmentEventsService.onCardUpStart) return;
 
     const touch = event.touches[0];
-    this.boardEnvironmentEventsService.onUpStart = true;
+    this.boardEnvironmentEventsService.onCardUpStart = true;
 
     timer(500)
       .pipe(take(1))
       .subscribe(() => {
-        if (!this.boardEnvironmentEventsService.onUpStart) return;
+        if (!this.boardEnvironmentEventsService.onCardUpStart) return;
 
         this.startDownEvent(touch.pageX, touch.pageY);
       });
   }
 
   private startDownEvent(x: number, y: number) {
-    this.boardEnvironmentEventsService.onUpStart = true;
+    this.boardEnvironmentEventsService.onCardUpStart = true;
 
     const cardRect = this.elementRef.getBoundingClientRect();
 
-    this.boardEnvironmentEventsService.setPreviewSize({
+    this.boardEnvironmentEventsService.setCardPreviewSize({
       height: cardRect.height,
       width: cardRect.width,
     });
@@ -69,22 +69,20 @@ export class CardMoveStartDirective {
     this.listElements.ulElement.style.maxHeight =
       this.listElements.ulElement.offsetHeight + 'px';
 
-    const rect = this.elementRef.getBoundingClientRect();
-
     this.elementRef.style.zIndex = '20';
     this.elementRef.style.top = 'unset';
     this.elementRef.style.left = 'unset';
     this.elementRef.style.position = 'fixed';
-    this.elementRef.style.width = rect.width + 'px';
+    this.elementRef.style.width = cardRect.width + 'px';
     this.elementRef.style.transform = 'rotate(2deg)';
     this.elementRef.style.transition = 'none';
 
-    this.cardDataHandleService.actualYPosition = y;
-    this.cardDataHandleService.initialX = x - rect.x;
-    this.cardDataHandleService.initialY = y - rect.y;
+    this.cardDataService.actualYPosition = y;
+    this.cardDataService.initialX = x - cardRect.x;
+    this.cardDataService.initialY = y - cardRect.y;
 
-    this.elementRef.style.top = y - this.cardDataHandleService.initialY + 'px';
-    this.elementRef.style.left = x - this.cardDataHandleService.initialX + 'px';
+    this.elementRef.style.top = y - this.cardDataService.initialY + 'px';
+    this.elementRef.style.left = x - this.cardDataService.initialX + 'px';
 
     this.cardActionsService.handleCardsTransform(
       this.elementRef,
@@ -93,11 +91,11 @@ export class CardMoveStartDirective {
     );
 
     this.boardEnvironmentEventsService.actualCardMoving = {
-      id: this.cardDataHandleService.card.id,
-      listId: this.cardDataHandleService.card.listId,
+      id: this.cardDataService.card.id,
+      listId: this.cardDataService.card.listId,
       element: this.elementRef,
       type: 'card',
     };
-    this.boardEnvironmentEventsService.onUpStart = false;
+    this.boardEnvironmentEventsService.onCardUpStart = false;
   }
 }
