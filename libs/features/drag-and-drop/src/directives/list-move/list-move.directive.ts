@@ -1,18 +1,17 @@
 import {
   afterNextRender,
-  AfterViewInit,
   DestroyRef,
   Directive,
   inject,
   Injector,
   OnInit,
-  runInInjectionContext,
+  runInInjectionContext
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
-import { ListDataService } from '../../services/list-data/list-data.service';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Directive({
   selector: '[listMove]',
@@ -35,13 +34,6 @@ export class ListMoveDirective implements OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((event) => {
             this.moveEventHandle(event.x, event.y);
-          });
-
-        this.boardEnvironmentEventsService
-          .getGlobalMouseUpEvent$(this.listDataService.list.id, 'list')
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.upEventHandle();
           });
       });
     });
@@ -80,6 +72,4 @@ export class ListMoveDirective implements OnInit {
 
     this.boardEnvironmentEventsService.listMoveEvent = { x, y };
   }
-
-  private upEventHandle() {}
 }

@@ -46,7 +46,7 @@ export class ListMoveStartDirective {
   }
 
   private startDownEvent(x: number, y: number) {
-    this.boardEnvironmentEventsService.onCardUpStart = true;
+    this.boardEnvironmentEventsService.onListUpStart = true;
 
     const listRect = this.listElements.listElementRef.getBoundingClientRect();
 

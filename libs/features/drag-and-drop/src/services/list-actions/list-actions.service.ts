@@ -17,6 +17,11 @@ export class ListActionsService {
     if (!afterElement)
       return this.handleLastListTransform(elementRef, listElement, fromMove);
 
+    if (!fromMove)
+      Array.from(listElement.children).forEach((_element) => {
+        (_element as HTMLElement).style.transition = 'none';
+      });
+
     listElement.insertBefore(
       this.boardEnvironmentEventsService.listPreviewElement,
       afterElement,
