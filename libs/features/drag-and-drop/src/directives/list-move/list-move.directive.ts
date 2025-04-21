@@ -71,7 +71,7 @@ export class ListMoveDirective implements OnInit {
         this.listElements.listElementRef,
       );
 
-    this.listActionsService.handleCardsTransform(
+    this.listActionsService.handleListTransform(
       this.listElements.listElementRef,
       this.listElements.listElementRef.parentElement as HTMLElement,
       afterElement,

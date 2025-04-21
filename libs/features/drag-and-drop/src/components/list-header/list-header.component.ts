@@ -1,6 +1,7 @@
 import { Component, inject, input } from '@angular/core';
 import { IList } from '@new-trello-v2/types-interfaces';
 import { ListMoveStartDirective } from '../../directives/list-move-start/list-move-start.directive';
+import { ListMoveStopDirective } from '../../directives/list-move-stop/list-move-stop.directive';
 import { ListMoveDirective } from '../../directives/list-move/list-move.directive';
 import { ListDataService } from '../../services/list-data/list-data.service';
 
@@ -8,7 +9,11 @@ import { ListDataService } from '../../services/list-data/list-data.service';
   selector: 'lib-list-header',
   templateUrl: './list-header.component.html',
   styleUrls: ['./list-header.component.scss'],
-  hostDirectives: [ListMoveDirective, ListMoveStartDirective],
+  hostDirectives: [
+    ListMoveDirective,
+    ListMoveStartDirective,
+    ListMoveStopDirective,
+  ],
 })
 export class ListHeaderComponent {
   headerName = input.required<string>();

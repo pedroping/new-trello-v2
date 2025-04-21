@@ -3,7 +3,7 @@ import { ListStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
-import { ListCardComponent } from '../list-card/list-card.component';
+import { CardComponent } from '../card/card.component';
 import { ListHeaderComponent } from '../list-header/list-header.component';
 import { ListDataService } from '../../services/list-data/list-data.service';
 
@@ -11,7 +11,7 @@ import { ListDataService } from '../../services/list-data/list-data.service';
   selector: 'lib-list',
   templateUrl: './list.component.html',
   styleUrls: ['./list.component.scss'],
-  imports: [ListHeaderComponent, ListCardComponent],
+  imports: [ListHeaderComponent, CardComponent],
   providers: [
     ListStoreService,
     ListDataService,

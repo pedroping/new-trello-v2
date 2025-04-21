@@ -6,9 +6,9 @@ import { CardMoveDirective } from '../../directives/card-move/card-move.directiv
 import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Component({
-  selector: '[lib-list-card]',
-  templateUrl: './list-card.component.html',
-  styleUrls: ['./list-card.component.scss'],
+  selector: '[lib-card]',
+  templateUrl: './card.component.html',
+  styleUrls: ['./card.component.scss'],
   providers: [CardDataService],
   hostDirectives: [
     CardMoveDirective,
@@ -16,7 +16,7 @@ import { CardDataService } from '../../services/card-data/card-data.service';
     CardMoveStopDirective,
   ],
 })
-export class ListCardComponent {
+export class CardComponent {
   card = input.required<ICard>();
 
   private readonly cardDataHandleService = inject(CardDataService);

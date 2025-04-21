@@ -8,28 +8,14 @@ export class ListActionsService {
     BoardEnvironmentEventsService,
   );
 
-  // const elementHeight = elementRef.offsetHeight;
-
-  // Array.from(listElement.children)
-  //   .filter((element) => element != elementRef)
-  //   .forEach((_element, i) => {
-  //     const element = _element as HTMLElement;
-
-  //     if (elementId < i)
-  //       element.style.transform = `translateY(${elementHeight + 4}px)`;
-  //     else element.style.transform = 'translateY(0px)';
-  //   });
-
-  // if (fromMove) this.setTransitions(true, elementRef, listElement.children);
-
-  handleCardsTransform(
+  handleListTransform(
     elementRef: HTMLElement,
     listElement: HTMLElement,
     afterElement: Element | null | undefined,
     fromMove = false,
   ) {
     if (!afterElement)
-      return this.handleLastCardTransform(elementRef, listElement, fromMove);
+      return this.handleLastListTransform(elementRef, listElement, fromMove);
 
     listElement.insertBefore(
       this.boardEnvironmentEventsService.listPreviewElement,
@@ -45,22 +31,29 @@ export class ListActionsService {
 
     const elementWidth = elementRef.offsetWidth;
 
+    const previewGap = Math.max((elementWidth + 20) * elementId, 0);
+
+    this.boardEnvironmentEventsService.listPreviewElement.style.transition =
+      'none';
+    this.boardEnvironmentEventsService.listPreviewElement.style.transform = `translateX(${previewGap}px)`;
+
     Array.from(listElement.children)
       .filter((element) => element != elementRef)
       .forEach((_element, i) => {
         const element = _element as HTMLElement;
 
+        if (element == this.boardEnvironmentEventsService.listPreviewElement)
+          return;
+
         if (elementId < i)
-          element.style.transform = `translateX(${(elementWidth + 20)}px)`;
+          element.style.transform = `translateX(${elementWidth + 20}px)`;
         else element.style.transform = 'translateX(0px)';
       });
 
-    const previewGap = Math.max((elementWidth + 20) * elementId, 0);
-
-    this.boardEnvironmentEventsService.listPreviewElement.style.transform = `translateX(${previewGap}px)`;
+    if (fromMove) this.setTransitions(true, elementRef, listElement.children);
   }
 
-  private handleLastCardTransform(
+  private handleLastListTransform(
     elementRef: HTMLElement,
     listElement: HTMLElement,
     fromMove = false,

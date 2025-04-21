@@ -36,7 +36,7 @@ export class BoardEnvironmentStoreService {
 
     if (!card) return;
 
-    let newCardList = [...list.cards]
+    let newCardList = [...list.cards];
 
     newCardList = newCardList.filter((card) => card.id != cardId);
 
@@ -44,8 +44,28 @@ export class BoardEnvironmentStoreService {
 
     const newData = this.boardEnvironment;
 
-    if (newData.lists[listIndex])
-      newData.lists[listIndex].cards = newCardList;
+    if (newData.lists[listIndex]) newData.lists[listIndex].cards = newCardList;
+
+    this.boardEnvironment = newData;
+  }
+
+  moveList(listId: number, newListPositon: number) {
+    const listIndex = this.boardEnvironment.lists.findIndex(
+      (list) => list.id == listId,
+    );
+
+    if (listIndex == -1) return;
+
+    const currentList = this.boardEnvironment.lists[listIndex];
+
+    const newLists = this.boardEnvironment.lists.filter(
+      (list) => list != currentList,
+    );
+
+    newLists.splice(Math.max(0, newListPositon), 0, currentList);
+
+    const newData = this.boardEnvironment;
+    newData.lists = newLists;
 
     this.boardEnvironment = newData;
   }

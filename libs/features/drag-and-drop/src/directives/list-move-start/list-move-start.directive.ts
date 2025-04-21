@@ -79,7 +79,7 @@ export class ListMoveStartDirective {
     this.listElements.listElementRef.style.left =
       x - this.listDataService.initialX + 'px';
 
-    this.listActionsService.handleCardsTransform(
+    this.listActionsService.handleListTransform(
       this.listElements.listElementRef,
       this.listElements.listElementRef.parentElement as HTMLElement,
       this.listElements.listElementRef,

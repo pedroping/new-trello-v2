@@ -4,12 +4,14 @@ import {
   IMoveEvent,
   TEventType,
 } from '@new-trello-v2/types-interfaces';
-import { BehaviorSubject, filter, fromEvent, Subject, tap } from 'rxjs';
+import { BehaviorSubject, filter, fromEvent, merge, Subject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {
   private mouseUpEvent$ = new Subject<MouseEvent>();
-  private mousemoveEvent$ = new Subject<MouseEvent>();
+  private mouseMoveEvent$ = new Subject<MouseEvent>();
+  private touchUpEvent$ = new Subject<TouchEvent>();
+  private touchMoveEvent$ = new Subject<TouchEvent>();
   private onCardUpStart$ = new BehaviorSubject<boolean>(false);
   private onListUpStart$ = new BehaviorSubject<boolean>(false);
   private cardMoveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
@@ -120,7 +122,21 @@ export class BoardEnvironmentEventsService {
   }
 
   getGlobalMouseMoveEvent$(id: number, type: TEventType) {
-    return this.mousemoveEvent$.pipe(
+    return this.mouseMoveEvent$.pipe(
+      filter(() =>
+        type == 'card'
+          ? this.actualCardMoving?.id === id
+          : this.actualListMoving?.id === id,
+      ),
+      tap((event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }),
+    );
+  }
+
+  getGlobalTouchMoveEvent$(id: number, type: TEventType) {
+    return this.touchMoveEvent$.pipe(
       filter(() =>
         type == 'card'
           ? this.actualCardMoving?.id === id
@@ -135,6 +151,20 @@ export class BoardEnvironmentEventsService {
 
   getGlobalMouseUpEvent$(id: number, type: TEventType) {
     return this.mouseUpEvent$.pipe(
+      filter(() =>
+        type == 'card'
+          ? this.actualCardMoving?.id === id
+          : this.actualListMoving?.id == id,
+      ),
+      tap((event) => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }),
+    );
+  }
+
+  getGlobalTouchUpEvent$(id: number, type: TEventType) {
+    return this.touchUpEvent$.pipe(
       filter(() =>
         type == 'card'
           ? this.actualCardMoving?.id === id
@@ -229,11 +259,20 @@ export class BoardEnvironmentEventsService {
 
   private initGlobalEvents() {
     fromEvent<MouseEvent>(window.document.body, 'mousemove').subscribe((e) =>
-      this.mousemoveEvent$.next(e),
+      this.mouseMoveEvent$.next(e),
     );
 
     fromEvent<MouseEvent>(window, 'mouseup').subscribe((e) =>
       this.mouseUpEvent$.next(e),
     );
+
+    fromEvent<TouchEvent>(window.document.body, 'touchmove').subscribe((e) =>
+      this.touchMoveEvent$.next(e),
+    );
+
+    merge(
+      fromEvent<TouchEvent>(window.document.body, 'touchend'),
+      fromEvent<TouchEvent>(window.document.body, 'touchcancel'),
+    ).subscribe((e) => this.touchUpEvent$.next(e));
   }
 }
