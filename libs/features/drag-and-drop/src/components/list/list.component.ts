@@ -1,11 +1,11 @@
 import { Component, effect, ElementRef, inject, input } from '@angular/core';
 import { ListStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
-import { ListAutoScrollDirective } from '../../directives/list-auto-scroll/list-auto-scroll.directive';
+import { CardAutoScrollDirective } from '../../directives/card-auto-scroll/card-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
+import { ListDataService } from '../../services/list-data/list-data.service';
 import { CardComponent } from '../card/card.component';
 import { ListHeaderComponent } from '../list-header/list-header.component';
-import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Component({
   selector: 'lib-list',
@@ -30,7 +30,7 @@ import { ListDataService } from '../../services/list-data/list-data.service';
   ],
   hostDirectives: [
     {
-      directive: ListAutoScrollDirective,
+      directive: CardAutoScrollDirective,
       inputs: ['list'],
     },
   ],

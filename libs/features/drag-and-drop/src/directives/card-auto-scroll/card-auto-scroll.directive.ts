@@ -28,9 +28,9 @@ import {
 const SIZE_GAP = 200;
 
 @Directive({
-  selector: '[listAutoScroll]',
+  selector: '[cardAutoScroll]',
 })
-export class ListAutoScrollDirective implements OnInit, OnDestroy {
+export class CardAutoScrollDirective implements OnInit, OnDestroy {
   list = input.required<IList>();
 
   private readonly boardEnvironmentEventsService = inject(
