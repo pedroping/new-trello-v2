@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  BoardEnvironmentEventsService,
-  ListStoreService
+  BoardEnvironmentEventsService
 } from '@new-trello-v2/drag-and-drop-data';
 import { throttleTime } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Directive({
   selector: '[cardMove]',
@@ -24,15 +24,15 @@ export class CardMoveDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
-  private readonly listDataService = inject(ListStoreService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly cardActionsService = inject(CardActionsService);
-  private readonly cardDataHandleService = inject(CardDataService);
+  private readonly listDataService = inject(ListDataService);
+  private readonly cardDataService = inject(CardDataService);
 
   ngOnInit(): void {
     this.boardEnvironmentEventsService
-      .getGlobalMouseMoveEvent$(this.cardDataHandleService.card.id, 'card')
+      .getGlobalMouseMoveEvent$(this.cardDataService.card.id, 'card')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         this.moveEventHandle(event.x, event.y);
@@ -46,7 +46,7 @@ export class CardMoveDirective implements OnInit {
           this.boardEnvironmentEventsService.cardMoveEvent == null ||
           this.boardEnvironmentEventsService.actualCardMoving == null ||
           this.boardEnvironmentEventsService.actualCardMoving.id !=
-            this.cardDataHandleService.card.id
+            this.cardDataService.card.id
         )
           return;
 
@@ -64,14 +64,14 @@ export class CardMoveDirective implements OnInit {
     )
       return;
 
-    this.cardDataHandleService.actualXPosition = x;
-    this.cardDataHandleService.actualYPosition = y;
+    this.cardDataService.actualXPosition = x;
+    this.cardDataService.actualYPosition = y;
 
     this.listElements.listElementRef.style.zIndex = '20';
     this.elementRef.parentElement!.style.zIndex = '20';
     this.elementRef.style.transform = 'rotate(2deg)';
-    this.elementRef.style.top = y - this.cardDataHandleService.initialY + 'px';
-    this.elementRef.style.left = x - this.cardDataHandleService.initialX + 'px';
+    this.elementRef.style.top = y - this.cardDataService.initialY + 'px';
+    this.elementRef.style.left = x - this.cardDataService.initialX + 'px';
 
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(

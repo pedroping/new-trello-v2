@@ -5,13 +5,14 @@ import {
   inject,
   Injector,
   OnInit,
-  runInInjectionContext
+  runInInjectionContext,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
+import { throttleTime } from 'rxjs';
 
 @Directive({
   selector: '[listMove]',
@@ -34,6 +35,24 @@ export class ListMoveDirective implements OnInit {
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((event) => {
             this.moveEventHandle(event.x, event.y);
+          });
+
+        this.boardEnvironmentEventsService.globalScrollEvent$$
+          .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(200))
+          .subscribe(() => {
+            if (
+              this.boardEnvironmentEventsService.onListUpStart ||
+              this.boardEnvironmentEventsService.listMoveEvent == null ||
+              this.boardEnvironmentEventsService.actualListMoving == null ||
+              this.boardEnvironmentEventsService.actualListMoving.id !=
+                this.listDataService.list.id
+            )
+              return;
+
+            this.moveEventHandle(
+              this.boardEnvironmentEventsService.listMoveEvent.x,
+              this.boardEnvironmentEventsService.listMoveEvent.y,
+            );
           });
       });
     });

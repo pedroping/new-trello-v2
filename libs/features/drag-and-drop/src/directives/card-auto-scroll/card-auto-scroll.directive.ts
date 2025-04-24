@@ -9,8 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
-  BoardEnvironmentEventsService,
-  ListStoreService,
+  BoardEnvironmentEventsService
 } from '@new-trello-v2/drag-and-drop-data';
 import { IList } from '@new-trello-v2/types-interfaces';
 import {
@@ -24,6 +23,7 @@ import {
   throttleTime,
   timer,
 } from 'rxjs';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 const SIZE_GAP = 200;
 
@@ -39,7 +39,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
   private readonly destroyRef = inject(DestroyRef);
-  private readonly listDataService = inject(ListStoreService);
+  private readonly listDataService = inject(ListDataService);
 
   private upHasStart = false;
   private downHasStart = false;

@@ -1,5 +1,4 @@
 import { Component, effect, ElementRef, inject, input } from '@angular/core';
-import { ListStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { CardAutoScrollDirective } from '../../directives/card-auto-scroll/card-auto-scroll.directive';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -13,7 +12,6 @@ import { ListHeaderComponent } from '../list-header/list-header.component';
   styleUrls: ['./list.component.scss'],
   imports: [ListHeaderComponent, CardComponent],
   providers: [
-    ListStoreService,
     ListDataService,
     {
       provide: LIST_ELEMENT,
@@ -39,11 +37,11 @@ export class ListComponent {
   list = input.required<IList>();
   cards = input.required<ICard[]>();
 
-  private readonly listStoreService = inject(ListStoreService);
+  private readonly listDataService = inject(ListDataService);
 
   constructor() {
     effect(() => {
-      this.listStoreService.cards = this.cards();
+      this.listDataService.cards = this.cards();
     });
   }
 }
