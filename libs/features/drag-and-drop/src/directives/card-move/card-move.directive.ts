@@ -6,9 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  BoardEnvironmentEventsService
-} from '@new-trello-v2/drag-and-drop-data';
+import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { throttleTime } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
@@ -75,14 +73,14 @@ export class CardMoveDirective implements OnInit {
 
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(
-        this.listElements.ulElement,
+        this.elementRef.parentElement as HTMLElement,
         y,
         this.elementRef,
       );
 
     this.cardActionsService.handleCardsTransform(
       this.elementRef,
-      this.listElements.ulElement,
+      this.elementRef.parentElement as HTMLElement,
       afterElement,
       true,
     );

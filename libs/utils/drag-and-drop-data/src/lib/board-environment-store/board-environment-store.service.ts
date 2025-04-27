@@ -7,6 +7,15 @@ export class BoardEnvironmentStoreService {
   private boardEnvironment$ = new BehaviorSubject<IBoardEnvironmentData>(
     <IBoardEnvironmentData>{},
   );
+  private boardElementRef$ = new BehaviorSubject<HTMLElement | null>(null);
+
+  set boardElementRef(element: HTMLElement) {
+    this.boardElementRef$.next(element);
+  }
+
+  get boardElementRef() {
+    return this.boardElementRef$.value as HTMLElement;
+  }
 
   set boardEnvironment(data: Partial<IBoardEnvironmentData>) {
     this.boardEnvironment$.next({ ...this.boardEnvironment, ...data });

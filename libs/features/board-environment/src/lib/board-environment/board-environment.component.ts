@@ -1,5 +1,13 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  inject,
+  Injector,
+  OnInit,
+  runInInjectionContext,
+} from '@angular/core';
 import {
   AutoScrollDirective,
   ListComponent,
@@ -14,17 +22,27 @@ import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
   styleUrl: './board-environment.component.scss',
   imports: [ListComponent, AsyncPipe],
   hostDirectives: [MousePageMoveDirective, AutoScrollDirective],
-  providers: [BoardEnvironmentStoreService],
 })
 export class BoardEnvironmentComponent implements OnInit {
-  private readonly boardEnvironmentDataService = inject(
+  private readonly boardEnvironmentStoreService = inject(
     BoardEnvironmentStoreService,
   );
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   readonly boardEnvironment$ =
-    this.boardEnvironmentDataService?.boardEnvironment$$;
+    this.boardEnvironmentStoreService?.boardEnvironment$$;
 
   ngOnInit(): void {
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        this.boardEnvironmentStoreService.boardElementRef =
+          this.elementRef.nativeElement;
+
+        console.log(this.boardEnvironmentStoreService.boardElementRef);
+      });
+    });
+
     const newData: IBoardEnvironmentData = {
       id: 1,
       name: 'Initial Board',
@@ -40,6 +58,6 @@ export class BoardEnvironmentComponent implements OnInit {
       })),
     };
 
-    this.boardEnvironmentDataService.boardEnvironment = newData;
+    this.boardEnvironmentStoreService.boardEnvironment = newData;
   }
 }

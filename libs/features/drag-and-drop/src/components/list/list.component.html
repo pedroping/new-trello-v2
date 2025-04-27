@@ -1,7 +1,7 @@
 <lib-list-header [headerName]="list().name" [list]="list()" />
 <div class="content">
   <div class="sortable-list">
-    <ul id="sortable">
+    <ul id="sortable" [attr.list-id]="list().id">
       @for (card of cards(); track card.id) {
       <li lib-card [card]="card"></li>
       }

@@ -4,16 +4,17 @@ import { CardMoveStartDirective } from '../../directives/card-move-start/card-mo
 import { CardMoveStopDirective } from '../../directives/card-move-stop/card-move-stop.directive';
 import { CardMoveDirective } from '../../directives/card-move/card-move.directive';
 import { CardDataService } from '../../services/card-data/card-data.service';
+import { CardActionsService } from '../../services/card-actions/card-actions.service';
 
 @Component({
   selector: '[lib-card]',
   templateUrl: './card.component.html',
   styleUrls: ['./card.component.scss'],
-  providers: [CardDataService],
+  providers: [CardDataService, CardActionsService],
   hostDirectives: [
     CardMoveDirective,
     CardMoveStartDirective,
-    CardMoveStopDirective,
+    // CardMoveStopDirective,
   ],
 })
 export class CardComponent {
