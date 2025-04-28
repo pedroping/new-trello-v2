@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
+import { IBoardEnvironmentData, ICard } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -52,12 +52,14 @@ export class BoardEnvironmentStoreService {
       return;
     }
 
-    const newData = this.boardEnvironment;
+    let oldCardList = [...this.boardEnvironment.lists[listIndex].cards];
+    const newCardList = [...this.boardEnvironment.lists[newListId].cards];
+    oldCardList = oldCardList.filter((card) => card.id !== cardId);
+    newCardList.splice(Math.max(0, newCardPositon), 0, card);
 
-    newData.lists[listIndex].cards = newData.lists[listIndex].cards.filter(
-      (card) => card.id !== cardId,
-    );
-    newData.lists[newListId].cards.splice(Math.max(0, newCardPositon), 0, card);
+    const newData = this.boardEnvironment;
+    newData.lists[newListId].cards = newCardList;
+    newData.lists[listIndex].cards = oldCardList;
 
     this.boardEnvironment = newData;
   }
@@ -66,9 +68,10 @@ export class BoardEnvironmentStoreService {
     const listIndex = this.boardEnvironment.lists.findIndex((list) =>
       list.cards.find((card) => card.id === cardId),
     );
-    const card = this.boardEnvironment.lists[listIndex]?.cards.find(
+    let card = this.boardEnvironment.lists[listIndex]?.cards.find(
       (card) => card.id === cardId,
     );
+    card = { ...card } as ICard;
 
     return { listIndex, card };
   }

@@ -19,19 +19,25 @@ export class CardActionsService {
   private stopCardTransform = false;
 
   handleCardsTransform(
+    cloneElement: HTMLElement,
     elementRef: HTMLElement,
     listElement: HTMLElement,
     afterElement: Element | null | undefined,
     fromMove = false,
   ) {
-    listElement = elementRef.parentElement as HTMLElement;
+    listElement = cloneElement.parentElement as HTMLElement;
 
     if (this.stopCardTransform) return;
 
-    this.validateListChange(elementRef);
+    this.validateListChange(cloneElement, elementRef);
 
     if (!afterElement)
-      return this.handleLastCardTransform(elementRef, listElement, fromMove);
+      return this.handleLastCardTransform(
+        cloneElement,
+        elementRef,
+        listElement,
+        fromMove,
+      );
 
     listElement.insertBefore(
       this.boardEnvironmentEventsService.cardPreviewElement,
@@ -39,16 +45,16 @@ export class CardActionsService {
     );
 
     const elementId = Array.from(listElement.children)
-      .filter((element) => element != elementRef)
+      .filter((element) => element != elementRef && element != cloneElement)
       .findIndex(
         (element) =>
           element == this.boardEnvironmentEventsService.cardPreviewElement,
       );
 
-    const elementHeight = elementRef.offsetHeight;
+    const elementHeight = cloneElement.offsetHeight;
 
     Array.from(listElement.children)
-      .filter((element) => element != elementRef)
+      .filter((element) => element != elementRef && element != cloneElement)
       .forEach((_element, i) => {
         const element = _element as HTMLElement;
         if (elementId < i)
@@ -56,48 +62,48 @@ export class CardActionsService {
         else element.style.transform = 'translateY(0px)';
       });
 
-    if (fromMove) this.setTransitions(true, elementRef, listElement.children);
+    this.boardEnvironmentEventsService.cardPreviewElement.style.transform =
+      elementId === 0 ? 'translateY(5px)' : '';
+
+    if (fromMove)
+      this.setTransitions(true, cloneElement, elementRef, listElement.children);
   }
 
-  private validateListChange(elementRef: HTMLElement) {
-    const list = this.getActualList(elementRef);
+  private validateListChange(
+    cloneElement: HTMLElement,
+    elementRef: HTMLElement,
+  ) {
+    const list = this.getActualList(cloneElement);
     const listId = list?.getAttribute('list-id');
-
     if (!listId || !list) return;
-
     if (+listId == this.cardDataService.card.listId) return;
-
     const newUlList = list.children[1].firstChild?.firstChild as HTMLElement;
-
     if (!newUlList) return;
-
     this.stopCardTransform = true;
-
     this.cardDataService.card.listId = +listId;
-
     this.boardEnvironmentEventsService.actualCardMoving = {
       id: this.cardDataService.card.id,
       listId: this.cardDataService.card.listId,
-      element: elementRef,
+      element: cloneElement,
       type: 'card',
     };
-    const cardRect = elementRef.getBoundingClientRect();
-
+    const cardRect = cloneElement.getBoundingClientRect();
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(
         newUlList,
         cardRect.y,
       );
+    const prevList = cloneElement.parentElement as HTMLElement;
+    newUlList.appendChild(cloneElement);
 
-    const prevList = elementRef.parentElement as HTMLElement;
-
-    newUlList.appendChild(elementRef);
     const cardsCount = Array.from(newUlList.children).filter(
       (element) =>
-        element != this.boardEnvironmentEventsService.cardPreviewElement,
+        element != this.boardEnvironmentEventsService.cardPreviewElement &&
+        element != elementRef,
     ).length;
 
     newUlList.style.minHeight = cardsCount * 43 + 10 + 'px';
+    newUlList.style.maxHeight = cardsCount * 43 + 10 + 'px';
 
     if (afterElement) {
       newUlList.insertBefore(
@@ -111,35 +117,38 @@ export class CardActionsService {
     }
 
     this.stopCardTransform = false;
-    this.handleCardsTransform(elementRef, newUlList, afterElement, true);
+    this.handleCardsTransform(
+      cloneElement,
+      elementRef,
+      newUlList,
+      afterElement,
+      true,
+    );
 
     timer(10)
       .pipe(take(1))
       .subscribe(() => {
         Array.from(prevList.children).forEach((_element) => {
           const element = _element as HTMLElement;
-
           element.style.transform = '';
         });
-
         const previListCardCount = Array.from(prevList.children).filter(
           (element) =>
-            element != this.boardEnvironmentEventsService.cardPreviewElement,
+            element != this.boardEnvironmentEventsService.cardPreviewElement &&
+            element != cloneElement &&
+            element != elementRef,
         ).length;
-
         prevList.style.minHeight = previListCardCount * 43 + 10 + 'px';
-
+        prevList.style.maxHeight = previListCardCount * 43 + 10 + 'px';
         const listParent = prevList.parentElement?.parentElement?.parentElement;
-
         if (!listParent) return;
-
         listParent.style.zIndex = '20';
       });
-
     return;
   }
 
   private handleLastCardTransform(
+    cloneElement: HTMLElement,
     elementRef: HTMLElement,
     listElement: HTMLElement,
     fromMove = false,
@@ -149,18 +158,20 @@ export class CardActionsService {
     );
 
     Array.from(listElement.children)
-      .filter((element) => element != elementRef)
+      .filter((element) => element != elementRef && element != cloneElement)
       .forEach((_element, i) => {
         const element = _element as HTMLElement;
 
         element.style.transform = 'translateY(0px)';
       });
 
-    if (fromMove) this.setTransitions(true, elementRef, listElement.children);
+    if (fromMove)
+      this.setTransitions(true, cloneElement, elementRef, listElement.children);
   }
 
   private setTransitions(
     set: boolean,
+    cloneElement: HTMLElement,
     elementRef: HTMLElement,
     listElements: HTMLCollection,
   ) {
@@ -168,7 +179,7 @@ export class CardActionsService {
       .pipe(take(1))
       .subscribe(() => {
         Array.from(listElements)
-          .filter((element) => element != elementRef)
+          .filter((element) => element != elementRef && element != cloneElement)
           .forEach((_element) => {
             const element = _element as HTMLElement;
 

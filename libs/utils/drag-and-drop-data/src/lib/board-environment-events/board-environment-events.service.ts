@@ -189,6 +189,7 @@ export class BoardEnvironmentEventsService {
   getDragAfterCardElement(
     list: HTMLElement,
     y: number,
+    cloneElement?: HTMLElement,
     actualElement?: HTMLElement,
   ) {
     const draggableElements = Array.from(list.children);
@@ -196,7 +197,9 @@ export class BoardEnvironmentEventsService {
     return draggableElements
       .filter(
         (element) =>
-          element != this._cardPreviewElement && element != actualElement,
+          element != this._cardPreviewElement &&
+          element != actualElement &&
+          element != cloneElement,
       )
       .reduce(
         (

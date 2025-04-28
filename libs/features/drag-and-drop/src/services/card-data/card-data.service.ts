@@ -8,9 +8,18 @@ export class CardDataService {
   private _actualYPosition = 0;
   private _actualXPosition = 0;
   private _card?: InputSignal<ICard>;
+  private _cardClone?: HTMLElement;
 
   startDomain(card: InputSignal<ICard>) {
     this._card = card;
+  }
+
+  get cardClone() {
+    return this._cardClone as HTMLElement;
+  }
+
+  set cardClone(clone: HTMLElement) {
+    this._cardClone = clone;
   }
 
   get card() {

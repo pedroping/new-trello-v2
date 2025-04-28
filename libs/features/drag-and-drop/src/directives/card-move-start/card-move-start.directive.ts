@@ -1,12 +1,5 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  inject
-} from '@angular/core';
-import {
-  BoardEnvironmentEventsService
-} from '@new-trello-v2/drag-and-drop-data';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
+import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
@@ -56,6 +49,23 @@ export class CardMoveStartDirective {
   private startDownEvent(x: number, y: number) {
     this.boardEnvironmentEventsService.onCardUpStart = true;
 
+    const cardsCount = Array.from(
+      this.elementRef.parentElement!.children,
+    ).filter(
+      (element) =>
+        element != this.boardEnvironmentEventsService.cardPreviewElement,
+    ).length;
+
+    this.elementRef.parentElement!.style.maxHeight =
+      cardsCount * 43 + 10 + 'px';
+
+    const clone = this.elementRef.cloneNode(true) as HTMLElement;
+    this.elementRef.parentElement!.appendChild(clone);
+    clone.style.transition = 'none';
+    clone.setAttribute('clone', 'true');
+
+    this.cardDataService.cardClone = clone;
+
     const cardRect = this.elementRef.getBoundingClientRect();
 
     this.boardEnvironmentEventsService.setCardPreviewSize({
@@ -69,31 +79,36 @@ export class CardMoveStartDirective {
     this.listElements.ulElement.style.maxHeight =
       this.listElements.ulElement.offsetHeight + 'px';
 
-    this.elementRef.style.zIndex = '20';
-    this.elementRef.style.top = 'unset';
-    this.elementRef.style.left = 'unset';
-    this.elementRef.style.position = 'fixed';
-    this.elementRef.style.width = cardRect.width + 'px';
-    this.elementRef.style.transform = 'rotate(2deg)';
-    this.elementRef.style.transition = 'none';
+    this.cardDataService.cardClone.style.zIndex = '20';
+    this.cardDataService.cardClone.style.top = 'unset';
+    this.cardDataService.cardClone.style.left = 'unset';
+    this.cardDataService.cardClone.style.position = 'fixed';
+    this.cardDataService.cardClone.style.width = cardRect.width + 'px';
+    this.cardDataService.cardClone.style.transform = 'rotate(2deg)';
+    this.cardDataService.cardClone.style.transition = 'none';
 
     this.cardDataService.actualYPosition = y;
     this.cardDataService.initialX = x - cardRect.x;
     this.cardDataService.initialY = y - cardRect.y;
 
-    this.elementRef.style.top = y - this.cardDataService.initialY + 'px';
-    this.elementRef.style.left = x - this.cardDataService.initialX + 'px';
+    this.cardDataService.cardClone.style.top =
+      y - this.cardDataService.initialY + 'px';
+    this.cardDataService.cardClone.style.left =
+      x - this.cardDataService.initialX + 'px';
 
     this.cardActionsService.handleCardsTransform(
+      this.cardDataService.cardClone,
       this.elementRef,
-      this.elementRef.parentElement as HTMLElement,
+      this.cardDataService.cardClone.parentElement as HTMLElement,
       this.elementRef.nextElementSibling,
     );
+
+    this.elementRef.style.display = 'none';
 
     this.boardEnvironmentEventsService.actualCardMoving = {
       id: this.cardDataService.card.id,
       listId: this.cardDataService.card.listId,
-      element: this.elementRef,
+      element: this.cardDataService.cardClone,
       type: 'card',
     };
     this.boardEnvironmentEventsService.onCardUpStart = false;

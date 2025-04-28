@@ -65,21 +65,25 @@ export class CardMoveDirective implements OnInit {
     this.cardDataService.actualXPosition = x;
     this.cardDataService.actualYPosition = y;
 
-    this.listElements.listElementRef.style.zIndex = '20';
-    this.elementRef.style.transform = 'rotate(2deg)';
-    this.elementRef.style.top = y - this.cardDataService.initialY + 'px';
-    this.elementRef.style.left = x - this.cardDataService.initialX + 'px';
+    this.cardDataService.cardClone.style.transition = 'none';
+    this.cardDataService.cardClone.parentElement!.style.zIndex = '20';
+    this.cardDataService.cardClone.style.transform = 'rotate(2deg)';
+    this.cardDataService.cardClone.style.top =
+      y - this.cardDataService.initialY + 'px';
+    this.cardDataService.cardClone.style.left =
+      x - this.cardDataService.initialX + 'px';
 
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(
-        this.elementRef.parentElement as HTMLElement,
+        this.cardDataService.cardClone.parentElement as HTMLElement,
         y,
-        this.elementRef,
+        this.cardDataService.cardClone,
       );
 
     this.cardActionsService.handleCardsTransform(
+      this.cardDataService.cardClone,
       this.elementRef,
-      this.elementRef.parentElement as HTMLElement,
+      this.cardDataService.cardClone.parentElement as HTMLElement,
       afterElement,
       true,
     );
