@@ -86,7 +86,7 @@ export class CardMoveStartDirective {
 
     this.cardActionsService.handleCardsTransform(
       this.elementRef,
-      this.listElements.ulElement,
+      this.elementRef.parentElement as HTMLElement,
       this.elementRef.nextElementSibling,
     );
 

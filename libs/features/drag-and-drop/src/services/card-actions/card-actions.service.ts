@@ -24,9 +24,11 @@ export class CardActionsService {
     afterElement: Element | null | undefined,
     fromMove = false,
   ) {
-    this.validateListChange(elementRef);
+    listElement = elementRef.parentElement as HTMLElement;
 
     if (this.stopCardTransform) return;
+
+    this.validateListChange(elementRef);
 
     if (!afterElement)
       return this.handleLastCardTransform(elementRef, listElement, fromMove);
@@ -49,7 +51,6 @@ export class CardActionsService {
       .filter((element) => element != elementRef)
       .forEach((_element, i) => {
         const element = _element as HTMLElement;
-
         if (elementId < i)
           element.style.transform = `translateY(${elementHeight + 4}px)`;
         else element.style.transform = 'translateY(0px)';
@@ -88,17 +89,52 @@ export class CardActionsService {
         cardRect.y,
       );
 
+    const prevList = elementRef.parentElement as HTMLElement;
+
     newUlList.appendChild(elementRef);
+    const cardsCount = Array.from(newUlList.children).filter(
+      (element) =>
+        element != this.boardEnvironmentEventsService.cardPreviewElement,
+    ).length;
+
+    newUlList.style.minHeight = cardsCount * 43 + 10 + 'px';
 
     if (afterElement) {
       newUlList.insertBefore(
         this.boardEnvironmentEventsService.cardPreviewElement,
         afterElement,
       );
-
-      this.stopCardTransform = false;
-      this.handleCardsTransform(elementRef, newUlList, afterElement, true);
+    } else {
+      newUlList.appendChild(
+        this.boardEnvironmentEventsService.cardPreviewElement,
+      );
     }
+
+    this.stopCardTransform = false;
+    this.handleCardsTransform(elementRef, newUlList, afterElement, true);
+
+    timer(10)
+      .pipe(take(1))
+      .subscribe(() => {
+        Array.from(prevList.children).forEach((_element) => {
+          const element = _element as HTMLElement;
+
+          element.style.transform = '';
+        });
+
+        const previListCardCount = Array.from(prevList.children).filter(
+          (element) =>
+            element != this.boardEnvironmentEventsService.cardPreviewElement,
+        ).length;
+
+        prevList.style.minHeight = previListCardCount * 43 + 10 + 'px';
+
+        const listParent = prevList.parentElement?.parentElement?.parentElement;
+
+        if (!listParent) return;
+
+        listParent.style.zIndex = '20';
+      });
 
     return;
   }

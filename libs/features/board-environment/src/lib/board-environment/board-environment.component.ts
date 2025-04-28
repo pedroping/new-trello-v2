@@ -38,8 +38,6 @@ export class BoardEnvironmentComponent implements OnInit {
       afterNextRender(() => {
         this.boardEnvironmentStoreService.boardElementRef =
           this.elementRef.nativeElement;
-
-        console.log(this.boardEnvironmentStoreService.boardElementRef);
       });
     });
 

@@ -45,7 +45,9 @@ export class CardMoveStopDirective implements OnInit {
 
     this.elementRef.style.transition = 'all 200ms ease-in-out';
 
-    const previewElementId = Array.from(this.listElements.ulElement.children)
+    const parentElement = this.elementRef.parentElement as HTMLElement;
+
+    const previewElementId = Array.from(parentElement.children)
       .filter((element) => element != this.elementRef)
       .indexOf(this.boardEnvironmentEventsService.cardPreviewElement);
     const previewElementRect =
@@ -62,18 +64,18 @@ export class CardMoveStopDirective implements OnInit {
     this.elementRef.style.top = previewElementRect.y - 5 + 'px';
 
     if (
-      this.listElements.ulElement.contains(
+      parentElement.contains(
         this.boardEnvironmentEventsService.cardPreviewElement,
       )
     )
-      this.listElements.ulElement.removeChild(
+      parentElement.removeChild(
         this.boardEnvironmentEventsService.cardPreviewElement,
       );
 
     timer(10)
       .pipe(take(1))
       .subscribe(() => {
-        Array.from(this.listElements.ulElement.children).forEach((_element) => {
+        Array.from(parentElement.children).forEach((_element) => {
           const element = _element as HTMLElement;
           element.style.transition = 'none';
           element.style.transform = 'translateY(0px)';

@@ -14,7 +14,7 @@ import { CardActionsService } from '../../services/card-actions/card-actions.ser
   hostDirectives: [
     CardMoveDirective,
     CardMoveStartDirective,
-    // CardMoveStopDirective,
+    CardMoveStopDirective,
   ],
 })
 export class CardComponent {

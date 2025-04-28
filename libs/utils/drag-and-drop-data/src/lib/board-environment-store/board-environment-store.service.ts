@@ -29,33 +29,48 @@ export class BoardEnvironmentStoreService {
     return this.boardEnvironment$.asObservable();
   }
 
-  moveCard(cardId: number, listId: number, newCardPositon: number) {
-    const list = this.boardEnvironment.lists.find((list) => list.id == listId);
-    const listIndex = this.boardEnvironment.lists.findIndex(
-      (list) => list.id == listId,
+  moveCard(cardId: number, newListId: number, newCardPositon: number) {
+    const list = this.boardEnvironment.lists.find(
+      (list) => list.id == newListId,
     );
-
     if (!list) return;
 
-    const cardIndex = list.cards.findIndex((card) => card.id == cardId);
-
-    if (cardIndex === newCardPositon) return;
-
-    const card = list.cards.find((card) => card.id == cardId);
-
+    const { listIndex, card } = this.findCardAndList(cardId);
     if (!card) return;
 
-    let newCardList = [...list.cards];
+    if (listIndex === newListId) {
+      const cardIndex = list.cards.findIndex((card) => card.id == cardId);
+      if (cardIndex === newCardPositon) return;
+      let newCardList = [...list.cards];
+      newCardList = newCardList.filter((card) => card.id != cardId);
+      newCardList.splice(Math.max(0, newCardPositon), 0, card);
+      const newData = this.boardEnvironment;
+      if (newData.lists[listIndex])
+        newData.lists[listIndex].cards = newCardList;
+      this.boardEnvironment = newData;
 
-    newCardList = newCardList.filter((card) => card.id != cardId);
-
-    newCardList.splice(Math.max(0, newCardPositon), 0, card);
+      return;
+    }
 
     const newData = this.boardEnvironment;
 
-    if (newData.lists[listIndex]) newData.lists[listIndex].cards = newCardList;
+    newData.lists[listIndex].cards = newData.lists[listIndex].cards.filter(
+      (card) => card.id !== cardId,
+    );
+    newData.lists[newListId].cards.splice(Math.max(0, newCardPositon), 0, card);
 
     this.boardEnvironment = newData;
+  }
+
+  private findCardAndList(cardId: number) {
+    const listIndex = this.boardEnvironment.lists.findIndex((list) =>
+      list.cards.find((card) => card.id === cardId),
+    );
+    const card = this.boardEnvironment.lists[listIndex]?.cards.find(
+      (card) => card.id === cardId,
+    );
+
+    return { listIndex, card };
   }
 
   moveList(listId: number, newListPositon: number) {
