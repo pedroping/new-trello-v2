@@ -140,9 +140,14 @@ export class CardActionsService {
         ).length;
         prevList.style.minHeight = previListCardCount * 43 + 10 + 'px';
         prevList.style.maxHeight = previListCardCount * 43 + 10 + 'px';
-        const listParent = prevList.parentElement?.parentElement?.parentElement;
-        if (!listParent) return;
-        listParent.style.zIndex = '20';
+
+        const newListParent =
+          newUlList.parentElement?.parentElement?.parentElement;
+        const prevListParent =
+          prevList.parentElement?.parentElement?.parentElement;
+
+        if (newListParent) newListParent.style.zIndex = '20';
+        if (prevListParent) prevListParent.style.zIndex = '0';
       });
     return;
   }

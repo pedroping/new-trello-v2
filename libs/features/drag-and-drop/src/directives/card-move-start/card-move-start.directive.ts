@@ -80,6 +80,10 @@ export class CardMoveStartDirective {
       this.listElements.ulElement.offsetHeight + 'px';
 
     this.cardDataService.cardClone.style.zIndex = '20';
+
+    this.cardDataService.cardClone.parentElement!.parentElement!.parentElement!.style.zIndex =
+      '20';
+
     this.cardDataService.cardClone.style.top = 'unset';
     this.cardDataService.cardClone.style.left = 'unset';
     this.cardDataService.cardClone.style.position = 'fixed';
