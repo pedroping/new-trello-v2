@@ -64,19 +64,6 @@ export class CardMoveStopDirective implements OnInit {
     this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
     this.cardDataService.cardClone.style.top = previewElementRect.y - 5 + 'px';
 
-    const previListCardCount = Array.from(
-      this.elementRef.parentElement!.children,
-    ).filter(
-      (element) =>
-        element != this.boardEnvironmentEventsService.cardPreviewElement &&
-        element != this.elementRef &&
-        element != this.cardDataService.cardClone,
-    ).length;
-    this.elementRef.parentElement!.style.maxHeight =
-      previListCardCount * 43 + 10 + 'px';
-    this.elementRef.parentElement!.style.minHeight =
-      previListCardCount * 43 + 10 + 'px';
-
     timer(210)
       .pipe(take(1))
       .subscribe(() => {
@@ -96,29 +83,13 @@ export class CardMoveStopDirective implements OnInit {
           this.cardDataService.cardClone,
         );
 
-        if (this.elementRef.parentElement?.children) {
-          const previListCardCount = Array.from(
-            this.elementRef.parentElement.children,
-          ).filter(
-            (element) =>
-              element !=
-                this.boardEnvironmentEventsService.cardPreviewElement &&
-              element != this.elementRef &&
-              element != this.cardDataService.cardClone,
-          ).length;
-          this.elementRef.parentElement!.style.maxHeight =
-            previListCardCount * 43 + 10 + 'px';
-          this.elementRef.parentElement!.style.minHeight =
-            previListCardCount * 43 + 10 + 'px';
-        }
-
         Array.from(parentElement.children).forEach((_element) => {
           const element = _element as HTMLElement;
           element.style.transition = 'none';
           element.style.transform = 'translateY(0px)';
         });
 
-        timer(10)
+        timer(1)
           .pipe(take(1))
           .subscribe(() => {
             this.boardEnvironmentDataService.moveCard(
