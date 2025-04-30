@@ -81,12 +81,21 @@ export class CardActionsService {
     if (!newUlList) return;
     this.stopCardTransform = true;
     this.cardDataService.card.listId = +listId;
+
+    this.boardEnvironmentEventsService.actualCardMoving = null;
     this.boardEnvironmentEventsService.actualCardMoving = {
       id: this.cardDataService.card.id,
       listId: this.cardDataService.card.listId,
       element: cloneElement,
       type: 'card',
     };
+
+    const cloneRect = cloneElement.getBoundingClientRect();
+    this.boardEnvironmentEventsService.cardMoveEvent = {
+      x: cloneRect.x,
+      y: cloneRect.y,
+    };
+
     const cardRect = cloneElement.getBoundingClientRect();
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(
