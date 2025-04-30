@@ -68,9 +68,6 @@ export class CardMoveStopDirective implements OnInit {
       .pipe(
         take(1),
         tap(() => {
-          this.elementRef.style.display = 'block';
-          this.cardDataService.cardClone.style.display = 'none';
-
           if (
             parentElement.contains(
               this.boardEnvironmentEventsService.cardPreviewElement,
@@ -82,7 +79,7 @@ export class CardMoveStopDirective implements OnInit {
 
           Array.from(parentElement.children).forEach((_element) => {
             const element = _element as HTMLElement;
-            element.style.transition = 'none';
+            element.style.transition = 'all 5ms ease-in-out';
             element.style.transform = 'translateY(0px)';
           });
         }),
@@ -96,11 +93,13 @@ export class CardMoveStopDirective implements OnInit {
                 previewElementId,
               );
             }),
-            switchMap(() => timer(10).pipe(take(1))),
+            switchMap(() => timer(5).pipe(take(1))),
           ),
         ),
       )
       .subscribe(() => {
+        this.elementRef.style.display = 'block';
+
         this.cardDataService.cardClone.parentElement!.removeChild(
           this.cardDataService.cardClone,
         );
