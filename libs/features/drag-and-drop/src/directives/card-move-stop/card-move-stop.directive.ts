@@ -10,7 +10,7 @@ import {
   BoardEnvironmentEventsService,
   BoardEnvironmentStoreService,
 } from '@new-trello-v2/drag-and-drop-data';
-import { take, timer } from 'rxjs';
+import { switchMap, take, tap, timer } from 'rxjs';
 import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Directive({
@@ -64,40 +64,46 @@ export class CardMoveStopDirective implements OnInit {
     this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
     this.cardDataService.cardClone.style.top = previewElementRect.y - 5 + 'px';
 
-    timer(210)
-      .pipe(take(1))
-      .subscribe(() => {
-        this.elementRef.style.display = 'block';
-        this.cardDataService.cardClone.style.display = 'none';
+    timer(200)
+      .pipe(
+        take(1),
+        tap(() => {
+          this.elementRef.style.display = 'block';
+          this.cardDataService.cardClone.style.display = 'none';
 
-        if (
-          parentElement.contains(
-            this.boardEnvironmentEventsService.cardPreviewElement,
+          if (
+            parentElement.contains(
+              this.boardEnvironmentEventsService.cardPreviewElement,
+            )
           )
-        )
-          parentElement.removeChild(
-            this.boardEnvironmentEventsService.cardPreviewElement,
-          );
+            parentElement.removeChild(
+              this.boardEnvironmentEventsService.cardPreviewElement,
+            );
 
+          Array.from(parentElement.children).forEach((_element) => {
+            const element = _element as HTMLElement;
+            element.style.transition = 'none';
+            element.style.transform = 'translateY(0px)';
+          });
+        }),
+        switchMap(() =>
+          timer(5).pipe(
+            take(1),
+            tap(() => {
+              this.boardEnvironmentDataService.moveCard(
+                this.cardDataService.card.id,
+                this.cardDataService.card.listId,
+                previewElementId,
+              );
+            }),
+            switchMap(() => timer(10).pipe(take(1))),
+          ),
+        ),
+      )
+      .subscribe(() => {
         this.cardDataService.cardClone.parentElement!.removeChild(
           this.cardDataService.cardClone,
         );
-
-        Array.from(parentElement.children).forEach((_element) => {
-          const element = _element as HTMLElement;
-          element.style.transition = 'none';
-          element.style.transform = 'translateY(0px)';
-        });
-
-        timer(1)
-          .pipe(take(1))
-          .subscribe(() => {
-            this.boardEnvironmentDataService.moveCard(
-              this.cardDataService.card.id,
-              this.cardDataService.card.listId,
-              previewElementId,
-            );
-          });
       });
   }
 }
