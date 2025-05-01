@@ -3,7 +3,7 @@
   <div class="sortable-list">
     <ul id="sortable" [attr.list-id]="list().id">
       @for (card of cards(); track card.id) {
-      <li lib-card [card]="card" [attr.list-id]="list().id"></li>
+      <li lib-card [card]="card" [attr.list-id]="list().id" [attr.card-id]="card.id"></li>
       }
     </ul>
   </div>

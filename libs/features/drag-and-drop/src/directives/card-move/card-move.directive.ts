@@ -8,7 +8,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { throttleTime } from 'rxjs';
-import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
@@ -23,7 +22,6 @@ export class CardMoveDirective implements OnInit {
     BoardEnvironmentEventsService,
   );
   private readonly destroyRef = inject(DestroyRef);
-  private readonly listElements = inject(LIST_ELEMENT);
   private readonly cardActionsService = inject(CardActionsService);
   private readonly listDataService = inject(ListDataService);
   private readonly cardDataService = inject(CardDataService);
@@ -37,7 +35,7 @@ export class CardMoveDirective implements OnInit {
       });
 
     this.listDataService.scrollEvent$$
-      .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(200))
+      .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(20))
       .subscribe(() => {
         if (
           this.boardEnvironmentEventsService.onCardUpStart ||

@@ -52,9 +52,11 @@ export class BoardEnvironmentStoreService {
       return;
     }
 
-    let oldCardList = [...this.boardEnvironment.lists[listIndex].cards];
+    const oldCardList = [...this.boardEnvironment.lists[listIndex].cards];
     const newCardList = [...this.boardEnvironment.lists[newListId].cards];
-    oldCardList = oldCardList.filter((card) => card.id !== cardId);
+
+    const cardIndex = oldCardList.findIndex((card) => card.id === cardId);
+    oldCardList.splice(cardIndex, 1);
     newCardList.splice(Math.max(0, newCardPositon), 0, card);
 
     const newData = this.boardEnvironment;

@@ -100,6 +100,8 @@ export class CardMoveStartDirective {
     this.cardDataService.cardClone.style.left =
       x - this.cardDataService.initialX + 'px';
 
+    this.elementRef.style.display = 'none';
+    
     this.cardActionsService.handleCardsTransform(
       this.cardDataService.cardClone,
       this.elementRef,
@@ -107,14 +109,17 @@ export class CardMoveStartDirective {
       this.elementRef.nextElementSibling,
     );
 
-    this.elementRef.style.display = 'none';
+    timer(10)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.boardEnvironmentEventsService.onCardUpStart = false;
 
-    this.boardEnvironmentEventsService.actualCardMoving = {
-      id: this.cardDataService.card.id,
-      listId: this.cardDataService.card.listId,
-      element: this.cardDataService.cardClone,
-      type: 'card',
-    };
-    this.boardEnvironmentEventsService.onCardUpStart = false;
+        this.boardEnvironmentEventsService.actualCardMoving = {
+          id: this.cardDataService.card.id,
+          listId: this.cardDataService.card.listId,
+          element: this.cardDataService.cardClone,
+          type: 'card',
+        };
+      });
   }
 }

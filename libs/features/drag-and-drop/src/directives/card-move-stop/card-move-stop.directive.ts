@@ -41,68 +41,167 @@ export class CardMoveStopDirective implements OnInit {
     this.boardEnvironmentEventsService.cardMoveEvent = null;
     this.boardEnvironmentEventsService.onCardUpStart = false;
 
-    this.boardEnvironmentEventsService.cardPreviewElement.style.zIndex = '0';
-    this.elementRef.style.transition = 'all 200ms ease-in-out';
-    this.cardDataService.cardClone.parentElement!.style.transition =
-      'all 200ms ease-in-out';
-    this.cardDataService.cardClone.style.transition = 'all 200ms ease-in-out';
+    timer(10)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.boardEnvironmentEventsService.cardPreviewElement.style.zIndex =
+          '0';
+        this.elementRef.style.transition = 'none';
+        this.elementRef.style.position = 'fixed';
+        this.elementRef.style.display = 'block';
+        this.elementRef.style.opacity = '0';
+        this.cardDataService.cardClone.style.transition =
+          'all 200ms ease-in-out';
 
-    const parentElement = this.cardDataService.cardClone
-      .parentElement as HTMLElement;
+        const parentElement = this.cardDataService.cardClone
+          .parentElement as HTMLElement;
 
-    const previewElementId = Array.from(parentElement.children)
-      .filter(
-        (element) =>
-          element != this.elementRef &&
-          element != this.cardDataService.cardClone,
-      )
-      .indexOf(this.boardEnvironmentEventsService.cardPreviewElement);
-    const previewElementRect =
-      this.boardEnvironmentEventsService.cardPreviewElement.getBoundingClientRect();
-
-    this.cardDataService.cardClone.style.transform = 'rotate(0deg)';
-    this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
-    this.cardDataService.cardClone.style.top = previewElementRect.y - 5 + 'px';
-
-    timer(200)
-      .pipe(
-        take(1),
-        tap(() => {
-          if (
-            parentElement.contains(
-              this.boardEnvironmentEventsService.cardPreviewElement,
-            )
+        const previewElementId = Array.from(parentElement.children)
+          .filter(
+            (element) =>
+              element != this.elementRef &&
+              element != this.cardDataService.cardClone,
           )
-            parentElement.removeChild(
-              this.boardEnvironmentEventsService.cardPreviewElement,
-            );
+          .indexOf(this.boardEnvironmentEventsService.cardPreviewElement);
 
-          Array.from(parentElement.children).forEach((_element) => {
-            const element = _element as HTMLElement;
-            element.style.transition = 'all 5ms ease-in-out';
-            element.style.transform = 'translateY(0px)';
-          });
-        }),
-        switchMap(() =>
-          timer(5).pipe(
+        const previewElementRect =
+          this.boardEnvironmentEventsService.cardPreviewElement.getBoundingClientRect();
+
+        this.cardDataService.cardClone.style.transform = 'rotate(0deg)';
+        this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
+        this.cardDataService.cardClone.style.top =
+          previewElementRect.y - 5 + 'px';
+
+        this.elementRef.style.left = previewElementRect.x + 'px';
+        this.elementRef.style.top = previewElementRect.y - 5 + 'px';
+        this.elementRef.style.width = previewElementRect.width + 'px';
+
+        const isSameList =
+          this.cardDataService.card.listId.toString() ===
+          this.elementRef.getAttribute('list-id');
+
+        if (!isSameList) {
+          Array.from(this.elementRef.parentElement!.children).forEach(
+            (_element) => {
+              const element = _element as HTMLElement;
+              element.style.transition = 'none';
+            },
+          );
+
+          this.elementRef.parentElement?.removeChild(this.elementRef);
+        }
+
+        timer(200)
+          .pipe(
             take(1),
             tap(() => {
-              this.boardEnvironmentDataService.moveCard(
-                this.cardDataService.card.id,
-                this.cardDataService.card.listId,
-                previewElementId,
-              );
-            }),
-            switchMap(() => timer(5).pipe(take(1))),
-          ),
-        ),
-      )
-      .subscribe(() => {
-        this.elementRef.style.display = 'block';
+              if (
+                parentElement.contains(
+                  this.boardEnvironmentEventsService.cardPreviewElement,
+                )
+              )
+                parentElement.removeChild(
+                  this.boardEnvironmentEventsService.cardPreviewElement,
+                );
 
-        this.cardDataService.cardClone.parentElement!.removeChild(
-          this.cardDataService.cardClone,
-        );
+              this.elementRef.style.opacity = '1';
+            }),
+            switchMap(() =>
+              timer(10).pipe(
+                take(1),
+                tap(() => {
+                  if (isSameList)
+                    this.boardEnvironmentDataService.moveCard(
+                      this.cardDataService.card.id,
+                      this.cardDataService.card.listId,
+                      previewElementId,
+                    );
+                }),
+                switchMap(() => timer(20).pipe(take(1))),
+              ),
+            ),
+          )
+          .subscribe(() => {
+            Array.from(parentElement.children)
+              .filter(
+                (element) =>
+                  element != this.elementRef &&
+                  element.getAttribute('card-id') !=
+                    this.cardDataService.card.id.toString() &&
+                  element != this.cardDataService.cardClone,
+              )
+              .forEach((_element, i) => {
+                const element = _element as HTMLElement;
+
+                if (i < previewElementId) return;
+
+                element.style.transition = 'none';
+
+                const rect = element.getBoundingClientRect();
+
+                element.style.top = (i + 1) * 43 + 5 + 'px';
+                element.style.width = rect.width + 'px';
+
+                element.style.transform = 'translateY(0px)';
+              });
+
+            Array.from(parentElement.children)
+              .filter(
+                (element) =>
+                  element != this.elementRef &&
+                  element.getAttribute('card-id') !=
+                    this.cardDataService.card.id.toString() &&
+                  element != this.cardDataService.cardClone,
+              )
+              .forEach((_element, i) => {
+                if (i < previewElementId) return;
+                const element = _element as HTMLElement;
+
+                element.style.position = 'absolute';
+              });
+
+            this.elementRef.style.position = 'static';
+
+            if (isSameList)
+              this.cardDataService.cardClone.parentElement!.removeChild(
+                this.cardDataService.cardClone,
+              );
+
+            timer(20)
+              .pipe(take(1))
+              .subscribe(() => {
+                if (!isSameList)
+                  this.boardEnvironmentDataService.moveCard(
+                    this.cardDataService.card.id,
+                    this.cardDataService.card.listId,
+                    previewElementId,
+                  );
+
+                Array.from(parentElement.children)
+                  .filter(
+                    (element) =>
+                      element != this.elementRef &&
+                      element.getAttribute('card-id') !=
+                        this.cardDataService.card.id.toString() &&
+                      element != this.cardDataService.cardClone,
+                  )
+                  .forEach((_element, i) => {
+                    const element = _element as HTMLElement;
+                    element.style.position = 'static';
+                    element.style.top = '';
+                    element.style.left = '';
+                    element.style.transition = 'none';
+                  });
+                this.elementRef.style.top = '';
+                this.elementRef.style.left = '';
+                this.elementRef.style.transition = 'none';
+
+                if (!isSameList)
+                  this.cardDataService.cardClone.parentElement!.removeChild(
+                    this.cardDataService.cardClone,
+                  );
+              });
+          });
       });
   }
 }

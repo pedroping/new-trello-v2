@@ -12,8 +12,8 @@ import { CardDataService } from '../../services/card-data/card-data.service';
   styleUrls: ['./card.component.scss'],
   providers: [CardDataService, CardActionsService],
   hostDirectives: [
-    CardMoveDirective,
     CardMoveStartDirective,
+    CardMoveDirective,
     CardMoveStopDirective,
   ],
 })
