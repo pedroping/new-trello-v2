@@ -82,7 +82,6 @@ export class CardActionsService {
     this.stopCardTransform = true;
     this.cardDataService.card.listId = +listId;
 
-    this.boardEnvironmentEventsService.actualCardMoving = null;
     this.boardEnvironmentEventsService.actualCardMoving = {
       id: this.cardDataService.card.id,
       listId: this.cardDataService.card.listId,

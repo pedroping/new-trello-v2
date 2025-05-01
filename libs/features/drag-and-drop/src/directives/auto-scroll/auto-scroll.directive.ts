@@ -32,9 +32,10 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
   );
   private readonly destroyRef = inject(DestroyRef);
 
-  private upHasStart = false;
-  private downHasStart = false;
-  private destroyEvents$ = new Subject<void>();
+  private leftHasStart = false;
+  private rightHasStart = false;
+  private rightDestroyEvents$ = new Subject<void>();
+  private leftDestroyEvents$ = new Subject<void>();
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
 
@@ -61,7 +62,10 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
       .pipe(
         takeUntilDestroyed(this.destroyRef),
         tap(([cardStartEvent, listStartEvent]) => {
-          if (!cardStartEvent && !listStartEvent) this.destroyEvents$.next();
+          if (!cardStartEvent && !listStartEvent) {
+            this.rightDestroyEvents$.next();
+            this.leftDestroyEvents$.next();
+          }
         }),
         filter(
           ([cardStartEvent, listStartEvent]) =>
@@ -86,46 +90,57 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
       )
       .subscribe(({ cardMoveEvent, listMoveEvent }) => {
         const moveEvent = cardMoveEvent || listMoveEvent;
-
+        
         if (!moveEvent) return;
 
         const rightSize = window.innerWidth - SIZE_GAP;
 
         if (moveEvent.x <= SIZE_GAP) {
-          if (this.upHasStart) {
-            this.downHasStart = false;
+          if (this.leftHasStart) {
+            this.rightHasStart = false;
+            this.rightDestroyEvents$.next();
+
             return;
           }
 
-          this.upHasStart = true;
-          this.destroyEvents$.next();
+          this.leftHasStart = true;
+          this.rightDestroyEvents$.next();
+
           this.startLeftEvent();
 
           return;
         }
 
         if (moveEvent.x >= rightSize) {
-          if (this.downHasStart) {
-            this.upHasStart = false;
+          if (this.rightHasStart) {
+            this.leftHasStart = false;
+            this.leftDestroyEvents$.next();
+
             return;
           }
 
-          this.downHasStart = true;
-          this.destroyEvents$.next();
+          this.rightHasStart = true;
+          this.leftDestroyEvents$.next();
+
           this.startRightEvent();
 
           return;
         }
 
-        this.upHasStart = false;
-        this.downHasStart = false;
-        this.destroyEvents$.next();
+        this.leftHasStart = false;
+        this.rightHasStart = false;
+
+        this.rightDestroyEvents$.next();
+        this.leftDestroyEvents$.next();
       });
   }
 
   private startLeftEvent() {
     timer(0, 10)
-      .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntil(this.leftDestroyEvents$),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => {
         this.scrollElement.scrollLeft -= 2;
         this.boardEnvironmentEventsService.setGlobalScrollEvent(
@@ -136,7 +151,10 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
 
   private startRightEvent() {
     timer(0, 10)
-      .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        takeUntil(this.rightDestroyEvents$),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe(() => {
         this.scrollElement.scrollLeft += 2;
         this.boardEnvironmentEventsService.setGlobalScrollEvent(
@@ -146,6 +164,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroyEvents$.next();
+    this.rightDestroyEvents$.next();
+    this.leftDestroyEvents$.next();
   }
 }
