@@ -1,6 +1,6 @@
 import { Injectable, InputSignal } from '@angular/core';
 import { ICard, IList } from '@new-trello-v2/types-interfaces';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 @Injectable({ providedIn: 'any' })
 export class ListDataService {
   private _initialX = 0;
@@ -10,14 +10,9 @@ export class ListDataService {
   private _list?: InputSignal<IList>;
 
   private cards$ = new BehaviorSubject<ICard[]>([]);
-  private _scrollEvent$ = new Subject<number>();
 
   startDomain(list: InputSignal<IList>) {
     this._list = list;
-  }
-
-  setScrollEvent(scroll: number) {
-    this._scrollEvent$.next(scroll);
   }
 
   set cards(cards: ICard[]) {
@@ -30,10 +25,6 @@ export class ListDataService {
 
   get cards$$() {
     return this.cards$.asObservable();
-  }
-
-  get scrollEvent$$() {
-    return this._scrollEvent$.asObservable();
   }
 
   get list() {

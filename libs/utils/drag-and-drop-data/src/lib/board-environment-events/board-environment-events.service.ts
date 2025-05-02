@@ -18,7 +18,6 @@ export class BoardEnvironmentEventsService {
   private listMoveEvent$ = new BehaviorSubject<IMoveEvent | null>(null);
   private actualCardMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
   private actualListMoving$ = new BehaviorSubject<IDragMoveEvent | null>(null);
-  private globalScrollEvent$ = new Subject<number>();
 
   private _cardPreviewElement?: HTMLLIElement;
   private _listPreviewElement?: HTMLDivElement;
@@ -102,14 +101,6 @@ export class BoardEnvironmentEventsService {
 
   get listPreviewElement() {
     return this._listPreviewElement as HTMLElement;
-  }
-
-  get globalScrollEvent$$() {
-    return this.globalScrollEvent$.asObservable();
-  }
-
-  setGlobalScrollEvent(scroll: number) {
-    this.globalScrollEvent$.next(scroll);
   }
 
   setCardPreviewSize(params: { height?: number; width?: number }) {

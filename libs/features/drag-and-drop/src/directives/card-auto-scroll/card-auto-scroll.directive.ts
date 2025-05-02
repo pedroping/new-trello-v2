@@ -8,10 +8,8 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  BoardEnvironmentEventsService
-} from '@new-trello-v2/drag-and-drop-data';
-import { IList } from '@new-trello-v2/types-interfaces';
+import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import { IDragMoveEvent, IList } from '@new-trello-v2/types-interfaces';
 import {
   filter,
   map,
@@ -23,7 +21,7 @@ import {
   throttleTime,
   timer,
 } from 'rxjs';
-import { ListDataService } from '../../services/list-data/list-data.service';
+import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 const SIZE_GAP = 200;
 
@@ -39,7 +37,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
   private readonly destroyRef = inject(DestroyRef);
-  private readonly listDataService = inject(ListDataService);
+  private readonly scrollActionsService = inject(ScrollActionsService);
 
   private upHasStart = false;
   private downHasStart = false;
@@ -50,21 +48,22 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
       .pipe(
         skip(1),
         takeUntilDestroyed(this.destroyRef),
-        tap((event) => {
-          if (!event) this.destroyEvents$.next();
+        tap(() => {
+          this.destroyEvents$.next();
         }),
         switchMap((cardEvent) => {
           return this.boardEnvironmentEventsService.cardMoveEvent$$.pipe(
             filter(Boolean),
             throttleTime(10),
             takeUntilDestroyed(this.destroyRef),
+            filter(() => cardEvent?.listId == this.list().id),
             map((moveEvent) => ({ cardEvent, moveEvent })),
           );
         }),
         filter(Boolean),
         filter((event) => event.cardEvent?.listId == this.list().id),
       )
-      .subscribe(({ moveEvent }) => {
+      .subscribe(({ moveEvent, cardEvent }) => {
         const downSize = window.innerHeight - SIZE_GAP;
 
         if (moveEvent.y <= SIZE_GAP) {
@@ -75,7 +74,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
 
           this.upHasStart = true;
           this.destroyEvents$.next();
-          this.startUpEvent();
+          this.startUpEvent(cardEvent);
 
           return;
         }
@@ -88,7 +87,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
 
           this.downHasStart = true;
           this.destroyEvents$.next();
-          this.startDownEvent();
+          this.startDownEvent(cardEvent);
 
           return;
         }
@@ -99,25 +98,25 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
       });
   }
 
-  private startUpEvent() {
+  private startUpEvent(cardEvent: IDragMoveEvent | null) {
     const contentElement = this.scrollElement.children[1];
 
     timer(0, 10)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += -1;
-        this.listDataService.setScrollEvent(contentElement.scrollTop);
+        this.scrollActionsService.setScrollEvent(cardEvent);
       });
   }
 
-  private startDownEvent() {
+  private startDownEvent(cardEvent: IDragMoveEvent | null) {
     const contentElement = this.scrollElement.children[1];
 
     timer(0, 10)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += 1;
-        this.listDataService.setScrollEvent(contentElement.scrollTop);
+        this.scrollActionsService.setScrollEvent(cardEvent);
       });
   }
 

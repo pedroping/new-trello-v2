@@ -13,6 +13,7 @@ import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
 import { throttleTime } from 'rxjs';
+import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 @Directive({
   selector: '[listMove]',
@@ -25,6 +26,7 @@ export class ListMoveDirective implements OnInit {
   private readonly listElements = inject(LIST_ELEMENT);
   private readonly listDataService = inject(ListDataService);
   private readonly injector = inject(Injector);
+  private readonly scrollActionsService = inject(ScrollActionsService);
   private readonly listActionsService = inject(ListActionsService);
 
   ngOnInit(): void {
@@ -37,7 +39,7 @@ export class ListMoveDirective implements OnInit {
             this.moveEventHandle(event.x, event.y);
           });
 
-        this.boardEnvironmentEventsService.globalScrollEvent$$
+        this.scrollActionsService.globalScrollEvent$$
           .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(200))
           .subscribe(() => {
             if (

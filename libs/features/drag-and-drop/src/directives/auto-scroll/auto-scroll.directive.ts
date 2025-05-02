@@ -20,6 +20,7 @@ import {
   throttleTime,
   timer,
 } from 'rxjs';
+import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 const SIZE_GAP = 200;
 
@@ -38,6 +39,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
   private leftDestroyEvents$ = new Subject<void>();
   private readonly scrollElement = inject(ElementRef)
     .nativeElement as HTMLElement;
+  private readonly scrollActionsService = inject(ScrollActionsService);
 
   ngOnInit() {
     const cardMoveEvent$ =
@@ -90,7 +92,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
       )
       .subscribe(({ cardMoveEvent, listMoveEvent }) => {
         const moveEvent = cardMoveEvent || listMoveEvent;
-        
+
         if (!moveEvent) return;
 
         const rightSize = window.innerWidth - SIZE_GAP;
@@ -143,7 +145,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this.scrollElement.scrollLeft -= 2;
-        this.boardEnvironmentEventsService.setGlobalScrollEvent(
+        this.scrollActionsService.setGlobalScrollEvent(
           this.scrollElement.scrollLeft,
         );
       });
@@ -157,7 +159,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
       )
       .subscribe(() => {
         this.scrollElement.scrollLeft += 2;
-        this.boardEnvironmentEventsService.setGlobalScrollEvent(
+        this.scrollActionsService.setGlobalScrollEvent(
           this.scrollElement.scrollLeft,
         );
       });

@@ -10,7 +10,7 @@ import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data
 import { merge, throttleTime } from 'rxjs';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
-import { ListDataService } from '../../services/list-data/list-data.service';
+import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 @Directive({
   selector: '[cardMove]',
@@ -23,8 +23,8 @@ export class CardMoveDirective implements OnInit {
   );
   private readonly destroyRef = inject(DestroyRef);
   private readonly cardActionsService = inject(CardActionsService);
-  private readonly listDataService = inject(ListDataService);
   private readonly cardDataService = inject(CardDataService);
+  private readonly scrollActionsService = inject(ScrollActionsService);
 
   ngOnInit(): void {
     this.boardEnvironmentEventsService
@@ -35,8 +35,8 @@ export class CardMoveDirective implements OnInit {
       });
 
     merge(
-      this.listDataService.scrollEvent$$,
-      this.boardEnvironmentEventsService.globalScrollEvent$$,
+      this.scrollActionsService.scrollEvent$$,
+      this.scrollActionsService.globalScrollEvent$$,
     )
       .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(20))
       .subscribe(() => {
