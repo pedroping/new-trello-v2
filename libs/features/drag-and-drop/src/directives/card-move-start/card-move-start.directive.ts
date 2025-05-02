@@ -101,7 +101,7 @@ export class CardMoveStartDirective {
       x - this.cardDataService.initialX + 'px';
 
     this.elementRef.style.display = 'none';
-    
+
     this.cardActionsService.handleCardsTransform(
       this.cardDataService.cardClone,
       this.elementRef,
