@@ -101,7 +101,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
   private startUpEvent(cardEvent: IDragMoveEvent | null) {
     const contentElement = this.scrollElement.children[1];
 
-    timer(0, 10)
+    timer(0, 5)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += -1;
@@ -112,7 +112,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
   private startDownEvent(cardEvent: IDragMoveEvent | null) {
     const contentElement = this.scrollElement.children[1];
 
-    timer(0, 10)
+    timer(0, 5)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         contentElement.scrollTop += 1;

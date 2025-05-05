@@ -138,7 +138,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
   }
 
   private startLeftEvent() {
-    timer(0, 10)
+    timer(0, 5)
       .pipe(
         takeUntil(this.leftDestroyEvents$),
         takeUntilDestroyed(this.destroyRef),
@@ -152,7 +152,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
   }
 
   private startRightEvent() {
-    timer(0, 10)
+    timer(0, 5)
       .pipe(
         takeUntil(this.rightDestroyEvents$),
         takeUntilDestroyed(this.destroyRef),
