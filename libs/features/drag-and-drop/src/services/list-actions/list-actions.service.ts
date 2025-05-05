@@ -38,10 +38,6 @@ export class ListActionsService {
 
     const previewGap = Math.max((elementWidth + 20) * elementId, 0);
 
-    this.boardEnvironmentEventsService.listPreviewElement.style.transition =
-      'none';
-    this.boardEnvironmentEventsService.listPreviewElement.style.transform = `translateX(${previewGap}px)`;
-
     Array.from(listElement.children)
       .filter((element) => element != elementRef)
       .forEach((_element, i) => {
@@ -54,6 +50,10 @@ export class ListActionsService {
           element.style.transform = `translateX(${elementWidth + 20}px)`;
         else element.style.transform = 'translateX(0px)';
       });
+
+    this.boardEnvironmentEventsService.listPreviewElement.style.transition =
+      'none';
+    this.boardEnvironmentEventsService.listPreviewElement.style.transform = `translateX(${previewGap}px)`;
 
     if (fromMove) this.setTransitions(true, elementRef, listElement.children);
   }
@@ -69,11 +69,29 @@ export class ListActionsService {
 
     Array.from(listElement.children)
       .filter((element) => element != elementRef)
-      .forEach((_element, i) => {
+      .forEach((_element) => {
         const element = _element as HTMLElement;
+
+        if (element == this.boardEnvironmentEventsService.listPreviewElement)
+          return;
 
         element.style.transform = 'translateX(0px)';
       });
+
+    const elementId = Array.from(listElement.children)
+      .filter((element) => element != elementRef)
+      .findIndex(
+        (element) =>
+          element == this.boardEnvironmentEventsService.listPreviewElement,
+      );
+
+    const elementWidth = elementRef.offsetWidth;
+
+    const previewGap = Math.max((elementWidth + 20) * elementId, 0);
+
+    this.boardEnvironmentEventsService.listPreviewElement.style.transition =
+      'none';
+    this.boardEnvironmentEventsService.listPreviewElement.style.transform = `translateX(${previewGap}px)`;
 
     if (fromMove) this.setTransitions(true, elementRef, listElement.children);
   }

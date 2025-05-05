@@ -172,7 +172,7 @@ export class CardActionsService {
 
     Array.from(listElement.children)
       .filter((element) => element != elementRef && element != cloneElement)
-      .forEach((_element, i) => {
+      .forEach((_element) => {
         const element = _element as HTMLElement;
 
         element.style.transform = 'translateY(0px)';
@@ -202,9 +202,10 @@ export class CardActionsService {
   }
 
   private getActualList(elementRef: HTMLElement) {
-    const allLists = Array.from(
-      this.boardEnvironmentStoreService.boardElementRef.children,
-    );
+    const listsElement = this.boardEnvironmentStoreService.boardElementRef
+      .firstChild as HTMLElement;
+    const allLists = Array.from(listsElement.children);
+
     const elementRect = elementRef.getBoundingClientRect();
 
     return allLists.find((element: Element) => {

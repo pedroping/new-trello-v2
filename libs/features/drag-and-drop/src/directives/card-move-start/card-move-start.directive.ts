@@ -1,7 +1,6 @@
 import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
-import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 
@@ -9,7 +8,6 @@ import { CardDataService } from '../../services/card-data/card-data.service';
   selector: '[cardMoveStart]',
 })
 export class CardMoveStartDirective {
-  private readonly listElements = inject(LIST_ELEMENT);
   private readonly cardActionsService = inject(CardActionsService);
   private readonly cardDataService = inject(CardDataService);
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -73,15 +71,16 @@ export class CardMoveStartDirective {
       width: cardRect.width,
     });
 
-    this.listElements.ulElement.style.minHeight =
-      this.listElements.ulElement.offsetHeight + 'px';
+    const parentElement = this.cardDataService.cardClone
+      .parentElement as HTMLElement;
 
-    this.listElements.ulElement.style.maxHeight =
-      this.listElements.ulElement.offsetHeight + 'px';
+    parentElement.style.minHeight = parentElement.offsetHeight + 'px';
+
+    parentElement.style.maxHeight = parentElement.offsetHeight + 'px';
 
     this.cardDataService.cardClone.style.zIndex = '20';
 
-    this.cardDataService.cardClone.parentElement!.parentElement!.parentElement!.style.zIndex =
+    parentElement!.parentElement!.parentElement!.parentElement!.style.zIndex =
       '20';
 
     this.cardDataService.cardClone.style.top = 'unset';

@@ -10,8 +10,8 @@ import { ListDataService } from '../../services/list-data/list-data.service';
   templateUrl: './list-header.component.html',
   styleUrls: ['./list-header.component.scss'],
   hostDirectives: [
-    ListMoveDirective,
     ListMoveStartDirective,
+    ListMoveDirective,
     ListMoveStopDirective,
   ],
 })

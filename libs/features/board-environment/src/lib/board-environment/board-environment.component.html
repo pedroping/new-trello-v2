@@ -1,5 +1,7 @@
-@if (boardEnvironment$ | async; as boardEnvironment) {
-@for (list of boardEnvironment.lists; track list.id) {
-<lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
-}
-}
+<div class="all-lists">
+  @if (boardEnvironment$ | async; as boardEnvironment) {
+  @for (list of boardEnvironment.lists; track list.id) {
+  <lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
+  }
+  }
+</div>

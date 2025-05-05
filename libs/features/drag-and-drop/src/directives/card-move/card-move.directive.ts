@@ -66,6 +66,8 @@ export class CardMoveDirective implements OnInit {
     this.cardDataService.actualXPosition = x;
     this.cardDataService.actualYPosition = y;
 
+    if (!this.cardDataService.cardClone) return;
+
     this.cardDataService.cardClone.style.transition = 'none';
     this.cardDataService.cardClone.parentElement!.style.zIndex = '20';
     this.cardDataService.cardClone.style.transform = 'rotate(2deg)';

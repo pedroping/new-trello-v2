@@ -79,7 +79,35 @@ export class ListMoveStopDirective implements OnInit {
         this.listElements.listElementRef.style.position = 'static';
         this.listElements.listElementRef.style.width = '100%';
         this.listElements.listElementRef.style.zIndex = '2';
-        this.listElements.listElementRef.style.zIndex = '0';
+
+        const parentElement = this.listElements.listElementRef
+          .parentElement as HTMLElement;
+
+        parentElement.style.width = '';
+        parentElement.style.minWidth = '';
+        parentElement.style.maxWidth = '';
+
+        timer(250)
+          .pipe(take(1))
+          .subscribe(() => {
+            Array.from(
+              (this.listElements.listElementRef.parentElement as HTMLElement)
+                .children,
+            ).forEach((_element) => {
+              const element = _element as HTMLElement;
+              element.style.zIndex = '0';
+              element.style.minHeight = '';
+              element.style.maxHeight = '';
+              element.style.zIndex = '';
+              element.style.top = '';
+              element.style.left = '';
+              element.style.position = '';
+              element.style.width = '';
+              element.style.height = '';
+              element.style.transform = '';
+              element.style.transition = '';
+            });
+          });
       });
   }
 }

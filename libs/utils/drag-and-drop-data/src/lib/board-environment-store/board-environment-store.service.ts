@@ -33,42 +33,51 @@ export class BoardEnvironmentStoreService {
     const list = this.boardEnvironment.lists.find(
       (list) => list.id == newListId,
     );
+    const oldListIndex = this.boardEnvironment.lists.findIndex(
+      (list) => list.id == newListId,
+    );
+
     if (!list) return;
 
     const { listIndex, card } = this.findCardAndList(cardId);
+
     if (!card) return;
 
-    if (listIndex === newListId) {
+    if (listIndex === oldListIndex) {
       const cardIndex = list.cards.findIndex((card) => card.id == cardId);
       if (cardIndex === newCardPositon) return;
       let newCardList = [...list.cards];
       newCardList = newCardList.filter((card) => card.id != cardId);
       newCardList.splice(Math.max(0, newCardPositon), 0, card);
       const newData = this.boardEnvironment;
-      if (newData.lists[listIndex])
-        newData.lists[listIndex].cards = newCardList;
+      const newListIndex = newData.lists.findIndex(
+        (list) => list.id === listIndex,
+      );
+
+      if (newData.lists[newListIndex])
+        newData.lists[newListIndex].cards = newCardList;
       this.boardEnvironment = newData;
 
       return;
     }
 
     const oldCardList = [...this.boardEnvironment.lists[listIndex].cards];
-    const newCardList = [...this.boardEnvironment.lists[newListId].cards];
+    const newCardList = [...this.boardEnvironment.lists[oldListIndex].cards];
 
     const cardIndex = oldCardList.findIndex((card) => card.id === cardId);
     oldCardList.splice(cardIndex, 1);
     newCardList.splice(Math.max(0, newCardPositon), 0, card);
 
     const newData = this.boardEnvironment;
-    newData.lists[newListId].cards = newCardList;
+    newData.lists[oldListIndex].cards = newCardList;
     newData.lists[listIndex].cards = oldCardList;
 
     this.boardEnvironment = newData;
   }
 
   private findCardAndList(cardId: number) {
-    const listIndex = this.boardEnvironment.lists.findIndex((list) =>
-      list.cards.find((card) => card.id === cardId),
+    const listIndex = this.boardEnvironment.lists.findIndex(
+      (list) => !!list.cards.find((card) => card.id === cardId),
     );
     let card = this.boardEnvironment.lists[listIndex]?.cards.find(
       (card) => card.id === cardId,
@@ -87,10 +96,9 @@ export class BoardEnvironmentStoreService {
 
     const currentList = this.boardEnvironment.lists[listIndex];
 
-    const newLists = this.boardEnvironment.lists.filter(
-      (list) => list != currentList,
-    );
+    const newLists = this.boardEnvironment.lists;
 
+    newLists.splice(listIndex, 1);
     newLists.splice(Math.max(0, newListPositon), 0, currentList);
 
     const newData = this.boardEnvironment;

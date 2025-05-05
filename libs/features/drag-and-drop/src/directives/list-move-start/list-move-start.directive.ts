@@ -1,9 +1,11 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
+import { Directive, HostListener, inject } from '@angular/core';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
+
+const LISTGAP = 340;
 
 @Directive({
   selector: '[appListMoveStart]',
@@ -70,6 +72,15 @@ export class ListMoveStartDirective {
     this.listElements.listElementRef.style.transform = 'rotate(2deg)';
     this.listElements.listElementRef.style.transition = 'none';
 
+    const parentElement = this.listElements.listElementRef
+      .parentElement as HTMLElement;
+
+    const pageWidth = parentElement.offsetWidth + LISTGAP;
+
+    parentElement.style.width = pageWidth + 'px';
+    parentElement.style.minWidth = pageWidth + 'px';
+    parentElement.style.maxWidth = pageWidth + 'px';
+
     this.listDataService.actualYPosition = y;
     this.listDataService.initialX = x - listRect.x;
     this.listDataService.initialY = y - listRect.y;
@@ -81,7 +92,7 @@ export class ListMoveStartDirective {
 
     this.listActionsService.handleListTransform(
       this.listElements.listElementRef,
-      this.listElements.listElementRef.parentElement as HTMLElement,
+      parentElement,
       this.listElements.listElementRef,
     );
 
