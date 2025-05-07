@@ -45,68 +45,116 @@ export class ListMoveStopDirective implements OnInit {
     const previewElementRect =
       this.boardEnvironmentEventsService.listPreviewElement.getBoundingClientRect();
 
-    this.boardEnvironmentDataService.moveList(
-      this.listDataService.list.id,
-      previewElementId,
-    );
-
     this.listElements.listElementRef.style.transform = 'rotate(0deg)';
     this.listElements.listElementRef.style.left = previewElementRect.x + 'px';
-    this.listElements.listElementRef.style.top =
-      previewElementRect.y - 5 + 'px';
+    this.listElements.listElementRef.style.top = previewElementRect.y + 'px';
+    this.listElements.listElementRef.style.maxWidth = '300px';
 
-    if (
-      (this.listElements.listElementRef.parentElement as HTMLElement).contains(
-        this.boardEnvironmentEventsService.listPreviewElement,
-      )
-    )
-      (
-        this.listElements.listElementRef.parentElement as HTMLElement
-      ).removeChild(this.boardEnvironmentEventsService.listPreviewElement);
-
-    timer(10)
+    timer(200)
       .pipe(take(1))
       .subscribe(() => {
+        if (
+          (
+            this.listElements.listElementRef.parentElement as HTMLElement
+          ).contains(this.boardEnvironmentEventsService.listPreviewElement)
+        )
+          (
+            this.listElements.listElementRef.parentElement as HTMLElement
+          ).removeChild(this.boardEnvironmentEventsService.listPreviewElement);
+
         Array.from(
           (this.listElements.listElementRef.parentElement as HTMLElement)
             .children,
         ).forEach((_element) => {
           const element = _element as HTMLElement;
-          element.style.transition = 'none';
-          element.style.transform = 'translateY(0px)';
+          element.style.transition = '';
         });
 
-        this.listElements.listElementRef.style.position = 'static';
-        this.listElements.listElementRef.style.width = '100%';
-        this.listElements.listElementRef.style.zIndex = '2';
-
-        const parentElement = this.listElements.listElementRef
-          .parentElement as HTMLElement;
-
-        parentElement.style.width = '';
-        parentElement.style.minWidth = '';
-        parentElement.style.maxWidth = '';
-
-        timer(250)
+        timer(20)
           .pipe(take(1))
           .subscribe(() => {
+            const parentElement = this.listElements.listElementRef
+              .parentElement as HTMLElement;
+
+            this.listElements.listElementRef.style.width = '100%';
+            this.listElements.listElementRef.style.zIndex = '2';
+
             Array.from(
               (this.listElements.listElementRef.parentElement as HTMLElement)
                 .children,
-            ).forEach((_element) => {
-              const element = _element as HTMLElement;
-              element.style.zIndex = '0';
-              element.style.minHeight = '';
-              element.style.maxHeight = '';
-              element.style.zIndex = '';
-              element.style.top = '';
-              element.style.left = '';
-              element.style.position = '';
-              element.style.width = '';
-              element.style.height = '';
-              element.style.transform = '';
-              element.style.transition = '';
-            });
+            )
+              .filter((element) => element != this.listElements.listElementRef)
+              .forEach((_element, i) => {
+                const element = _element as HTMLElement;
+
+                element.style.transition = 'none';
+
+                const rect = element.getBoundingClientRect();
+
+                element.style.left = (i + 1) * 320 + 'px';
+                element.style.width = rect.width + 'px';
+                element.style.height = rect.height + 'px';
+
+                element.style.transform = 'translateY(0px)';
+              });
+
+            Array.from(parentElement.children)
+              .filter((element) => element != this.listElements.listElementRef)
+              .forEach((_element, i) => {
+                if (i < previewElementId) return;
+                const element = _element as HTMLElement;
+
+                element.style.position = 'absolute';
+              });
+
+            timer(30)
+              .pipe(take(1))
+              .subscribe(() => {
+                parentElement.style.transition = 'all 200ms ease-in-out';
+
+                timer(1)
+                  .pipe(take(1))
+                  .subscribe(() => {
+                    this.boardEnvironmentDataService.moveList(
+                      this.listDataService.list.id,
+                      previewElementId,
+                    );
+
+                    timer(200)
+                      .pipe(take(1))
+                      .subscribe(() => {
+                        parentElement.style.width = '';
+                        parentElement.style.minWidth = '';
+                        parentElement.style.maxWidth = '';
+                        parentElement.style.transition = '';
+
+                        Array.from(
+                          (
+                            this.listElements.listElementRef
+                              .parentElement as HTMLElement
+                          ).children,
+                        ).forEach((_element) => {
+                          const element = _element as HTMLElement;
+                          element.style.zIndex = '0';
+                          element.style.minHeight = '';
+                          element.style.maxWidth = '';
+                          element.style.zIndex = '';
+                          element.style.top = '';
+                          element.style.left = '';
+                          element.style.position = '';
+                          element.style.width = '';
+                          element.style.height = '';
+                          element.style.transform = '';
+                          element.style.transition = '';
+                          element.style.maxHeight = '';
+                          element.style.left = '';
+                          element.style.width = '';
+                          element.style.height = '';
+                          element.style.position = '';
+                        });
+                      });
+                  });
+              });
           });
       });
   }

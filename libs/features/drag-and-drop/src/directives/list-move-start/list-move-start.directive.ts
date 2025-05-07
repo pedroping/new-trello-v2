@@ -57,6 +57,15 @@ export class ListMoveStartDirective {
       width: listRect.width,
     });
 
+    const parentElement = this.listElements.listElementRef
+      .parentElement as HTMLElement;
+
+    const pageWidth = parentElement.offsetWidth;
+
+    parentElement.style.width = pageWidth + 'px';
+    parentElement.style.minWidth = pageWidth + 'px';
+    parentElement.style.maxWidth = pageWidth + 'px';
+
     this.listElements.listElementRef.style.minHeight =
       this.listElements.listElementRef.offsetHeight + 'px';
 
@@ -71,15 +80,6 @@ export class ListMoveStartDirective {
     this.listElements.listElementRef.style.height = listRect.height + 'px';
     this.listElements.listElementRef.style.transform = 'rotate(2deg)';
     this.listElements.listElementRef.style.transition = 'none';
-
-    const parentElement = this.listElements.listElementRef
-      .parentElement as HTMLElement;
-
-    const pageWidth = parentElement.offsetWidth + LISTGAP;
-
-    parentElement.style.width = pageWidth + 'px';
-    parentElement.style.minWidth = pageWidth + 'px';
-    parentElement.style.maxWidth = pageWidth + 'px';
 
     this.listDataService.actualYPosition = y;
     this.listDataService.initialX = x - listRect.x;
