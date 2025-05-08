@@ -6,7 +6,7 @@ import {
 } from '@new-trello-v2/drag-and-drop-data';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListDataService } from '../../services/list-data/list-data.service';
-import { take, timer } from 'rxjs';
+import { fromEvent, merge, take, timer } from 'rxjs';
 
 @Directive({
   selector: '[listMoveStop]',
@@ -37,11 +37,11 @@ export class ListMoveStopDirective implements OnInit {
     this.boardEnvironmentEventsService.onListUpStart = false;
     this.listElements.listElementRef.style.transition = 'all 200ms ease-in-out';
 
-    const previewElementId = Array.from(
-      (this.listElements.listElementRef.parentElement as HTMLElement).children,
-    )
-      .filter((element) => element != this.listElements.listElementRef)
-      .indexOf(this.boardEnvironmentEventsService.listPreviewElement);
+    const previewElementId = this.getAllLists(
+      this.listElements.listElementRef.parentElement as HTMLElement,
+      true,
+    ).indexOf(this.boardEnvironmentEventsService.listPreviewElement);
+
     const previewElementRect =
       this.boardEnvironmentEventsService.listPreviewElement.getBoundingClientRect();
 
@@ -50,7 +50,10 @@ export class ListMoveStopDirective implements OnInit {
     this.listElements.listElementRef.style.top = previewElementRect.y + 'px';
     this.listElements.listElementRef.style.maxWidth = '300px';
 
-    timer(200)
+    merge(
+      fromEvent(this.listElements.listElementRef, 'transitionend'),
+      fromEvent(this.listElements.listElementRef, 'transitioncancel'),
+    )
       .pipe(take(1))
       .subscribe(() => {
         if (
@@ -62,100 +65,90 @@ export class ListMoveStopDirective implements OnInit {
             this.listElements.listElementRef.parentElement as HTMLElement
           ).removeChild(this.boardEnvironmentEventsService.listPreviewElement);
 
-        Array.from(
-          (this.listElements.listElementRef.parentElement as HTMLElement)
-            .children,
-        ).forEach((_element) => {
+        const parentElement = this.listElements.listElementRef
+          .parentElement as HTMLElement;
+
+        this.getAllLists(parentElement).forEach((_element) => {
           const element = _element as HTMLElement;
           element.style.transition = '';
         });
 
-        timer(20)
+        timer(1)
           .pipe(take(1))
           .subscribe(() => {
-            const parentElement = this.listElements.listElementRef
-              .parentElement as HTMLElement;
-
             this.listElements.listElementRef.style.width = '100%';
             this.listElements.listElementRef.style.zIndex = '2';
 
-            Array.from(
-              (this.listElements.listElementRef.parentElement as HTMLElement)
-                .children,
-            )
-              .filter((element) => element != this.listElements.listElementRef)
-              .forEach((_element, i) => {
-                const element = _element as HTMLElement;
+            this.getAllLists(parentElement, true).forEach((_element, i) => {
+              const element = _element as HTMLElement;
 
-                element.style.transition = 'none';
+              element.style.transition = 'none';
 
-                const rect = element.getBoundingClientRect();
+              const rect = element.getBoundingClientRect();
 
-                element.style.left = (i + 1) * 320 + 'px';
-                element.style.width = rect.width + 'px';
-                element.style.height = rect.height + 'px';
+              element.style.left = (i + 1) * 320 + 'px';
+              element.style.width = rect.width + 'px';
+              element.style.height = rect.height + 'px';
 
-                element.style.transform = 'translateY(0px)';
-              });
+              element.style.transform = 'translateY(0px)';
+            });
 
-            Array.from(parentElement.children)
-              .filter((element) => element != this.listElements.listElementRef)
-              .forEach((_element, i) => {
-                if (i < previewElementId) return;
-                const element = _element as HTMLElement;
+            this.getAllLists(parentElement, true).forEach((_element, i) => {
+              if (i < previewElementId) return;
+              const element = _element as HTMLElement;
 
-                element.style.position = 'absolute';
-              });
+              element.style.position = 'absolute';
+            });
 
-            timer(30)
+            parentElement.style.transition = 'all 200ms ease-in-out';
+
+            timer(1)
               .pipe(take(1))
               .subscribe(() => {
-                parentElement.style.transition = 'all 200ms ease-in-out';
+                this.boardEnvironmentDataService.moveList(
+                  this.listDataService.list.id,
+                  previewElementId,
+                );
 
-                timer(1)
+                timer(20)
                   .pipe(take(1))
                   .subscribe(() => {
-                    this.boardEnvironmentDataService.moveList(
-                      this.listDataService.list.id,
-                      previewElementId,
-                    );
+                    parentElement.style.width = '';
+                    parentElement.style.minWidth = '';
+                    parentElement.style.maxWidth = '';
+                    parentElement.style.transition = '';
 
-                    timer(200)
-                      .pipe(take(1))
-                      .subscribe(() => {
-                        parentElement.style.width = '';
-                        parentElement.style.minWidth = '';
-                        parentElement.style.maxWidth = '';
-                        parentElement.style.transition = '';
-
-                        Array.from(
-                          (
-                            this.listElements.listElementRef
-                              .parentElement as HTMLElement
-                          ).children,
-                        ).forEach((_element) => {
-                          const element = _element as HTMLElement;
-                          element.style.zIndex = '0';
-                          element.style.minHeight = '';
-                          element.style.maxWidth = '';
-                          element.style.zIndex = '';
-                          element.style.top = '';
-                          element.style.left = '';
-                          element.style.position = '';
-                          element.style.width = '';
-                          element.style.height = '';
-                          element.style.transform = '';
-                          element.style.transition = '';
-                          element.style.maxHeight = '';
-                          element.style.left = '';
-                          element.style.width = '';
-                          element.style.height = '';
-                          element.style.position = '';
-                        });
-                      });
+                    this.getAllLists(parentElement).forEach((_element) => {
+                      const element = _element as HTMLElement;
+                      element.style.zIndex = '0';
+                      element.style.minHeight = '';
+                      element.style.maxWidth = '';
+                      element.style.zIndex = '';
+                      element.style.top = '';
+                      element.style.left = '';
+                      element.style.position = '';
+                      element.style.width = '';
+                      element.style.height = '';
+                      element.style.transform = '';
+                      element.style.transition = '';
+                      element.style.maxHeight = '';
+                      element.style.left = '';
+                      element.style.width = '';
+                      element.style.height = '';
+                      element.style.position = '';
+                    });
                   });
               });
           });
       });
+  }
+
+  getAllLists(parentElement: HTMLElement, withFilter = false) {
+    if (withFilter)
+      return Array.from(parentElement.children).filter(
+        (element) => element != this.listElements.listElementRef,
+      );
+
+    return Array.from(parentElement.children);
   }
 }
