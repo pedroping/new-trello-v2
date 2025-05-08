@@ -10,7 +10,7 @@ import {
   BoardEnvironmentEventsService,
   BoardEnvironmentStoreService,
 } from '@new-trello-v2/drag-and-drop-data';
-import { switchMap, take, tap, timer } from 'rxjs';
+import { fromEvent, merge, switchMap, take, tap, timer } from 'rxjs';
 import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Directive({
@@ -85,7 +85,10 @@ export class CardMoveStopDirective implements OnInit {
       this.elementRef.parentElement?.removeChild(this.elementRef);
     }
 
-    timer(200)
+    merge(
+      fromEvent(this.cardDataService.cardClone, 'transitionend'),
+      fromEvent(this.cardDataService.cardClone, 'transitioncancel'),
+    )
       .pipe(
         take(1),
         tap(() => {
@@ -101,7 +104,7 @@ export class CardMoveStopDirective implements OnInit {
           this.elementRef.style.opacity = '1';
         }),
         switchMap(() =>
-          timer(10).pipe(
+          timer(1).pipe(
             take(1),
             tap(() => {
               if (isSameList)
