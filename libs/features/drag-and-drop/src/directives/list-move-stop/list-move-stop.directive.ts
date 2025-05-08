@@ -73,71 +73,67 @@ export class ListMoveStopDirective implements OnInit {
           element.style.transition = '';
         });
 
+        this.listElements.listElementRef.style.width = '100%';
+        this.listElements.listElementRef.style.zIndex = '2';
+
+        this.getAllLists(parentElement, true).forEach((_element, i) => {
+          const element = _element as HTMLElement;
+
+          element.style.transition = 'none';
+
+          const rect = element.getBoundingClientRect();
+
+          element.style.left = (i + 1) * 320 + 'px';
+          element.style.width = rect.width + 'px';
+          element.style.height = rect.height + 'px';
+
+          element.style.transform = 'translateY(0px)';
+        });
+
+        this.getAllLists(parentElement, true).forEach((_element, i) => {
+          if (i < previewElementId) return;
+          const element = _element as HTMLElement;
+
+          element.style.position = 'absolute';
+        });
+
+        parentElement.style.transition = 'all 200ms ease-in-out';
+
         timer(1)
           .pipe(take(1))
           .subscribe(() => {
-            this.listElements.listElementRef.style.width = '100%';
-            this.listElements.listElementRef.style.zIndex = '2';
+            this.boardEnvironmentDataService.moveList(
+              this.listDataService.list.id,
+              previewElementId,
+            );
 
-            this.getAllLists(parentElement, true).forEach((_element, i) => {
-              const element = _element as HTMLElement;
-
-              element.style.transition = 'none';
-
-              const rect = element.getBoundingClientRect();
-
-              element.style.left = (i + 1) * 320 + 'px';
-              element.style.width = rect.width + 'px';
-              element.style.height = rect.height + 'px';
-
-              element.style.transform = 'translateY(0px)';
-            });
-
-            this.getAllLists(parentElement, true).forEach((_element, i) => {
-              if (i < previewElementId) return;
-              const element = _element as HTMLElement;
-
-              element.style.position = 'absolute';
-            });
-
-            parentElement.style.transition = 'all 200ms ease-in-out';
-
-            timer(1)
+            timer(20)
               .pipe(take(1))
               .subscribe(() => {
-                this.boardEnvironmentDataService.moveList(
-                  this.listDataService.list.id,
-                  previewElementId,
-                );
+                parentElement.style.width = '';
+                parentElement.style.minWidth = '';
+                parentElement.style.maxWidth = '';
+                parentElement.style.transition = '';
 
-                timer(20)
-                  .pipe(take(1))
-                  .subscribe(() => {
-                    parentElement.style.width = '';
-                    parentElement.style.minWidth = '';
-                    parentElement.style.maxWidth = '';
-                    parentElement.style.transition = '';
-
-                    this.getAllLists(parentElement).forEach((_element) => {
-                      const element = _element as HTMLElement;
-                      element.style.zIndex = '0';
-                      element.style.minHeight = '';
-                      element.style.maxWidth = '';
-                      element.style.zIndex = '';
-                      element.style.top = '';
-                      element.style.left = '';
-                      element.style.position = '';
-                      element.style.width = '';
-                      element.style.height = '';
-                      element.style.transform = '';
-                      element.style.transition = '';
-                      element.style.maxHeight = '';
-                      element.style.left = '';
-                      element.style.width = '';
-                      element.style.height = '';
-                      element.style.position = '';
-                    });
-                  });
+                this.getAllLists(parentElement).forEach((_element) => {
+                  const element = _element as HTMLElement;
+                  element.style.zIndex = '0';
+                  element.style.minHeight = '';
+                  element.style.maxWidth = '';
+                  element.style.zIndex = '';
+                  element.style.top = '';
+                  element.style.left = '';
+                  element.style.position = '';
+                  element.style.width = '';
+                  element.style.height = '';
+                  element.style.transform = '';
+                  element.style.transition = '';
+                  element.style.maxHeight = '';
+                  element.style.left = '';
+                  element.style.width = '';
+                  element.style.height = '';
+                  element.style.position = '';
+                });
               });
           });
       });
