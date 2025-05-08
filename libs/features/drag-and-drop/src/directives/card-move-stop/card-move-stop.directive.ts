@@ -51,13 +51,9 @@ export class CardMoveStopDirective implements OnInit {
     const parentElement = this.cardDataService.cardClone
       .parentElement as HTMLElement;
 
-    const previewElementId = Array.from(parentElement.children)
-      .filter(
-        (element) =>
-          element != this.elementRef &&
-          element != this.cardDataService.cardClone,
-      )
-      .indexOf(this.boardEnvironmentEventsService.cardPreviewElement);
+    const previewElementId = this.getAllCardsList(parentElement).indexOf(
+      this.boardEnvironmentEventsService.cardPreviewElement,
+    );
 
     const previewElementRect =
       this.boardEnvironmentEventsService.cardPreviewElement.getBoundingClientRect();
@@ -114,48 +110,31 @@ export class CardMoveStopDirective implements OnInit {
                   previewElementId,
                 );
             }),
-            switchMap(() => timer(20).pipe(take(1))),
           ),
         ),
       )
       .subscribe(() => {
-        Array.from(parentElement.children)
-          .filter(
-            (element) =>
-              element != this.elementRef &&
-              element.getAttribute('card-id') !=
-                this.cardDataService.card.id.toString() &&
-              element != this.cardDataService.cardClone,
-          )
-          .forEach((_element, i) => {
-            const element = _element as HTMLElement;
+        this.getAllCardsList(parentElement, true).forEach((_element, i) => {
+          const element = _element as HTMLElement;
 
-            if (i < previewElementId) return;
+          if (i < previewElementId) return;
 
-            element.style.transition = 'none';
+          element.style.transition = 'none';
 
-            const rect = element.getBoundingClientRect();
+          const rect = element.getBoundingClientRect();
 
-            element.style.top = (i + 1) * 43 + 5 + 'px';
-            element.style.width = rect.width + 'px';
+          element.style.top = (i + 1) * 43 + 5 + 'px';
+          element.style.width = rect.width + 'px';
 
-            element.style.transform = 'translateY(0px)';
-          });
+          element.style.transform = 'translateY(0px)';
+        });
 
-        Array.from(parentElement.children)
-          .filter(
-            (element) =>
-              element != this.elementRef &&
-              element.getAttribute('card-id') !=
-                this.cardDataService.card.id.toString() &&
-              element != this.cardDataService.cardClone,
-          )
-          .forEach((_element, i) => {
-            if (i < previewElementId) return;
-            const element = _element as HTMLElement;
+        this.getAllCardsList(parentElement, true).forEach((_element, i) => {
+          if (i < previewElementId) return;
+          const element = _element as HTMLElement;
 
-            element.style.position = 'absolute';
-          });
+          element.style.position = 'absolute';
+        });
 
         this.elementRef.style.position = 'static';
 
@@ -164,40 +143,44 @@ export class CardMoveStopDirective implements OnInit {
             this.cardDataService.cardClone,
           );
 
-        timer(20)
-          .pipe(take(1))
-          .subscribe(() => {
-            if (!isSameList)
-              this.boardEnvironmentDataService.moveCard(
-                this.cardDataService.card.id,
-                this.cardDataService.card.listId,
-                previewElementId,
-              );
+        if (!isSameList)
+          this.boardEnvironmentDataService.moveCard(
+            this.cardDataService.card.id,
+            this.cardDataService.card.listId,
+            previewElementId,
+          );
 
-            Array.from(parentElement.children)
-              .filter(
-                (element) =>
-                  element != this.elementRef &&
-                  element.getAttribute('card-id') !=
-                    this.cardDataService.card.id.toString() &&
-                  element != this.cardDataService.cardClone,
-              )
-              .forEach((_element, i) => {
-                const element = _element as HTMLElement;
-                element.style.position = 'static';
-                element.style.top = '';
-                element.style.left = '';
-                element.style.transition = 'none';
-              });
-            this.elementRef.style.top = '';
-            this.elementRef.style.left = '';
-            this.elementRef.style.transition = 'none';
+        this.getAllCardsList(parentElement, true).forEach((_element) => {
+          const element = _element as HTMLElement;
+          element.style.position = 'static';
+          element.style.top = '';
+          element.style.left = '';
+          element.style.transition = 'none';
+        });
+        this.elementRef.style.top = '';
+        this.elementRef.style.left = '';
+        this.elementRef.style.transition = 'none';
 
-            if (!isSameList)
-              this.cardDataService.cardClone.parentElement!.removeChild(
-                this.cardDataService.cardClone,
-              );
-          });
+        if (!isSameList)
+          this.cardDataService.cardClone.parentElement!.removeChild(
+            this.cardDataService.cardClone,
+          );
       });
+  }
+
+  getAllCardsList(parentElement: HTMLElement, filterById = false) {
+    if (filterById)
+      return Array.from(parentElement.children).filter(
+        (element) =>
+          element != this.elementRef &&
+          element.getAttribute('card-id') !=
+            this.cardDataService.card.id.toString() &&
+          element != this.cardDataService.cardClone,
+      );
+
+    return Array.from(parentElement.children).filter(
+      (element) =>
+        element != this.elementRef && element != this.cardDataService.cardClone,
+    );
   }
 }
