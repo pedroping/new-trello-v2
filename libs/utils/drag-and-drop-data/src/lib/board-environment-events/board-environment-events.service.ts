@@ -4,7 +4,15 @@ import {
   IMoveEvent,
   TEventType,
 } from '@new-trello-v2/types-interfaces';
-import { BehaviorSubject, filter, fromEvent, merge, Subject, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  fromEvent,
+  map,
+  merge,
+  Subject,
+  tap,
+} from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {
@@ -135,6 +143,10 @@ export class BoardEnvironmentEventsService {
     );
   }
 
+  getGlobalTouchMoveEventUnFiltered$() {
+    return this.touchMoveEvent$.asObservable();
+  }
+
   getGlobalTouchMoveEvent$(id: number, type: TEventType) {
     return this.touchMoveEvent$.pipe(
       filter(() =>
@@ -146,6 +158,10 @@ export class BoardEnvironmentEventsService {
         event.preventDefault();
         event.stopImmediatePropagation();
       }),
+      map((event: TouchEvent) => ({
+        x: event.touches[0].pageX,
+        y: event.touches[0].pageY,
+      })),
     );
   }
 
@@ -274,8 +290,8 @@ export class BoardEnvironmentEventsService {
     );
 
     merge(
-      fromEvent<TouchEvent>(window.document.body, 'touchend'),
-      fromEvent<TouchEvent>(window.document.body, 'touchcancel'),
+      fromEvent<TouchEvent>(window, 'touchend'),
+      fromEvent<TouchEvent>(window, 'touchcancel'),
     ).subscribe((e) => this.touchUpEvent$.next(e));
   }
 }

@@ -28,8 +28,16 @@ export class CardMoveStopDirective implements OnInit {
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   ngOnInit(): void {
-    this.boardEnvironmentEventsService
-      .getGlobalMouseUpEvent$(this.cardDataService.card.id, 'card')
+    merge(
+      this.boardEnvironmentEventsService.getGlobalTouchUpEvent$(
+        this.cardDataService.card.id,
+        'card',
+      ),
+      this.boardEnvironmentEventsService.getGlobalMouseUpEvent$(
+        this.cardDataService.card.id,
+        'card',
+      ),
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.upEventHandle();

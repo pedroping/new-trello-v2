@@ -23,8 +23,16 @@ export class ListMoveStopDirective implements OnInit {
   );
 
   ngOnInit(): void {
-    this.boardEnvironmentEventsService
-      .getGlobalMouseUpEvent$(this.listDataService.list.id, 'list')
+    merge(
+      this.boardEnvironmentEventsService.getGlobalTouchUpEvent$(
+        this.listDataService.list.id,
+        'list',
+      ),
+      this.boardEnvironmentEventsService.getGlobalMouseUpEvent$(
+        this.listDataService.list.id,
+        'list',
+      ),
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.upEventHandle();

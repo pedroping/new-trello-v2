@@ -12,7 +12,7 @@ import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
-import { throttleTime } from 'rxjs';
+import { merge, throttleTime } from 'rxjs';
 import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 @Directive({
@@ -32,10 +32,18 @@ export class ListMoveDirective implements OnInit {
   ngOnInit(): void {
     runInInjectionContext(this.injector, () => {
       afterNextRender(() => {
-        this.boardEnvironmentEventsService
-          .getGlobalMouseMoveEvent$(this.listDataService.list.id, 'list')
+        merge(
+          this.boardEnvironmentEventsService.getGlobalTouchMoveEvent$(
+            this.listDataService.list.id,
+            'list',
+          ),
+          this.boardEnvironmentEventsService.getGlobalMouseMoveEvent$(
+            this.listDataService.list.id,
+            'list',
+          ),
+        )
           .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe((event) => {
+          .subscribe((event) => {            
             this.moveEventHandle(event.x, event.y);
           });
 

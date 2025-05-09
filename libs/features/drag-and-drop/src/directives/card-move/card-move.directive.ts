@@ -27,8 +27,16 @@ export class CardMoveDirective implements OnInit {
   private readonly scrollActionsService = inject(ScrollActionsService);
 
   ngOnInit(): void {
-    this.boardEnvironmentEventsService
-      .getGlobalMouseMoveEvent$(this.cardDataService.card.id, 'card')
+    merge(
+      this.boardEnvironmentEventsService.getGlobalTouchMoveEvent$(
+        this.cardDataService.card.id,
+        'card',
+      ),
+      this.boardEnvironmentEventsService.getGlobalMouseMoveEvent$(
+        this.cardDataService.card.id,
+        'card',
+      ),
+    )
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         this.moveEventHandle(event.x, event.y);
@@ -92,5 +100,6 @@ export class CardMoveDirective implements OnInit {
     );
 
     this.boardEnvironmentEventsService.cardMoveEvent = { x, y };
+    this.boardEnvironmentEventsService.onCardUpStart = false;
   }
 }

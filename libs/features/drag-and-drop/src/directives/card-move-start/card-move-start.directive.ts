@@ -1,6 +1,11 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  inject
+} from '@angular/core';
 import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
-import { take, timer } from 'rxjs';
+import { filter, take, timer } from 'rxjs';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 
@@ -15,6 +20,9 @@ export class CardMoveStartDirective {
     BoardEnvironmentEventsService,
   );
 
+  hasMove = false;
+  moveHasStart = false;
+
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -27,21 +35,31 @@ export class CardMoveStartDirective {
   }
 
   @HostListener('touchstart', ['$event']) onTouchDown(event: TouchEvent) {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-
     if (this.boardEnvironmentEventsService.onCardUpStart) return;
 
     const touch = event.touches[0];
-    this.boardEnvironmentEventsService.onCardUpStart = true;
 
-    timer(500)
-      .pipe(take(1))
+    this.hasMove = false;
+    this.moveHasStart = true;
+
+    this.boardEnvironmentEventsService
+      .getGlobalTouchMoveEventUnFiltered$()
+      .pipe(filter(() => this.moveHasStart))
       .subscribe(() => {
-        if (!this.boardEnvironmentEventsService.onCardUpStart) return;
-
-        this.startDownEvent(touch.pageX, touch.pageY);
+        this.hasMove = true;
+        this.moveHasStart = false;
       });
+
+    timer(500).subscribe(() => {
+      if (this.hasMove) return;
+
+      this.boardEnvironmentEventsService.onCardUpStart = true;
+      
+      this.startDownEvent(touch.pageX, touch.pageY);
+
+      this.hasMove = false;
+      this.moveHasStart = false;
+    });
   }
 
   private startDownEvent(x: number, y: number) {
