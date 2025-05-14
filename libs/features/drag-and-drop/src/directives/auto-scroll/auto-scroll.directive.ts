@@ -22,8 +22,6 @@ import {
 } from 'rxjs';
 import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
-const SIZE_GAP = 200;
-
 @Directive({
   selector: '[autoScroll]',
 })
@@ -94,6 +92,8 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
         const moveEvent = cardMoveEvent || listMoveEvent;
 
         if (!moveEvent) return;
+
+        const SIZE_GAP = Math.min(200, window.innerWidth * 0.2);
 
         const rightSize = window.innerWidth - SIZE_GAP;
 
