@@ -78,7 +78,7 @@ export class ListMoveDirective implements OnInit {
     this.listDataService.actualXPosition = x;
     this.listDataService.actualYPosition = y;
 
-    this.listElements.listElementRef.style.zIndex = '20';
+    this.listElements.listElementRef.style.zIndex = '40';
     this.listElements.listElementRef.style.transform = 'rotate(2deg)';
     this.listElements.listElementRef.style.top =
       y - this.listDataService.initialY + 'px';

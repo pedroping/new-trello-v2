@@ -1,12 +1,12 @@
 import { Directive, HostListener, inject } from '@angular/core';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import {
+  BoardEnvironmentEventsService,
+  BoardEnvironmentStoreService,
+} from '@new-trello-v2/drag-and-drop-data';
 import { filter, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
-
-const LISTGAP = 340;
-
 @Directive({
   selector: '[appListMoveStart]',
 })
@@ -16,6 +16,9 @@ export class ListMoveStartDirective {
   private readonly listActionsService = inject(ListActionsService);
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
+  );
+  private readonly boardEnvironmentStoreService = inject(
+    BoardEnvironmentStoreService,
   );
 
   hasMove = false;
@@ -85,7 +88,14 @@ export class ListMoveStartDirective {
     this.listElements.listElementRef.style.maxHeight =
       this.listElements.listElementRef.offsetHeight + 'px';
 
-    this.listElements.listElementRef.style.zIndex = '20';
+    const allListsElement = this.boardEnvironmentStoreService.boardElementRef
+      .firstChild as HTMLElement;
+
+    Array.from(allListsElement.children).forEach((list) => {
+      (list as HTMLElement).style.zIndex = '20';
+    });
+
+    this.listElements.listElementRef.style.zIndex = '40';
     this.listElements.listElementRef.style.top = 'unset';
     this.listElements.listElementRef.style.left = 'unset';
     this.listElements.listElementRef.style.position = 'fixed';
