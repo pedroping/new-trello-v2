@@ -9,17 +9,13 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/new-trello-v2",
         "outputMode": "server",
         "index": "./src/index.html",
         "browser": "./src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": ["zone.js"],
         "tsConfig": "tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "aot": true,
@@ -30,13 +26,15 @@
           }
         ],
         "styles": [
-          "./src/styles.scss"
+          {
+            "input": "./src/styles.scss",
+            "inject": true,
+            "bundleName": "styles"
+          }
         ],
 
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "libs/utils/styles/src/lib"
-          ]
+          "includePaths": ["libs/utils/styles/src/lib"]
         },
         "scripts": [],
         "server": "./src/main.server.ts",
@@ -90,16 +88,12 @@
     "lint": {
       "executor": "@nx/eslint:lint",
       "options": {
-        "lintFilePatterns": [
-          "./src"
-        ]
+        "lintFilePatterns": ["./src"]
       }
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectName}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
       "options": {
         "jestConfig": "jest.config.app.ts"
       }
@@ -136,9 +130,7 @@
         "main": "./src/server.ts",
         "tsConfig": "tsconfig.server.json",
         "stylePreprocessorOptions": {
-          "includePaths": [
-            "libs/utils/styles/src/lib"
-          ]
+          "includePaths": ["libs/utils/styles/src/lib"]
         },
         "inlineStyleLanguage": "scss"
       },
@@ -157,9 +149,7 @@
     "prerender": {
       "executor": "@angular-devkit/build-angular:prerender",
       "options": {
-        "routes": [
-          "/"
-        ]
+        "routes": ["/"]
       },
       "configurations": {
         "production": {
