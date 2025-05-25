@@ -156,16 +156,13 @@ export class CardMoveStopDirective implements OnInit {
             previewElementId,
           );
 
-        this.getAllCardsList(parentElement, true).forEach((_element) => {
+        this.getAllCardsList(parentElement, false).forEach((_element) => {
           const element = _element as HTMLElement;
           element.style.position = 'static';
           element.style.top = '';
           element.style.left = '';
           element.style.transition = 'none';
         });
-        this.elementRef.style.top = '';
-        this.elementRef.style.left = '';
-        this.elementRef.style.transition = 'none';
 
         if (!isSameList)
           this.cardDataService.cardClone.parentElement!.removeChild(
