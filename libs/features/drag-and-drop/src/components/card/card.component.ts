@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
-import { ICard } from '@new-trello-v2/types-interfaces';
 import { CardMoveStartDirective } from '../../directives/card-move-start/card-move-start.directive';
 import { CardMoveStopDirective } from '../../directives/card-move-stop/card-move-stop.directive';
 import { CardMoveDirective } from '../../directives/card-move/card-move.directive';
+import { ICard } from '../../interfaces/card.interfaces';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 

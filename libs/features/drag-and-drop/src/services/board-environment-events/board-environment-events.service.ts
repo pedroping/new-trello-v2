@@ -1,10 +1,5 @@
 import { afterNextRender, Injectable } from '@angular/core';
 import {
-  IDragMoveEvent,
-  IMoveEvent,
-  TEventType,
-} from '@new-trello-v2/types-interfaces';
-import {
   BehaviorSubject,
   filter,
   fromEvent,
@@ -13,6 +8,7 @@ import {
   Subject,
   tap,
 } from 'rxjs';
+import { IDragMoveEvent, IMoveEvent, TEventType } from '../../interfaces/card.interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {

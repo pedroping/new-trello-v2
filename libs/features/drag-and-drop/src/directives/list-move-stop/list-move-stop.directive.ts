@@ -1,12 +1,10 @@
 import { DestroyRef, Directive, inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  BoardEnvironmentEventsService,
-  BoardEnvironmentStoreService,
-} from '@new-trello-v2/drag-and-drop-data';
-import { LIST_ELEMENT } from '../../providers/list-element-provider';
-import { ListDataService } from '../../services/list-data/list-data.service';
 import { fromEvent, merge, take, timer } from 'rxjs';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
+import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
+import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Directive({
   selector: '[listMoveStop]',

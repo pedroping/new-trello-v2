@@ -4,11 +4,11 @@ import {
   effect,
   ElementRef,
   inject,
-  input,
-  OnInit,
+  input
 } from '@angular/core';
-import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { CardAutoScrollDirective } from '../../directives/card-auto-scroll/card-auto-scroll.directive';
+import { ICard } from '../../interfaces/card.interfaces';
+import { IList } from '../../interfaces/list.interfaces';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { ListDataService } from '../../services/list-data/list-data.service';
 import { CardComponent } from '../card/card.component';

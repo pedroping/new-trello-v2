@@ -1,6 +1,7 @@
 import { Injectable, InputSignal } from '@angular/core';
-import { ICard, IList } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject } from 'rxjs';
+import { ICard } from '../../interfaces/card.interfaces';
+import { IList } from '../../interfaces/list.interfaces';
 @Injectable({ providedIn: 'any' })
 export class ListDataService {
   private _initialX = 0;

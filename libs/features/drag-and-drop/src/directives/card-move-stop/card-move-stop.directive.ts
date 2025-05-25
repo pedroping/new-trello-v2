@@ -6,11 +6,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import {
-  BoardEnvironmentEventsService,
-  BoardEnvironmentStoreService,
-} from '@new-trello-v2/drag-and-drop-data';
 import { fromEvent, merge, switchMap, take, tap, timer } from 'rxjs';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
+import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Directive({

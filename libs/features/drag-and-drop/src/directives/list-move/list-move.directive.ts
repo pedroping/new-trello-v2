@@ -8,11 +8,11 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
+import { merge, throttleTime } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
-import { merge, throttleTime } from 'rxjs';
 import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 @Directive({

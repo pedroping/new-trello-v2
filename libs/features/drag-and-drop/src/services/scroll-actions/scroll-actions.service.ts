@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { IDragMoveEvent } from '@new-trello-v2/types-interfaces';
 import { Subject } from 'rxjs';
+import { IDragMoveEvent } from '../../interfaces/card.interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class ScrollActionsService {

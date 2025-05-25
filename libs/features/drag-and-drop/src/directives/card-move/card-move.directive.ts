@@ -6,8 +6,8 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { merge, throttleTime } from 'rxjs';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';

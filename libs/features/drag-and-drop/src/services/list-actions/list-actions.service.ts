@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
+import { BoardEnvironmentEventsService } from '../board-environment-events/board-environment-events.service';
 
 @Injectable({ providedIn: 'root' })
 export class ListActionsService {

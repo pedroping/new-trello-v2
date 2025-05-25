@@ -1,9 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  BoardEnvironmentEventsService,
-  BoardEnvironmentStoreService,
-} from '@new-trello-v2/drag-and-drop-data';
 import { take, timer } from 'rxjs';
+import { BoardEnvironmentEventsService } from '../board-environment-events/board-environment-events.service';
+import { BoardEnvironmentStoreService } from '../board-environment-store/board-environment-store.service';
 import { CardDataService } from '../card-data/card-data.service';
 
 @Injectable({ providedIn: 'any' })

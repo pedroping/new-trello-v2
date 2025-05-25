@@ -1,5 +1,5 @@
 import { Injectable, InputSignal } from '@angular/core';
-import { ICard } from '@new-trello-v2/types-interfaces';
+import { ICard } from '../../interfaces/card.interfaces';
 
 @Injectable({ providedIn: 'any' })
 export class CardDataService {

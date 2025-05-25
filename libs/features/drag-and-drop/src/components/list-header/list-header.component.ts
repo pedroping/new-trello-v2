@@ -1,8 +1,8 @@
 import { Component, inject, input } from '@angular/core';
-import { IList } from '@new-trello-v2/types-interfaces';
 import { ListMoveStartDirective } from '../../directives/list-move-start/list-move-start.directive';
 import { ListMoveStopDirective } from '../../directives/list-move-stop/list-move-stop.directive';
 import { ListMoveDirective } from '../../directives/list-move/list-move.directive';
+import { IList } from '../../interfaces/list.interfaces';
 import { ListDataService } from '../../services/list-data/list-data.service';
 
 @Component({

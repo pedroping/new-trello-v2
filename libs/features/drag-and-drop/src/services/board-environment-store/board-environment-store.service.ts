@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { IBoardEnvironmentData, ICard } from '@new-trello-v2/types-interfaces';
 import { BehaviorSubject } from 'rxjs';
+import { IBoardEnvironmentData } from '../../interfaces/board-environment.interfaces';
+import { ICard } from '../../interfaces/card.interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentStoreService {

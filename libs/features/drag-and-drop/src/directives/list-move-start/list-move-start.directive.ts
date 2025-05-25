@@ -1,10 +1,8 @@
 import { Directive, HostListener, inject } from '@angular/core';
-import {
-  BoardEnvironmentEventsService,
-  BoardEnvironmentStoreService,
-} from '@new-trello-v2/drag-and-drop-data';
 import { filter, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
+import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
 import { ListActionsService } from '../../services/list-actions/list-actions.service';
 import { ListDataService } from '../../services/list-data/list-data.service';
 @Directive({

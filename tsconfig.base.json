@@ -21,16 +21,10 @@
       "@new-trello-v2/drag-and-drop": [
         "libs/features/drag-and-drop/src/index.ts"
       ],
-      "@new-trello-v2/drag-and-drop-data": [
-        "libs/utils/drag-and-drop-data/src/index.ts"
-      ],
       "@new-trello-v2/mouse-page-move": [
         "libs/features/mouse-page-move/src/index.ts"
       ],
       "@new-trello-v2/styles": ["libs/utils/styles/src/index.ts"],
-      "@new-trello-v2/types-interfaces": [
-        "libs/utils/types-interfaces/src/index.ts"
-      ]
     }
   },
   "exclude": ["node_modules", "tmp"],

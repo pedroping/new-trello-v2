@@ -8,8 +8,6 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { BoardEnvironmentEventsService } from '@new-trello-v2/drag-and-drop-data';
-import { IDragMoveEvent, IList } from '@new-trello-v2/types-interfaces';
 import {
   filter,
   map,
@@ -21,6 +19,9 @@ import {
   throttleTime,
   timer,
 } from 'rxjs';
+import { IDragMoveEvent } from '../../interfaces/card.interfaces';
+import { IList } from '../../interfaces/list.interfaces';
+import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { ScrollActionsService } from '../../services/scroll-actions/scroll-actions.service';
 
 const SIZE_GAP = 200;

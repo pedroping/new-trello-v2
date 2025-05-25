@@ -10,11 +10,11 @@ import {
 } from '@angular/core';
 import {
   AutoScrollDirective,
+  BoardEnvironmentStoreService,
+  IBoardEnvironmentData,
   ListComponent,
 } from '@new-trello-v2/drag-and-drop';
-import { BoardEnvironmentStoreService } from '@new-trello-v2/drag-and-drop-data';
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
-import { IBoardEnvironmentData } from '@new-trello-v2/types-interfaces';
 
 @Component({
   selector: 'lib-board-environment',
