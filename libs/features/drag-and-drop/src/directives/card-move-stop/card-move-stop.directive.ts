@@ -126,6 +126,7 @@ export class CardMoveStopDirective implements OnInit {
           if (i < previewElementId) return;
 
           element.style.transition = 'none';
+          element.style.position = 'absolute';
 
           const rect = element.getBoundingClientRect();
 
@@ -133,13 +134,6 @@ export class CardMoveStopDirective implements OnInit {
           element.style.width = rect.width + 'px';
 
           element.style.transform = 'translateY(0px)';
-        });
-
-        this.getAllCardsList(parentElement, true).forEach((_element, i) => {
-          if (i < previewElementId) return;
-          const element = _element as HTMLElement;
-
-          element.style.position = 'absolute';
         });
 
         this.elementRef.style.position = 'static';
@@ -161,6 +155,7 @@ export class CardMoveStopDirective implements OnInit {
           element.style.position = 'static';
           element.style.top = '';
           element.style.left = '';
+          element.style.width = '';
           element.style.transition = 'none';
         });
 
