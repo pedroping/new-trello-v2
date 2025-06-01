@@ -16,7 +16,7 @@ export class ListMoveStopDirective implements OnInit {
   );
   private readonly listDataService = inject(ListDataService);
   private readonly listElements = inject(LIST_ELEMENT);
-  private readonly boardEnvironmentDataService = inject(
+  private readonly boardEnvironmentStoreService = inject(
     BoardEnvironmentStoreService,
   );
 
@@ -43,10 +43,12 @@ export class ListMoveStopDirective implements OnInit {
     this.boardEnvironmentEventsService.onListUpStart = false;
     this.listElements.listElementRef.style.transition = 'all 200ms ease-in-out';
 
-    const previewElementId = this.getAllLists(
-      this.listElements.listElementRef.parentElement as HTMLElement,
-      true,
-    ).indexOf(this.boardEnvironmentEventsService.listPreviewElement);
+    const parentElement = this.listElements.listElementRef
+      .parentElement as HTMLElement;
+
+    const previewElementId = this.getAllLists(parentElement, true).indexOf(
+      this.boardEnvironmentEventsService.listPreviewElement,
+    );
 
     const previewElementRect =
       this.boardEnvironmentEventsService.listPreviewElement.getBoundingClientRect();
@@ -63,28 +65,22 @@ export class ListMoveStopDirective implements OnInit {
       .pipe(take(1))
       .subscribe(() => {
         if (
-          (
-            this.listElements.listElementRef.parentElement as HTMLElement
-          ).contains(this.boardEnvironmentEventsService.listPreviewElement)
+          parentElement.contains(
+            this.boardEnvironmentEventsService.listPreviewElement,
+          )
         )
-          (
-            this.listElements.listElementRef.parentElement as HTMLElement
-          ).removeChild(this.boardEnvironmentEventsService.listPreviewElement);
+          parentElement.removeChild(
+            this.boardEnvironmentEventsService.listPreviewElement,
+          );
 
-        const parentElement = this.listElements.listElementRef
-          .parentElement as HTMLElement;
-
-        this.getAllLists(parentElement).forEach((_element) => {
-          const element = _element as HTMLElement;
+        this.getAllLists(parentElement).forEach((element) => {
           element.style.transition = '';
         });
 
         this.listElements.listElementRef.style.width = '100%';
         this.listElements.listElementRef.style.zIndex = '2';
 
-        this.getAllLists(parentElement, true).forEach((_element, i) => {
-          const element = _element as HTMLElement;
-
+        this.getAllLists(parentElement, true).forEach((element, i) => {
           element.style.transition = 'none';
 
           const rect = element.getBoundingClientRect();
@@ -96,10 +92,8 @@ export class ListMoveStopDirective implements OnInit {
           element.style.transform = 'translateY(0px)';
         });
 
-        this.getAllLists(parentElement, true).forEach((_element, i) => {
+        this.getAllLists(parentElement, true).forEach((element, i) => {
           if (i < previewElementId) return;
-          const element = _element as HTMLElement;
-
           element.style.position = 'absolute';
         });
 
@@ -108,21 +102,20 @@ export class ListMoveStopDirective implements OnInit {
         timer(1)
           .pipe(take(1))
           .subscribe(() => {
-            this.boardEnvironmentDataService.moveList(
+            this.boardEnvironmentStoreService.moveList(
               this.listDataService.list.id,
               previewElementId,
             );
 
             timer(20)
               .pipe(take(1))
-              .subscribe(() => {
+              .subscribe(() => {                
                 parentElement.style.width = '';
                 parentElement.style.minWidth = '';
                 parentElement.style.maxWidth = '';
                 parentElement.style.transition = '';
 
-                this.getAllLists(parentElement).forEach((_element) => {
-                  const element = _element as HTMLElement;
+                this.getAllLists(parentElement).forEach((element) => {
                   element.style.zIndex = '0';
                   element.style.minHeight = '';
                   element.style.maxWidth = '';
@@ -145,12 +138,15 @@ export class ListMoveStopDirective implements OnInit {
       });
   }
 
-  getAllLists(parentElement: HTMLElement, withFilter = false) {
+  private getAllLists(
+    parentElement: HTMLElement,
+    withFilter = false,
+  ): HTMLElement[] {
     if (withFilter)
       return Array.from(parentElement.children).filter(
         (element) => element != this.listElements.listElementRef,
-      );
+      ) as HTMLElement[];
 
-    return Array.from(parentElement.children);
+    return Array.from(parentElement.children) as HTMLElement[];
   }
 }

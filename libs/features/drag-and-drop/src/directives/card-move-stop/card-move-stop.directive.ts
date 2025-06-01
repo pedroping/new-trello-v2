@@ -120,9 +120,7 @@ export class CardMoveStopDirective implements OnInit {
         ),
       )
       .subscribe(() => {
-        this.getAllCardsList(parentElement, true).forEach((_element, i) => {
-          const element = _element as HTMLElement;
-
+        this.getAllCardsList(parentElement, true).forEach((element, i) => {
           if (i < previewElementId) return;
 
           element.style.transition = 'none';
@@ -150,8 +148,7 @@ export class CardMoveStopDirective implements OnInit {
             previewElementId,
           );
 
-        this.getAllCardsList(parentElement, false).forEach((_element) => {
-          const element = _element as HTMLElement;
+        this.getAllCardsList(parentElement, false).forEach((element) => {
           element.style.position = 'static';
           element.style.top = '';
           element.style.left = '';
@@ -166,7 +163,10 @@ export class CardMoveStopDirective implements OnInit {
       });
   }
 
-  getAllCardsList(parentElement: HTMLElement, filterById = false) {
+  getAllCardsList(
+    parentElement: HTMLElement,
+    filterById = false,
+  ): HTMLElement[] {
     if (filterById)
       return Array.from(parentElement.children).filter(
         (element) =>
@@ -174,11 +174,11 @@ export class CardMoveStopDirective implements OnInit {
           element.getAttribute('card-id') !=
             this.cardDataService.card.id.toString() &&
           element != this.cardDataService.cardClone,
-      );
+      ) as HTMLElement[];
 
     return Array.from(parentElement.children).filter(
       (element) =>
         element != this.elementRef && element != this.cardDataService.cardClone,
-    );
+    ) as HTMLElement[];
   }
 }
