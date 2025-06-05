@@ -6,3 +6,5 @@ export interface IList {
   environmentId: number;
   cards: ICard[];
 }
+
+export const LIST_GAP = 15;

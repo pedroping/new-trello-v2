@@ -1,5 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { take, timer } from 'rxjs';
+import { CARD_GAP } from '../../interfaces/card.interfaces';
+import { LIST_GAP } from '../../interfaces/list.interfaces';
 import { BoardEnvironmentEventsService } from '../board-environment-events/board-environment-events.service';
 import { BoardEnvironmentStoreService } from '../board-environment-store/board-environment-store.service';
 import { CardDataService } from '../card-data/card-data.service';
@@ -61,10 +63,18 @@ export class CardActionsService {
       });
 
     this.boardEnvironmentEventsService.cardPreviewElement.style.transform =
-      elementId === 0 ? 'translateY(5px)' : '';
+      elementId === 0 ? `translateY(${CARD_GAP}px)` : '';
 
     if (fromMove)
       this.setTransitions(true, cloneElement, elementRef, listElement.children);
+  }
+
+  getCardsTotalHeight(parentList: HTMLElement[], maxIndex?: number) {
+    return parentList
+      .slice(0, maxIndex ?? parentList.length)
+      .reduce((prev, curr) => {
+        return prev + CARD_GAP + (curr as HTMLElement).offsetHeight;
+      }, 0);
   }
 
   private validateListChange(
@@ -102,14 +112,16 @@ export class CardActionsService {
     const prevList = cloneElement.parentElement as HTMLElement;
     newUlList.appendChild(cloneElement);
 
-    const cardsCount = Array.from(newUlList.children).filter(
-      (element) =>
-        element != this.boardEnvironmentEventsService.cardPreviewElement &&
-        element != elementRef,
-    ).length;
+    const height = this.getCardsTotalHeight(
+      Array.from(newUlList.children).filter(
+        (element) =>
+          element != this.boardEnvironmentEventsService.cardPreviewElement &&
+          element != elementRef,
+      ) as HTMLElement[],
+    );
 
-    newUlList.style.minHeight = cardsCount * 43 + 10 + 'px';
-    newUlList.style.maxHeight = cardsCount * 43 + 10 + 'px';
+    newUlList.style.minHeight = height + LIST_GAP + 'px';
+    newUlList.style.maxHeight = height + LIST_GAP + 'px';
 
     if (afterElement) {
       newUlList.insertBefore(
@@ -138,14 +150,19 @@ export class CardActionsService {
           const element = _element as HTMLElement;
           element.style.transform = '';
         });
-        const previListCardCount = Array.from(prevList.children).filter(
-          (element) =>
-            element != this.boardEnvironmentEventsService.cardPreviewElement &&
-            element != cloneElement &&
-            element != elementRef,
-        ).length;
-        prevList.style.minHeight = previListCardCount * 43 + 10 + 'px';
-        prevList.style.maxHeight = previListCardCount * 43 + 10 + 'px';
+
+        const prevHeight = this.getCardsTotalHeight(
+          Array.from(prevList.children).filter(
+            (element) =>
+              element !=
+                this.boardEnvironmentEventsService.cardPreviewElement &&
+              element != cloneElement &&
+              element != elementRef,
+          ) as HTMLElement[],
+        );
+
+        prevList.style.minHeight = prevHeight + LIST_GAP + 'px';
+        prevList.style.maxHeight = prevHeight + LIST_GAP + 'px';
 
         const newListParent =
           newUlList.parentElement?.parentElement?.parentElement;

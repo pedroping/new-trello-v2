@@ -1,13 +1,9 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  inject
-} from '@angular/core';
+import { Directive, ElementRef, HostListener, inject } from '@angular/core';
 import { filter, take, timer } from 'rxjs';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
+import { LIST_GAP } from '../../interfaces/list.interfaces';
 
 @Directive({
   selector: '[cardMoveStart]',
@@ -54,7 +50,7 @@ export class CardMoveStartDirective {
       if (this.hasMove) return;
 
       this.boardEnvironmentEventsService.onCardUpStart = true;
-      
+
       this.startDownEvent(touch.pageX, touch.pageY);
 
       this.hasMove = false;
@@ -65,15 +61,14 @@ export class CardMoveStartDirective {
   private startDownEvent(x: number, y: number) {
     this.boardEnvironmentEventsService.onCardUpStart = true;
 
-    const cardsCount = Array.from(
-      this.elementRef.parentElement!.children,
-    ).filter(
-      (element) =>
-        element != this.boardEnvironmentEventsService.cardPreviewElement,
-    ).length;
+    const height = this.cardActionsService.getCardsTotalHeight(
+      Array.from(this.elementRef.parentElement!.children).filter(
+        (element) =>
+          element != this.boardEnvironmentEventsService.cardPreviewElement,
+      ) as HTMLElement[],
+    );
 
-    this.elementRef.parentElement!.style.maxHeight =
-      cardsCount * 43 + 10 + 'px';
+    this.elementRef.parentElement!.style.maxHeight = height + LIST_GAP + 'px';
 
     const clone = this.elementRef.cloneNode(true) as HTMLElement;
     this.elementRef.parentElement!.appendChild(clone);

@@ -49,7 +49,7 @@ export class BoardEnvironmentComponent implements OnInit {
         name: 'List ' + (i + 1),
         environmentId: 1,
         cards: Array.from({ length: 25 }).map((_, y) => ({
-          name: 'Card ' + (y + 1) + ' ' + (i + 1),
+          name: 'Card Card Card Card Card Card Card Card Card Card Card Card Card Card Card Card Card' + (y + 1) + ' ' + (i + 1),
           id: +`${i + 1}${y}`,
           listId: i,
         })),

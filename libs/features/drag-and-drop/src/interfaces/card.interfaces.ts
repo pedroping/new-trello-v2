@@ -17,3 +17,5 @@ export interface IMoveEvent {
 }
 
 export type TEventType = 'card' | 'list';
+
+export const CARD_GAP = 5;

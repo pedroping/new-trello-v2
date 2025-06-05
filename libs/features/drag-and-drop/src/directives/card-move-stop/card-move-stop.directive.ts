@@ -10,6 +10,8 @@ import { fromEvent, merge, switchMap, take, tap, timer } from 'rxjs';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
+import { CardActionsService } from '../../services/card-actions/card-actions.service';
+import { CARD_GAP } from '../../interfaces/card.interfaces';
 
 @Directive({
   selector: '[cardMoveStop]',
@@ -23,6 +25,8 @@ export class CardMoveStopDirective implements OnInit {
   private readonly boardEnvironmentDataService = inject(
     BoardEnvironmentStoreService,
   );
+  private readonly cardActionsService = inject(CardActionsService);
+
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
 
   ngOnInit(): void {
@@ -66,10 +70,10 @@ export class CardMoveStopDirective implements OnInit {
 
     this.cardDataService.cardClone.style.transform = 'rotate(0deg)';
     this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
-    this.cardDataService.cardClone.style.top = previewElementRect.y - 5 + 'px';
+    this.cardDataService.cardClone.style.top = previewElementRect.y - CARD_GAP + 'px';
 
     this.elementRef.style.left = previewElementRect.x + 'px';
-    this.elementRef.style.top = previewElementRect.y - 5 + 'px';
+    this.elementRef.style.top = previewElementRect.y - CARD_GAP + 'px';
     this.elementRef.style.width = previewElementRect.width + 'px';
 
     const isSameList =
@@ -128,7 +132,12 @@ export class CardMoveStopDirective implements OnInit {
 
           const rect = element.getBoundingClientRect();
 
-          element.style.top = (i + 1) * 43 + 5 + 'px';
+          const height = this.cardActionsService.getCardsTotalHeight(
+            this.getAllCardsList(parentElement, true) as HTMLElement[],
+            i + 1,
+          );
+
+          element.style.top = height + CARD_GAP + 'px';
           element.style.width = rect.width + 'px';
 
           element.style.transform = 'translateY(0px)';
