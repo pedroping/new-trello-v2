@@ -32,7 +32,6 @@
             "bundleName": "styles"
           }
         ],
-
         "stylePreprocessorOptions": {
           "includePaths": ["libs/utils/styles/src/lib"]
         },
@@ -77,7 +76,8 @@
           "buildTarget": "new-trello-v2:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
