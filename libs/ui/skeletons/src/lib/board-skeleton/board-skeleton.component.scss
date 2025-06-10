@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 :host {
   display: flex;
   overflow: hidden;
@@ -14,18 +16,18 @@
 
 @for $i from 1 through 100 {
   .list-#{$i} {
-    animation: 5s ease-in-out 0s infinite reverse both running upDown#{$i};
+    animation: #{math.max(math.random(10), 5)}s ease-in-out 0s infinite reverse both running upDown#{$i};
   }
 
   @keyframes upDown#{$i} {
     0%,
     100% {
-      height: $i * 20%;
+      height: $i * 1%;
       opacity: 1;
     }
 
     50% {
-      height: 10%;
+      height: 15%;
       opacity: 0.2;
     }
   }

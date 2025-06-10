@@ -27,7 +27,7 @@ export class BoardSkeletonComponent implements OnInit {
     const width = this.element.offsetWidth;
 
     this.lists = Array.from({ length: Math.round(width / LIST_WIDTH) }).map(
-      () => Math.max(20, Math.random() * 101),
+      () => Math.max(30, Math.round(Math.random() * 101)),
     );
   }
 }
