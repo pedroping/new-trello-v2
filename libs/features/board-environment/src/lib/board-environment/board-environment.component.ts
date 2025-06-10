@@ -15,13 +15,17 @@ import {
   ListComponent,
 } from '@new-trello-v2/drag-and-drop';
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
+import { BoardSkeletonComponent } from '@new-trello-v2/skeletons';
+import { timer } from 'rxjs';
+import { fadeAnimation } from '@new-trello-v2/animations';
 
 @Component({
   selector: 'lib-board-environment',
   templateUrl: './board-environment.component.html',
   styleUrl: './board-environment.component.scss',
-  imports: [ListComponent, AsyncPipe],
+  imports: [ListComponent, AsyncPipe, BoardSkeletonComponent],
   hostDirectives: [MousePageMoveDirective, AutoScrollDirective],
+  animations: [fadeAnimation]
 })
 export class BoardEnvironmentComponent implements OnInit {
   private readonly boardEnvironmentStoreService = inject(
@@ -38,25 +42,27 @@ export class BoardEnvironmentComponent implements OnInit {
       afterNextRender(() => {
         this.boardEnvironmentStoreService.boardElementRef =
           this.elementRef.nativeElement;
+
+        const newData: IBoardEnvironmentData = {
+          id: 1,
+          name: 'Initial Board',
+          lists: Array.from({ length: 10 }).map((_, i) => ({
+            id: i,
+            name: 'List ' + (i + 1),
+            environmentId: 1,
+            cards: Array.from({ length: 25 }).map((_, y) => ({
+              name: this.getNameByLength(y) + ' ' + (i + 1),
+              id: +`${i + 1}${y}`,
+              listId: i,
+            })),
+          })),
+        };
+
+        timer(5000).subscribe(() => {
+          this.boardEnvironmentStoreService.boardEnvironment = newData;
+        });
       });
     });
-
-    const newData: IBoardEnvironmentData = {
-      id: 1,
-      name: 'Initial Board',
-      lists: Array.from({ length: 10 }).map((_, i) => ({
-        id: i,
-        name: 'List ' + (i + 1),
-        environmentId: 1,
-        cards: Array.from({ length: 25 }).map((_, y) => ({
-          name: this.getNameByLength(y) + ' ' + (i + 1),
-          id: +`${i + 1}${y}`,
-          listId: i,
-        })),
-      })),
-    };
-
-    this.boardEnvironmentStoreService.boardEnvironment = newData;
   }
 
   getNameByLength(id: number) {

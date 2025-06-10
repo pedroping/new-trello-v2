@@ -1,0 +1,32 @@
+:host {
+  display: flex;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  gap: 20px;
+
+  .preview-list {
+    position: static;
+    background-color: var(--gray-01);
+  }
+}
+
+@for $i from 1 through 100 {
+  .list-#{$i} {
+    animation: 5s ease-in-out 0s infinite reverse both running upDown#{$i};
+  }
+
+  @keyframes upDown#{$i} {
+    0%,
+    100% {
+      height: $i * 20%;
+      opacity: 1;
+    }
+
+    50% {
+      height: 10%;
+      opacity: 0.2;
+    }
+  }
+}

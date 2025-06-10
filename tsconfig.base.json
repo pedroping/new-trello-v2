@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@new-trello-v2/animations": ["libs/utils/animations/src/index.ts"],
       "@new-trello-v2/board-environment": [
         "libs/features/board-environment/src/index.ts"
       ],
@@ -24,6 +25,7 @@
       "@new-trello-v2/mouse-page-move": [
         "libs/features/mouse-page-move/src/index.ts"
       ],
+      "@new-trello-v2/skeletons": ["libs/ui/skeletons/src/index.ts"],
       "@new-trello-v2/styles": ["libs/utils/styles/src/index.ts"]
     }
   },

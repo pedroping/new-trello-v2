@@ -1,0 +1,3 @@
+@for (_ of lists; let idx = $index; track idx) {
+<div class="preview-list" [class]="'list-' + (idx + 1)" [style.maxHeight]="_ + '%'"></div>
+}
