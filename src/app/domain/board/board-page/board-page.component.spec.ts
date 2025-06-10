@@ -1,20 +1,15 @@
-/* tslint:disable:no-unused-variable */
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { DebugElement } from '@angular/core';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { BoardPageComponent } from './board-page.component';
 
 describe('BoardPageComponent', () => {
   let component: BoardPageComponent;
   let fixture: ComponentFixture<BoardPageComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ BoardPageComponent ]
-    })
-    .compileComponents();
-  }));
+      declarations: [BoardPageComponent],
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(BoardPageComponent);
