@@ -14,15 +14,15 @@
   }
 }
 
-@for $i from 1 through 100 {
-  .list-#{$i} {
-    animation: #{math.max(math.random(10), 5)}s ease-in-out 0s infinite reverse both running upDown#{$i};
+@for $i from 1 through 10 {
+  .list-#{$i * 10} {
+    animation: #{math.max(math.random(10), 5)}s ease-in-out 0s infinite reverse both running upDown#{$i * 10};
   }
 
-  @keyframes upDown#{$i} {
+  @keyframes upDown#{$i * 10} {
     0%,
     100% {
-      height: $i * 1%;
+      height: $i * 10%;
       opacity: 1;
     }
 
