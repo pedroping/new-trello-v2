@@ -70,11 +70,14 @@ export class CardMoveStopDirective implements OnInit {
 
     this.cardDataService.cardClone.style.transform = 'rotate(0deg)';
     this.cardDataService.cardClone.style.left = previewElementRect.x + 'px';
-    this.cardDataService.cardClone.style.top = previewElementRect.y - CARD_GAP + 'px';
+    this.cardDataService.cardClone.style.top =
+      previewElementRect.y - CARD_GAP + 'px';
 
     this.elementRef.style.left = previewElementRect.x + 'px';
     this.elementRef.style.top = previewElementRect.y - CARD_GAP + 'px';
     this.elementRef.style.width = previewElementRect.width + 'px';
+
+    document.body.style.cursor = 'default';
 
     const isSameList =
       this.cardDataService.card.listId.toString() ===

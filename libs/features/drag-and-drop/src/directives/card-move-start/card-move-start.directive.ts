@@ -1,20 +1,30 @@
-import { Directive, ElementRef, HostListener, inject } from '@angular/core';
-import { filter, take, timer } from 'rxjs';
+import {
+  DestroyRef,
+  Directive,
+  ElementRef,
+  HostListener,
+  inject,
+  OnInit,
+} from '@angular/core';
+import { filter, fromEvent, take, timer } from 'rxjs';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
 import { LIST_GAP } from '../../interfaces/list.interfaces';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[cardMoveStart]',
 })
-export class CardMoveStartDirective {
+export class CardMoveStartDirective implements OnInit {
   private readonly cardActionsService = inject(CardActionsService);
   private readonly cardDataService = inject(CardDataService);
   elementRef = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
+  private readonly element = inject(ElementRef).nativeElement as HTMLElement;
+  private readonly destroyRef = inject(DestroyRef);
 
   hasMove = false;
   moveHasStart = false;
@@ -30,32 +40,36 @@ export class CardMoveStartDirective {
     this.startDownEvent(event.clientX, event.clientY);
   }
 
-  @HostListener('touchstart', ['$event']) onTouchDown(event: TouchEvent) {
-    if (this.boardEnvironmentEventsService.onCardUpStart) return;
+  ngOnInit(): void {
+    fromEvent<TouchEvent>(this.element, 'touchstart', { passive: true })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((event) => {
+        if (this.boardEnvironmentEventsService.onCardUpStart) return;
 
-    const touch = event.touches[0];
+        const touch = event.touches[0];
 
-    this.hasMove = false;
-    this.moveHasStart = true;
+        this.hasMove = false;
+        this.moveHasStart = true;
 
-    this.boardEnvironmentEventsService
-      .getGlobalTouchMoveEventUnFiltered$()
-      .pipe(filter(() => this.moveHasStart))
-      .subscribe(() => {
-        this.hasMove = true;
-        this.moveHasStart = false;
+        this.boardEnvironmentEventsService
+          .getGlobalTouchMoveEventUnFiltered$()
+          .pipe(filter(() => this.moveHasStart))
+          .subscribe(() => {
+            this.hasMove = true;
+            this.moveHasStart = false;
+          });
+
+        timer(500).subscribe(() => {
+          if (this.hasMove) return;
+
+          this.boardEnvironmentEventsService.onCardUpStart = true;
+
+          this.startDownEvent(touch.pageX, touch.pageY);
+
+          this.hasMove = false;
+          this.moveHasStart = false;
+        });
       });
-
-    timer(500).subscribe(() => {
-      if (this.hasMove) return;
-
-      this.boardEnvironmentEventsService.onCardUpStart = true;
-
-      this.startDownEvent(touch.pageX, touch.pageY);
-
-      this.hasMove = false;
-      this.moveHasStart = false;
-    });
   }
 
   private startDownEvent(x: number, y: number) {
@@ -113,6 +127,8 @@ export class CardMoveStartDirective {
       x - this.cardDataService.initialX + 'px';
 
     this.elementRef.style.display = 'none';
+
+    document.body.style.cursor = 'grab';
 
     this.cardActionsService.handleCardsTransform(
       this.cardDataService.cardClone,

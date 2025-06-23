@@ -110,7 +110,15 @@ export class CardActionsService {
         cardRect.y,
       );
     const prevList = cloneElement.parentElement as HTMLElement;
+
+    const newListParent = newUlList.parentElement?.parentElement?.parentElement;
+    const prevListParent = prevList.parentElement?.parentElement?.parentElement;
+    
+    if (prevListParent) prevListParent.style.zIndex = '-50';
+    if (newListParent) newListParent.style.zIndex = '200';
+    
     newUlList.appendChild(cloneElement);
+
 
     const height = this.getCardsTotalHeight(
       Array.from(newUlList.children).filter(
@@ -163,14 +171,6 @@ export class CardActionsService {
 
         prevList.style.minHeight = prevHeight + LIST_GAP + 'px';
         prevList.style.maxHeight = prevHeight + LIST_GAP + 'px';
-
-        const newListParent =
-          newUlList.parentElement?.parentElement?.parentElement;
-        const prevListParent =
-          prevList.parentElement?.parentElement?.parentElement;
-
-        if (newListParent) newListParent.style.zIndex = '20';
-        if (prevListParent) prevListParent.style.zIndex = '0';
       });
     return;
   }

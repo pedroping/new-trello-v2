@@ -58,6 +58,8 @@ export class ListMoveStopDirective implements OnInit {
     this.listElements.listElementRef.style.top = previewElementRect.y + 'px';
     this.listElements.listElementRef.style.maxWidth = '300px';
 
+    document.body.style.cursor = 'default';
+
     merge(
       fromEvent(this.listElements.listElementRef, 'transitionend'),
       fromEvent(this.listElements.listElementRef, 'transitioncancel'),
@@ -109,10 +111,10 @@ export class ListMoveStopDirective implements OnInit {
 
             timer(20)
               .pipe(take(1))
-              .subscribe(() => {                
-                parentElement.style.width = '';
-                parentElement.style.minWidth = '';
-                parentElement.style.maxWidth = '';
+              .subscribe(() => {
+                // parentElement.style.width = '';
+                // parentElement.style.minWidth = '';
+                // parentElement.style.maxWidth = '';
                 parentElement.style.transition = '';
 
                 this.getAllLists(parentElement).forEach((element) => {

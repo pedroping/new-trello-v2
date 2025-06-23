@@ -20,7 +20,7 @@ export function app(): express.Express {
     express.static(browserDistFolder, {
       maxAge: '1y',
       index: 'index.html',
-    })
+    }),
   );
 
   server.get('/404', (_, res) => {
@@ -30,9 +30,30 @@ export function app(): express.Express {
   server.get('**', (req, res, next) => {
     angularNodeAppEngine
       .handle(req, { server: 'express' })
-      .then((response) =>
-        response ? writeResponseToNodeResponse(response, res) : next()
-      )
+      .then((response) => {
+        const header = `
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data:;
+        font-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        frame-ancestors 'none';
+        block-all-mixed-content;
+        upgrade-insecure-requests;
+      `
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        res.setHeader('Content-Security-Policy', header);
+        res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+        res.setHeader('X-XSS-Protection', '1; mode=block');
+        res.setHeader('x-content-type-options', 'nosniff');
+        res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+
+        return response ? writeResponseToNodeResponse(response, res) : next();
+      })
       .catch(next);
   });
 
