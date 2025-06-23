@@ -58,7 +58,7 @@ export class BoardEnvironmentComponent implements OnInit {
           })),
         };
 
-        timer(500).subscribe(() => {
+        timer(5000).subscribe(() => {
           this.boardEnvironmentStoreService.boardEnvironment = newData;
         });
       });
