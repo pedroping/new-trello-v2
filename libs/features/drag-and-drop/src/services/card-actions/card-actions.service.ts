@@ -111,7 +111,6 @@ export class CardActionsService {
     const prevList = this.cardDataService.actualListParent.ulElement;
 
     const newListParent = newUlList.parentElement?.parentElement?.parentElement;
-    const prevListParent = prevList.parentElement?.parentElement?.parentElement;
 
     timer(20)
       .pipe(take(1))
