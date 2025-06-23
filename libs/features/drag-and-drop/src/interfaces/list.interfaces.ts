@@ -8,3 +8,8 @@ export interface IList {
 }
 
 export const LIST_GAP = 15;
+
+export interface ListElements {
+  listElementRef: HTMLElement;
+  ulElement: HTMLElement;
+}

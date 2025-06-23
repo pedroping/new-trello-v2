@@ -58,8 +58,7 @@ export class CardMoveStopDirective implements OnInit {
     this.elementRef.style.opacity = '0';
     this.cardDataService.cardClone.style.transition = 'all 200ms ease-in-out';
 
-    const parentElement = this.cardDataService.cardClone
-      .parentElement as HTMLElement;
+    const parentElement = this.cardDataService.actualListParent.ulElement;
 
     const previewElementId = this.getAllCardsList(parentElement).indexOf(
       this.boardEnvironmentEventsService.cardPreviewElement,

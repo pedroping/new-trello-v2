@@ -1,5 +1,6 @@
 import { Injectable, InputSignal } from '@angular/core';
 import { ICard } from '../../interfaces/card.interfaces';
+import { ListElements } from '../../interfaces/list.interfaces';
 
 @Injectable({ providedIn: 'any' })
 export class CardDataService {
@@ -9,9 +10,18 @@ export class CardDataService {
   private _actualXPosition = 0;
   private _card?: InputSignal<ICard>;
   private _cardClone?: HTMLElement;
+  private _actualListParent?: ListElements;
 
   startDomain(card: InputSignal<ICard>) {
     this._card = card;
+  }
+
+  get actualListParent() {
+    return this._actualListParent as ListElements;
+  }
+
+  set actualListParent(data: ListElements) {
+    this._actualListParent = data;
   }
 
   get cardClone() {

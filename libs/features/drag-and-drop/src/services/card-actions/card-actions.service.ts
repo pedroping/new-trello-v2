@@ -21,11 +21,10 @@ export class CardActionsService {
   handleCardsTransform(
     cloneElement: HTMLElement,
     elementRef: HTMLElement,
-    listElement: HTMLElement,
     afterElement: Element | null | undefined,
     fromMove = false,
   ) {
-    listElement = cloneElement.parentElement as HTMLElement;
+    const listElement = this.cardDataService.actualListParent.ulElement;
 
     if (this.stopCardTransform) return;
 
@@ -109,70 +108,68 @@ export class CardActionsService {
         newUlList,
         cardRect.y,
       );
-    const prevList = cloneElement.parentElement as HTMLElement;
+    const prevList = this.cardDataService.actualListParent.ulElement;
 
     const newListParent = newUlList.parentElement?.parentElement?.parentElement;
     const prevListParent = prevList.parentElement?.parentElement?.parentElement;
-    
-    if (prevListParent) prevListParent.style.zIndex = '-50';
-    if (newListParent) newListParent.style.zIndex = '200';
-    
-    newUlList.appendChild(cloneElement);
 
-
-    const height = this.getCardsTotalHeight(
-      Array.from(newUlList.children).filter(
-        (element) =>
-          element != this.boardEnvironmentEventsService.cardPreviewElement &&
-          element != elementRef,
-      ) as HTMLElement[],
-    );
-
-    newUlList.style.minHeight = height + LIST_GAP + 'px';
-    newUlList.style.maxHeight = height + LIST_GAP + 'px';
-
-    if (afterElement) {
-      newUlList.insertBefore(
-        this.boardEnvironmentEventsService.cardPreviewElement,
-        afterElement,
-      );
-    } else {
-      newUlList.appendChild(
-        this.boardEnvironmentEventsService.cardPreviewElement,
-      );
-    }
-
-    this.stopCardTransform = false;
-    this.handleCardsTransform(
-      cloneElement,
-      elementRef,
-      newUlList,
-      afterElement,
-      true,
-    );
-
-    timer(10)
+    timer(20)
       .pipe(take(1))
       .subscribe(() => {
-        Array.from(prevList.children).forEach((_element) => {
-          const element = _element as HTMLElement;
-          element.style.transform = '';
-        });
+        console.log(newListParent, prevListParent);
+        this.cardDataService.actualListParent = {
+          ulElement: newUlList,
+          listElementRef: newListParent as HTMLElement,
+        };
 
-        const prevHeight = this.getCardsTotalHeight(
-          Array.from(prevList.children).filter(
+        const height = this.getCardsTotalHeight(
+          Array.from(newUlList.children).filter(
             (element) =>
               element !=
                 this.boardEnvironmentEventsService.cardPreviewElement &&
-              element != cloneElement &&
               element != elementRef,
           ) as HTMLElement[],
         );
 
-        prevList.style.minHeight = prevHeight + LIST_GAP + 'px';
-        prevList.style.maxHeight = prevHeight + LIST_GAP + 'px';
+        newUlList.style.minHeight = height + LIST_GAP + 'px';
+        newUlList.style.maxHeight = height + LIST_GAP + 'px';
+
+        if (afterElement) {
+          newUlList.insertBefore(
+            this.boardEnvironmentEventsService.cardPreviewElement,
+            afterElement,
+          );
+        } else {
+          newUlList.appendChild(
+            this.boardEnvironmentEventsService.cardPreviewElement,
+          );
+        }
+
+        this.stopCardTransform = false;
+        this.handleCardsTransform(cloneElement, elementRef, afterElement, true);
+
+        timer(10)
+          .pipe(take(1))
+          .subscribe(() => {
+            Array.from(prevList.children).forEach((_element) => {
+              const element = _element as HTMLElement;
+              element.style.transform = '';
+            });
+
+            const prevHeight = this.getCardsTotalHeight(
+              Array.from(prevList.children).filter(
+                (element) =>
+                  element !=
+                    this.boardEnvironmentEventsService.cardPreviewElement &&
+                  element != cloneElement &&
+                  element != elementRef,
+              ) as HTMLElement[],
+            );
+
+            prevList.style.minHeight = prevHeight + LIST_GAP + 'px';
+            prevList.style.maxHeight = prevHeight + LIST_GAP + 'px';
+          });
       });
-    return;
   }
 
   private handleLastCardTransform(

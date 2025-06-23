@@ -12,6 +12,7 @@ import { CardActionsService } from '../../services/card-actions/card-actions.ser
 import { CardDataService } from '../../services/card-data/card-data.service';
 import { LIST_GAP } from '../../interfaces/list.interfaces';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
 
 @Directive({
   selector: '[cardMoveStart]',
@@ -23,8 +24,8 @@ export class CardMoveStartDirective implements OnInit {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
-  private readonly element = inject(ElementRef).nativeElement as HTMLElement;
   private readonly destroyRef = inject(DestroyRef);
+  private readonly listElement = inject(LIST_ELEMENT);
 
   hasMove = false;
   moveHasStart = false;
@@ -41,7 +42,7 @@ export class CardMoveStartDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    fromEvent<TouchEvent>(this.element, 'touchstart', { passive: true })
+    fromEvent<TouchEvent>(this.elementRef, 'touchstart', { passive: true })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
         if (this.boardEnvironmentEventsService.onCardUpStart) return;
@@ -89,6 +90,8 @@ export class CardMoveStartDirective implements OnInit {
     clone.style.transition = 'none';
     clone.setAttribute('clone', 'true');
 
+    document.body.appendChild(clone);
+
     this.cardDataService.cardClone = clone;
 
     const cardRect = this.elementRef.getBoundingClientRect();
@@ -98,17 +101,13 @@ export class CardMoveStartDirective implements OnInit {
       width: cardRect.width,
     });
 
-    const parentElement = this.cardDataService.cardClone
-      .parentElement as HTMLElement;
+    const parentElement = this.elementRef.parentElement as HTMLElement;
 
     parentElement.style.minHeight = parentElement.offsetHeight + 'px';
 
     parentElement.style.maxHeight = parentElement.offsetHeight + 'px';
 
-    this.cardDataService.cardClone.style.zIndex = '20';
-
-    parentElement!.parentElement!.parentElement!.parentElement!.style.zIndex =
-      '20';
+    this.cardDataService.cardClone.style.zIndex = '20000';
 
     this.cardDataService.cardClone.style.top = 'unset';
     this.cardDataService.cardClone.style.left = 'unset';
@@ -130,10 +129,11 @@ export class CardMoveStartDirective implements OnInit {
 
     document.body.style.cursor = 'grab';
 
+    this.cardDataService.actualListParent = this.listElement;
+
     this.cardActionsService.handleCardsTransform(
       this.cardDataService.cardClone,
       this.elementRef,
-      this.cardDataService.cardClone.parentElement as HTMLElement,
       this.elementRef.nextElementSibling,
     );
 
