@@ -116,7 +116,6 @@ export class CardActionsService {
     timer(20)
       .pipe(take(1))
       .subscribe(() => {
-        console.log(newListParent, prevListParent);
         this.cardDataService.actualListParent = {
           ulElement: newUlList,
           listElementRef: newListParent as HTMLElement,
