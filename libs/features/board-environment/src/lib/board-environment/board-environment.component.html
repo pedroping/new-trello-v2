@@ -1,10 +1,12 @@
 @if (boardEnvironment$ | async; as boardEnvironment) {
 @if (boardEnvironment?.lists?.length && boardEnvironment.lists.length > 0) {
-<ol class="all-lists" @fade>
-  @for (list of boardEnvironment.lists; track list.id) {
-  <lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
-  }
-</ol>
+<div class="content">
+  <ol class="all-lists" @fade>
+    @for (list of boardEnvironment.lists; track list.id) {
+    <lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
+    }
+  </ol>
+</div>
 } @else {
 <lib-board-skeleton />
 }

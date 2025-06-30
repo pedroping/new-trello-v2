@@ -112,9 +112,9 @@ export class ListMoveStopDirective implements OnInit {
             timer(20)
               .pipe(take(1))
               .subscribe(() => {
-                // parentElement.style.width = '';
-                // parentElement.style.minWidth = '';
-                // parentElement.style.maxWidth = '';
+                parentElement.style.width = '';
+                parentElement.style.minWidth = '';
+                parentElement.style.maxWidth = '';
                 parentElement.style.transition = '';
 
                 this.getAllLists(parentElement).forEach((element) => {
