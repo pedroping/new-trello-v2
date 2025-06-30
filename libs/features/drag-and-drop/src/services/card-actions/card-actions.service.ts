@@ -213,7 +213,7 @@ export class CardActionsService {
 
   private getActualList(elementRef: HTMLElement) {
     const listsElement = this.boardEnvironmentStoreService.boardElementRef
-      .firstChild as HTMLElement;
+      .firstChild!.firstChild as HTMLElement;
     const allLists = Array.from(listsElement.children);
 
     const elementRect = elementRef.getBoundingClientRect();

@@ -106,7 +106,7 @@ export class ListMoveStartDirective implements OnInit {
     document.body.style.cursor = 'grab';
 
     const allListsElement = this.boardEnvironmentStoreService.boardElementRef
-      .firstChild as HTMLElement;
+      .firstChild?.firstChild as HTMLElement;
 
     Array.from(allListsElement.children).forEach((list) => {
       (list as HTMLElement).style.zIndex = '20';
