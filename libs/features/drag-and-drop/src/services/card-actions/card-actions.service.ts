@@ -85,6 +85,7 @@ export class CardActionsService {
     if (!listId || !list) return;
     if (+listId == this.cardDataService.card.listId) return;
     const newUlList = list.children[1].firstChild?.firstChild as HTMLElement;
+
     if (!newUlList) return;
     this.stopCardTransform = true;
     this.cardDataService.card.listId = +listId;
@@ -102,11 +103,10 @@ export class CardActionsService {
       y: cloneRect.y,
     };
 
-    const cardRect = cloneElement.getBoundingClientRect();
     const afterElement =
       this.boardEnvironmentEventsService.getDragAfterCardElement(
         newUlList,
-        cardRect.y,
+        cloneRect.y,
       );
     const prevList = this.cardDataService.actualListParent.ulElement;
 
@@ -129,8 +129,14 @@ export class CardActionsService {
           ) as HTMLElement[],
         );
 
-        newUlList.style.minHeight = height + LIST_GAP + 'px';
-        newUlList.style.maxHeight = height + LIST_GAP + 'px';
+        const newHeight =
+          height +
+          this.cardDataService.cardClone.offsetHeight +
+          LIST_GAP +
+          'px';
+
+        newUlList.style.minHeight = newHeight;
+        newUlList.style.maxHeight = newHeight;
 
         if (afterElement) {
           newUlList.insertBefore(
