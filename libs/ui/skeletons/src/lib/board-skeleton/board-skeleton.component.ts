@@ -1,9 +1,11 @@
 import {
+  afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostBinding,
   inject,
-  OnInit,
+  signal
 } from '@angular/core';
 import { fadeAnimation } from '@new-trello-v2/animations';
 
@@ -15,20 +17,25 @@ const LIST_WIDTH = 300;
   styleUrl: './board-skeleton.component.scss',
   imports: [],
   animations: [fadeAnimation],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BoardSkeletonComponent implements OnInit {
-  lists: number[] = [];
+export class BoardSkeletonComponent {
+  lists = signal<number[]>([]);
 
   @HostBinding('@fade') animate = true;
 
   private readonly element = inject(ElementRef).nativeElement as HTMLElement;
 
-  ngOnInit(): void {
-    const width = this.element.offsetWidth;
+  constructor() {
+    afterNextRender(() => {
+      const width = window.innerWidth;
 
-    this.lists = Array.from({ length: Math.round(width / LIST_WIDTH) }).map(
-      () => Math.max(30, this.getRoundedBy10((Math.random() * 50) + 50)),
-    );
+      this.lists.set(
+        Array.from({ length: Math.round(width / LIST_WIDTH) }).map(() =>
+          Math.max(30, this.getRoundedBy10(Math.random() * 50 + 50)),
+        ),
+      );
+    });
   }
 
   getRoundedBy10(value: number) {

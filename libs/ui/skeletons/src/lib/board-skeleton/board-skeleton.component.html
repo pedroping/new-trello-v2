@@ -1,3 +1,3 @@
-@for (classId of lists; let idx = $index; track idx) {
+@for (classId of lists(); let idx = $index; track idx) {
 <div class="preview-list" [class]="'list-' + classId" ></div>
 }

@@ -1,3 +1,4 @@
+@defer (hydrate on viewport) {
 @if (boardEnvironment$ | async; as boardEnvironment) {
 @if (boardEnvironment?.lists?.length && boardEnvironment.lists.length > 0) {
 <div class="content">
@@ -10,4 +11,7 @@
 } @else {
 <lib-board-skeleton />
 }
+}
+} @placeholder {
+<lib-board-skeleton />
 }
