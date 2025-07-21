@@ -50,6 +50,8 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
         skip(1),
         takeUntilDestroyed(this.destroyRef),
         tap(() => {
+          this.downHasStart = false;
+          this.upHasStart = false;
           this.destroyEvents$.next();
         }),
         switchMap((cardEvent) => {
