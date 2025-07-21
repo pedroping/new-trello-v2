@@ -2,7 +2,7 @@
 @if (boardEnvironment$ | async; as boardEnvironment) {
 @if (boardEnvironment?.lists?.length && boardEnvironment.lists.length > 0) {
 <div class="content">
-  <ol class="all-lists" @fade>
+  <ol class="all-lists" id="all-lists" @fade>
     @for (list of boardEnvironment.lists; track list.id) {
     <lib-list [list]="list" [cards]="list.cards" [attr.list-id]="list.id" />
     }

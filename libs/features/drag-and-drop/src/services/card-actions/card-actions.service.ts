@@ -218,8 +218,11 @@ export class CardActionsService {
   }
 
   private getActualList(elementRef: HTMLElement) {
-    const listsElement = this.boardEnvironmentStoreService.boardElementRef
-      .firstChild!.firstChild as HTMLElement;
+    const listsElement =
+      this.boardEnvironmentStoreService.boardElementRef.querySelector(
+        '#all-lists',
+      ) as HTMLElement;
+
     const allLists = Array.from(listsElement.children);
 
     const elementRect = elementRef.getBoundingClientRect();
