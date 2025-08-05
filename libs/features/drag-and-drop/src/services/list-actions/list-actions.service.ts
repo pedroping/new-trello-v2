@@ -1,5 +1,5 @@
-import { inject, Injectable } from '@angular/core';
-import { take, timer } from 'rxjs';
+import { inject, Injectable, NgZone } from '@angular/core';
+import { take } from 'rxjs';
 import { BoardEnvironmentEventsService } from '../board-environment-events/board-environment-events.service';
 
 @Injectable({ providedIn: 'root' })
@@ -7,6 +7,7 @@ export class ListActionsService {
   private readonly boardEnvironmentEventsService = inject(
     BoardEnvironmentEventsService,
   );
+  private readonly ngZone = inject(NgZone);
 
   handleListTransform(
     elementRef: HTMLElement,
@@ -101,16 +102,14 @@ export class ListActionsService {
     elementRef: HTMLElement,
     listElements: HTMLCollection,
   ) {
-    timer(1)
-      .pipe(take(1))
-      .subscribe(() => {
-        Array.from(listElements)
-          .filter((element) => element != elementRef)
-          .forEach((_element) => {
-            const element = _element as HTMLElement;
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+      Array.from(listElements)
+        .filter((element) => element != elementRef)
+        .forEach((_element) => {
+          const element = _element as HTMLElement;
 
-            element.style.transition = set ? 'all 200ms ease-in-out' : 'none';
-          });
-      });
+          element.style.transition = set ? 'all 200ms ease-in-out' : 'none';
+        });
+    });
   }
 }

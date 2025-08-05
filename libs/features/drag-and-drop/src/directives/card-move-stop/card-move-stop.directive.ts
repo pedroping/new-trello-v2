@@ -3,15 +3,15 @@ import {
   Directive,
   ElementRef,
   inject,
-  OnInit,
+  OnInit
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent, merge, switchMap, take, tap, timer } from 'rxjs';
+import { fromEvent, merge, take, tap } from 'rxjs';
+import { CARD_GAP } from '../../interfaces/card.interfaces';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
-import { CardDataService } from '../../services/card-data/card-data.service';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
-import { CARD_GAP } from '../../interfaces/card.interfaces';
+import { CardDataService } from '../../services/card-data/card-data.service';
 
 @Directive({
   selector: '[cardMoveStop]',
@@ -111,21 +111,15 @@ export class CardMoveStopDirective implements OnInit {
 
           this.elementRef.style.opacity = '1';
         }),
-        switchMap(() =>
-          timer(1).pipe(
-            take(1),
-            tap(() => {
-              if (isSameList)
-                this.boardEnvironmentDataService.moveCard(
-                  this.cardDataService.card.id,
-                  this.cardDataService.card.listId,
-                  previewElementId,
-                );
-            }),
-          ),
-        ),
       )
       .subscribe(() => {
+        if (isSameList)
+          this.boardEnvironmentDataService.moveCard(
+            this.cardDataService.card.id,
+            this.cardDataService.card.listId,
+            previewElementId,
+          );
+
         this.getAllCardsList(parentElement, true).forEach((element, i) => {
           if (i < previewElementId) return;
 

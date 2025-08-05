@@ -4,15 +4,16 @@ import {
   ElementRef,
   HostListener,
   inject,
+  NgZone,
   OnInit,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter, fromEvent, take, timer } from 'rxjs';
+import { LIST_GAP } from '../../interfaces/list.interfaces';
+import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { CardActionsService } from '../../services/card-actions/card-actions.service';
 import { CardDataService } from '../../services/card-data/card-data.service';
-import { LIST_GAP } from '../../interfaces/list.interfaces';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { LIST_ELEMENT } from '../../providers/list-element-provider';
 
 @Directive({
   selector: '[cardMoveStart]',
@@ -26,6 +27,7 @@ export class CardMoveStartDirective implements OnInit {
   );
   private readonly destroyRef = inject(DestroyRef);
   private readonly listElement = inject(LIST_ELEMENT);
+  private readonly ngZone = inject(NgZone);
 
   hasMove = false;
   moveHasStart = false;
@@ -137,17 +139,15 @@ export class CardMoveStartDirective implements OnInit {
       this.elementRef.nextElementSibling,
     );
 
-    timer(10)
-      .pipe(take(1))
-      .subscribe(() => {
-        this.boardEnvironmentEventsService.onCardUpStart = false;
+    this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+      this.boardEnvironmentEventsService.onCardUpStart = false;
 
-        this.boardEnvironmentEventsService.actualCardMoving = {
-          id: this.cardDataService.card.id,
-          listId: this.cardDataService.card.listId,
-          element: this.cardDataService.cardClone,
-          type: 'card',
-        };
-      });
+      this.boardEnvironmentEventsService.actualCardMoving = {
+        id: this.cardDataService.card.id,
+        listId: this.cardDataService.card.listId,
+        element: this.cardDataService.cardClone,
+        type: 'card',
+      };
+    });
   }
 }

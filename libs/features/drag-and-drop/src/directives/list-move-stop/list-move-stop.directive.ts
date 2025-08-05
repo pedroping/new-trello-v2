@@ -1,6 +1,6 @@
-import { DestroyRef, Directive, inject, OnInit } from '@angular/core';
+import { DestroyRef, Directive, inject, NgZone, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent, merge, take, timer } from 'rxjs';
+import { fromEvent, merge, take } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
@@ -19,6 +19,7 @@ export class ListMoveStopDirective implements OnInit {
   private readonly boardEnvironmentStoreService = inject(
     BoardEnvironmentStoreService,
   );
+  private readonly ngZone = inject(NgZone);
 
   ngOnInit(): void {
     merge(
@@ -101,42 +102,38 @@ export class ListMoveStopDirective implements OnInit {
 
         parentElement.style.transition = 'all 200ms ease-in-out';
 
-        timer(1)
-          .pipe(take(1))
-          .subscribe(() => {
-            this.boardEnvironmentStoreService.moveList(
-              this.listDataService.list.id,
-              previewElementId,
-            );
+        this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+          this.boardEnvironmentStoreService.moveList(
+            this.listDataService.list.id,
+            previewElementId,
+          );
 
-            timer(20)
-              .pipe(take(1))
-              .subscribe(() => {
-                parentElement.style.width = '';
-                parentElement.style.minWidth = '';
-                parentElement.style.maxWidth = '';
-                parentElement.style.transition = '';
+          this.ngZone.onStable.pipe(take(1)).subscribe(() => {
+            parentElement.style.width = '';
+            parentElement.style.minWidth = '';
+            parentElement.style.maxWidth = '';
+            parentElement.style.transition = '';
 
-                this.getAllLists(parentElement).forEach((element) => {
-                  element.style.zIndex = '0';
-                  element.style.minHeight = '';
-                  element.style.maxWidth = '';
-                  element.style.zIndex = '';
-                  element.style.top = '';
-                  element.style.left = '';
-                  element.style.position = '';
-                  element.style.width = '';
-                  element.style.height = '';
-                  element.style.transform = '';
-                  element.style.transition = '';
-                  element.style.maxHeight = '';
-                  element.style.left = '';
-                  element.style.width = '';
-                  element.style.height = '';
-                  element.style.position = '';
-                });
-              });
+            this.getAllLists(parentElement).forEach((element) => {
+              element.style.zIndex = '0';
+              element.style.minHeight = '';
+              element.style.maxWidth = '';
+              element.style.zIndex = '';
+              element.style.top = '';
+              element.style.left = '';
+              element.style.position = '';
+              element.style.width = '';
+              element.style.height = '';
+              element.style.transform = '';
+              element.style.transition = '';
+              element.style.maxHeight = '';
+              element.style.left = '';
+              element.style.width = '';
+              element.style.height = '';
+              element.style.position = '';
+            });
           });
+        });
       });
   }
 
