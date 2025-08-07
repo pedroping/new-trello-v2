@@ -43,6 +43,8 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
   private upHasStart = false;
   private downHasStart = false;
   private destroyEvents$ = new Subject<void>();
+  upPlusMovement = 0;
+  downPlusMovement = 0;
 
   ngOnInit(): void {
     this.boardEnvironmentEventsService.actualCardMoving$$
@@ -70,8 +72,12 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
         const downSize = window.innerHeight - SIZE_GAP;
 
         if (moveEvent.y <= SIZE_GAP) {
+          const per = (moveEvent.y * 100) / SIZE_GAP;
+          this.upPlusMovement = 3 - 3 * (per / 100);
+
           if (this.upHasStart) {
             this.downHasStart = false;
+            this.downPlusMovement = 0;
             return;
           }
 
@@ -83,8 +89,13 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
         }
 
         if (moveEvent.y >= downSize) {
+          const per =
+            ((moveEvent.y - downSize) * 100) / (window.innerHeight - downSize);
+          this.downPlusMovement = 3 * (per / 100);
+
           if (this.downHasStart) {
             this.upHasStart = false;
+            this.upPlusMovement = 0;
             return;
           }
 
@@ -95,6 +106,8 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
           return;
         }
 
+        this.upPlusMovement = 0;
+        this.downPlusMovement = 0;
         this.upHasStart = false;
         this.downHasStart = false;
         this.destroyEvents$.next();
@@ -107,7 +120,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
     timer(0, 5)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        contentElement.scrollTop += -1;
+        contentElement.scrollTop += -Math.ceil(1 + this.upPlusMovement);
         this.scrollActionsService.setScrollEvent(cardEvent);
       });
   }
@@ -118,7 +131,7 @@ export class CardAutoScrollDirective implements OnInit, OnDestroy {
     timer(0, 5)
       .pipe(takeUntil(this.destroyEvents$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        contentElement.scrollTop += 1;
+        contentElement.scrollTop += Math.ceil(1 + this.downPlusMovement);
         this.scrollActionsService.setScrollEvent(cardEvent);
       });
   }

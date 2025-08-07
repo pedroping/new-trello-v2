@@ -39,6 +39,9 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
     .nativeElement as HTMLElement;
   private readonly scrollActionsService = inject(ScrollActionsService);
 
+  leftPlusMovement = 0;
+  rightPlusMovement = 0;
+
   ngOnInit() {
     const cardMoveEvent$ =
       this.boardEnvironmentEventsService.cardMoveEvent$$.pipe(
@@ -98,8 +101,12 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
         const rightSize = window.innerWidth - SIZE_GAP;
 
         if (moveEvent.x <= SIZE_GAP) {
+          const per = (moveEvent.x * 100) / SIZE_GAP;
+          this.leftPlusMovement = 3 - 3 * (per / 100);
+
           if (this.leftHasStart) {
             this.rightHasStart = false;
+            this.rightPlusMovement = 0;
             this.rightDestroyEvents$.next();
 
             return;
@@ -114,8 +121,14 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
         }
 
         if (moveEvent.x >= rightSize) {
+          const per =
+            ((moveEvent.x - rightSize) * 100) /
+            (window.innerWidth - rightSize);
+          this.rightPlusMovement = 3 * (per / 100);
+
           if (this.rightHasStart) {
             this.leftHasStart = false;
+            this.leftPlusMovement = 0;
             this.leftDestroyEvents$.next();
 
             return;
@@ -129,6 +142,8 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
           return;
         }
 
+        this.rightPlusMovement = 0;
+        this.leftPlusMovement = 0;
         this.leftHasStart = false;
         this.rightHasStart = false;
 
@@ -144,7 +159,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
-        this.scrollElement.scrollLeft -= 2;
+        this.scrollElement.scrollLeft -= Math.ceil(2 + this.leftPlusMovement);
         this.scrollActionsService.setGlobalScrollEvent(
           this.scrollElement.scrollLeft,
         );
@@ -158,7 +173,7 @@ export class AutoScrollDirective implements OnInit, OnDestroy {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => {
-        this.scrollElement.scrollLeft += 2;
+        this.scrollElement.scrollLeft += Math.ceil(2 + this.rightPlusMovement);
         this.scrollActionsService.setGlobalScrollEvent(
           this.scrollElement.scrollLeft,
         );
