@@ -89,6 +89,8 @@ export class CardMoveStartDirective implements OnInit {
 
     const clone = this.elementRef.cloneNode(true) as HTMLElement;
     this.elementRef.parentElement!.appendChild(clone);
+    this.elementRef.classList.add('on-drag');
+    clone.classList.add('on-drag');
     clone.style.transition = 'none';
     clone.setAttribute('clone', 'true');
 

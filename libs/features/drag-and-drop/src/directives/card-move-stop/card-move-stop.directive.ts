@@ -3,7 +3,7 @@ import {
   Directive,
   ElementRef,
   inject,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge, take, tap } from 'rxjs';
@@ -139,7 +139,9 @@ export class CardMoveStopDirective implements OnInit {
           element.style.transform = 'translateY(0px)';
         });
 
-        this.elementRef.style.position = 'static';
+        this.elementRef.style.position = '';
+        this.elementRef.style.top = '';
+        this.elementRef.style.left = '';
 
         if (isSameList)
           this.cardDataService.cardClone.parentElement!.removeChild(
@@ -154,12 +156,13 @@ export class CardMoveStopDirective implements OnInit {
           );
 
         this.getAllCardsList(parentElement, false).forEach((element) => {
-          element.style.position = 'static';
+          element.style.position = '';
           element.style.top = '';
           element.style.left = '';
           element.style.width = '';
           element.style.transition = 'none';
         });
+        this.elementRef.classList.remove('on-drag');
 
         if (!isSameList)
           this.cardDataService.cardClone.parentElement!.removeChild(
