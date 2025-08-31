@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, HostListener, inject, input } from '@angular/core';
 import { CardMoveStartDirective } from '../../directives/card-move-start/card-move-start.directive';
 import { CardMoveStopDirective } from '../../directives/card-move-stop/card-move-stop.directive';
 import { CardMoveDirective } from '../../directives/card-move/card-move.directive';
@@ -23,5 +23,10 @@ export class CardComponent {
 
   constructor() {
     this.cardDataHandleService.startDomain(this.card);
+  }
+
+  edit(event: Event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 }

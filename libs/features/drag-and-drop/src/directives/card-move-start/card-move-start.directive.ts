@@ -33,6 +33,15 @@ export class CardMoveStartDirective implements OnInit {
   moveHasStart = false;
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+    const buttonElement = this.elementRef.querySelector('#card-edit');
+
+    if (
+      buttonElement &&
+      (event.target === buttonElement ||
+        buttonElement.contains(event.target as Node))
+    )
+      return;
+
     event.preventDefault();
     event.stopImmediatePropagation();
 
