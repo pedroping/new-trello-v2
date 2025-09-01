@@ -33,6 +33,15 @@ export class ListMoveStartDirective implements OnInit {
   moveHasStart = false;
 
   @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+    const buttonElement = this.element.querySelector('#list-edit');
+
+    if (
+      buttonElement &&
+      (event.target === buttonElement ||
+        buttonElement.contains(event.target as Node))
+    )
+      return;
+
     event.preventDefault();
     event.stopImmediatePropagation();
 
@@ -89,6 +98,7 @@ export class ListMoveStartDirective implements OnInit {
       .parentElement as HTMLElement;
 
     const elementsTotal = parentElement.children.length;
+    this.element.classList.add('on-drag');
 
     const pageWidth =
       elementsTotal * (parentElement.firstChild as HTMLElement).offsetWidth +

@@ -24,4 +24,9 @@ export class ListHeaderComponent {
   constructor() {
     this.listDataService.startDomain(this.list);
   }
+
+  edit(event: Event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }
 }

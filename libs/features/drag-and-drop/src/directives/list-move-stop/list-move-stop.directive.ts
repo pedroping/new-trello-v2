@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, inject, NgZone, OnInit } from '@angular/core';
+import { DestroyRef, Directive, ElementRef, inject, NgZone, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge, take } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -20,6 +20,7 @@ export class ListMoveStopDirective implements OnInit {
     BoardEnvironmentStoreService,
   );
   private readonly ngZone = inject(NgZone);
+  private readonly element = inject(ElementRef).nativeElement as HTMLElement;
 
   ngOnInit(): void {
     merge(
@@ -113,6 +114,7 @@ export class ListMoveStopDirective implements OnInit {
             parentElement.style.minWidth = '';
             parentElement.style.maxWidth = '';
             parentElement.style.transition = '';
+            this.element.classList.remove('on-drag');
 
             this.getAllLists(parentElement).forEach((element) => {
               element.style.zIndex = '0';
