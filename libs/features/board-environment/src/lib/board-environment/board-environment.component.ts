@@ -1,13 +1,12 @@
 import { AsyncPipe } from '@angular/common';
 import {
-  afterNextRender,
   Component,
   ElementRef,
   inject,
   Injector,
-  OnInit,
-  runInInjectionContext,
+  OnInit
 } from '@angular/core';
+import { fadeAnimation } from '@new-trello-v2/animations';
 import {
   AutoScrollDirective,
   BoardEnvironmentStoreService,
@@ -17,7 +16,6 @@ import {
 import { MousePageMoveDirective } from '@new-trello-v2/mouse-page-move';
 import { BoardSkeletonComponent } from '@new-trello-v2/skeletons';
 import { timer } from 'rxjs';
-import { fadeAnimation } from '@new-trello-v2/animations';
 
 @Component({
   selector: 'lib-board-environment',
@@ -25,7 +23,7 @@ import { fadeAnimation } from '@new-trello-v2/animations';
   styleUrl: './board-environment.component.scss',
   imports: [ListComponent, AsyncPipe, BoardSkeletonComponent],
   hostDirectives: [MousePageMoveDirective, AutoScrollDirective],
-  animations: [fadeAnimation]
+  animations: [fadeAnimation],
 })
 export class BoardEnvironmentComponent implements OnInit {
   private readonly boardEnvironmentStoreService = inject(
@@ -38,30 +36,26 @@ export class BoardEnvironmentComponent implements OnInit {
     this.boardEnvironmentStoreService?.boardEnvironment$$;
 
   ngOnInit(): void {
-    runInInjectionContext(this.injector, () => {
-      afterNextRender(() => {
-        this.boardEnvironmentStoreService.boardElementRef =
-          this.elementRef.nativeElement;
+    this.boardEnvironmentStoreService.boardElementRef =
+      this.elementRef.nativeElement;
 
-        const newData: IBoardEnvironmentData = {
-          id: 1,
-          name: 'Initial Board',
-          lists: Array.from({ length: 10 }).map((_, i) => ({
-            id: i,
-            name: 'List ' + (i + 1),
-            environmentId: 1,
-            cards: Array.from({ length: 25 }).map((_, y) => ({
-              name: this.getNameByLength(y) + ' ' + (i + 1),
-              id: +`${i + 1}${y}`,
-              listId: i,
-            })),
-          })),
-        };
+    const newData: IBoardEnvironmentData = {
+      id: 1,
+      name: 'Initial Board',
+      lists: Array.from({ length: 10 }).map((_, i) => ({
+        id: i,
+        name: 'List ' + (i + 1),
+        environmentId: 1,
+        cards: Array.from({ length: 25 }).map((_, y) => ({
+          name: this.getNameByLength(y) + ' ' + (i + 1),
+          id: +`${i + 1}${y}`,
+          listId: i,
+        })),
+      })),
+    };
 
-        timer(500).subscribe(() => {
-          this.boardEnvironmentStoreService.boardEnvironment = newData;
-        });
-      });
+    timer(1000).subscribe(() => {
+      this.boardEnvironmentStoreService.boardEnvironment = newData;
     });
   }
 
