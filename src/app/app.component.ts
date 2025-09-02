@@ -22,7 +22,8 @@ export class AppComponent {
 
   private activateUpdate() {
     this.swUpdate.activateUpdate().then(() => {
-      document.location.reload();
+      if (confirm('New version available, reload now ?'))
+        document.location.reload();
     });
   }
 }
