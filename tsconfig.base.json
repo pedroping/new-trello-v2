@@ -26,7 +26,10 @@
         "libs/features/mouse-page-move/src/index.ts"
       ],
       "@new-trello-v2/skeletons": ["libs/ui/skeletons/src/index.ts"],
-      "@new-trello-v2/styles": ["libs/utils/styles/src/index.ts"]
+      "@new-trello-v2/styles": ["libs/utils/styles/src/index.ts"],
+      "@new-trello-v2/version-checker": [
+        "libs/utils/version-checker/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"],

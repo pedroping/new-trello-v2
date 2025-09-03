@@ -1,16 +1,20 @@
 import {
   ApplicationConfig,
-  provideZoneChangeDetection,
+  ErrorHandler,
+  inject,
   isDevMode,
+  provideAppInitializer,
+  provideZoneChangeDetection
 } from '@angular/core';
-import { provideRouter, withViewTransitions } from '@angular/router';
-import { appRoutes } from './app.routes';
-import { provideServiceWorker } from '@angular/service-worker';
 import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
-import { provideAnimationsAsync } from "@angular/platform-browser/animations/async"
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideRouter, withViewTransitions } from '@angular/router';
+import { provideServiceWorker } from '@angular/service-worker';
+import { ChunckErrorHandleService, VersionCheckService } from '@new-trello-v2/version-checker';
+import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,5 +26,12 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000',
     }),
     provideClientHydration(withEventReplay()),
+    {
+      provide: ErrorHandler,
+      useClass: ChunckErrorHandleService,
+    },
+    provideAppInitializer(() => {
+      return inject(VersionCheckService).start();
+    }),
   ],
 };
