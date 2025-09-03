@@ -1,10 +1,13 @@
 import {
+  afterNextRender,
   ApplicationConfig,
   ErrorHandler,
   inject,
+  Injector,
   isDevMode,
   provideAppInitializer,
-  provideZoneChangeDetection
+  provideZoneChangeDetection,
+  runInInjectionContext,
 } from '@angular/core';
 import {
   provideClientHydration,
@@ -13,7 +16,10 @@ import {
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideRouter, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
-import { ChunckErrorHandleService, VersionCheckService } from '@new-trello-v2/version-checker';
+import {
+  ChunckErrorHandleService,
+  VersionCheckService,
+} from '@new-trello-v2/version-checker';
 import { appRoutes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -31,7 +37,14 @@ export const appConfig: ApplicationConfig = {
       useClass: ChunckErrorHandleService,
     },
     provideAppInitializer(() => {
-      return inject(VersionCheckService).start();
+      const injector = inject(Injector);
+      const versionCheckService = inject(VersionCheckService);
+
+      return runInInjectionContext(injector, () => {
+        afterNextRender(() => {
+          versionCheckService.start();
+        });
+      });
     }),
   ],
 };

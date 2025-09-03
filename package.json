@@ -7,7 +7,7 @@
     "build": "node libs/utils/version-checker/src/lib/scripts/set-random-hash.js --path=public/versionId.txt && nx build",
     "build:analyzer": "nx build --stats-json && webpack-bundle-analyzer dist/new-trello-v2/stats.json",
     "test": "nx test",
-    "serve:ssr": "npm run build && node dist/new-trello-v2/server/server.mjs",
+    "serve:ssr": "npm run build  && node dist/new-trello-v2/server/server.mjs",
     "prerender": "npx nx run new-trello-v2:prerender"
   },
   "private": true,

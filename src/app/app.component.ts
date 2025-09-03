@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SwUpdate } from '@angular/service-worker';
+import { VersionCheckService } from '@new-trello-v2/version-checker';
 
 @Component({
   selector: 'new-trello-root',
@@ -8,22 +8,8 @@ import { SwUpdate } from '@angular/service-worker';
   imports: [RouterOutlet],
 })
 export class AppComponent {
-  private readonly swUpdate = inject(SwUpdate);
-
-  constructor() {
-    if (this.swUpdate.isEnabled) {
-      this.swUpdate.versionUpdates.subscribe((event) => {
-        if (event.type === 'VERSION_READY') {
-          this.activateUpdate();
-        }
-      });
-    }
-  }
-
-  private activateUpdate() {
-    this.swUpdate.activateUpdate().then(() => {
-      if (confirm('New version available, reload now?'))
-        document.location.reload();
-    });
-  }
+  // versionCheckService = inject(VersionCheckService);
+  // ngAfterViewInit(): void {
+  //   this.versionCheckService.start();
+  // }
 }

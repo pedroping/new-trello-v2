@@ -1,21 +1,37 @@
-import { Injectable, isDevMode } from '@angular/core';
+import {
+  afterNextRender,
+  inject,
+  Injectable,
+  Injector,
+  isDevMode,
+  runInInjectionContext,
+} from '@angular/core';
 import { Subject, takeUntil, timer } from 'rxjs';
-
 @Injectable({
   providedIn: 'root',
 })
 export class VersionCheckService {
   private destroy$ = new Subject<void>();
+  private readonly injector = inject(Injector);
 
   start() {
     if (isDevMode()) return;
-    this.checkVersion(false, true);
+
+    runInInjectionContext(this.injector, () => {
+      afterNextRender(() => {
+        this.checkVersion(false, true);
+      });
+    });
   }
 
   private checkVersion(fromTimer: boolean, fromStart: boolean) {
-    fetch('/versionId.txt?CacheBusting=' + this.generateRandomString())
-      .then((res) => res.text())
+    fetch(
+      `/versionId.txt?CacheBusting=${this.generateRandomString()}&ngsw-cache-bust=${this.generateRandomString()}`,
+    )
+      .then((res) => res?.text?.())
       .then((id) => {
+        if (!id) return;
+
         const currentVersion = localStorage.getItem('applicationVersion');
 
         localStorage.setItem('applicationVersion', id);
@@ -35,7 +51,7 @@ export class VersionCheckService {
   }
 
   private initTimerCheck() {
-    timer(120000, 120000)
+    timer(60000, 60000)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.checkVersion(true, false));
   }
