@@ -1,4 +1,11 @@
-import { DestroyRef, Directive, ElementRef, inject, NgZone, OnInit } from '@angular/core';
+import {
+  DestroyRef,
+  Directive,
+  ElementRef,
+  inject,
+  NgZone,
+  OnInit,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, merge, take } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
@@ -103,38 +110,34 @@ export class ListMoveStopDirective implements OnInit {
 
         parentElement.style.transition = 'all 200ms ease-in-out';
 
-        this.ngZone.onStable.pipe(take(1)).subscribe(() => {
-          this.boardEnvironmentStoreService.moveList(
-            this.listDataService.list.id,
-            previewElementId,
-          );
+        this.boardEnvironmentStoreService.moveList(
+          this.listDataService.list.id,
+          previewElementId,
+        );
 
-          this.ngZone.onStable.pipe(take(1)).subscribe(() => {
-            parentElement.style.width = '';
-            parentElement.style.minWidth = '';
-            parentElement.style.maxWidth = '';
-            parentElement.style.transition = '';
-            this.element.classList.remove('on-drag');
+        parentElement.style.width = '';
+        parentElement.style.minWidth = '';
+        parentElement.style.maxWidth = '';
+        parentElement.style.transition = '';
+        this.element.classList.remove('on-drag');
 
-            this.getAllLists(parentElement).forEach((element) => {
-              element.style.zIndex = '0';
-              element.style.minHeight = '';
-              element.style.maxWidth = '';
-              element.style.zIndex = '';
-              element.style.top = '';
-              element.style.left = '';
-              element.style.position = '';
-              element.style.width = '';
-              element.style.height = '';
-              element.style.transform = '';
-              element.style.transition = '';
-              element.style.maxHeight = '';
-              element.style.left = '';
-              element.style.width = '';
-              element.style.height = '';
-              element.style.position = '';
-            });
-          });
+        this.getAllLists(parentElement).forEach((element) => {
+          element.style.zIndex = '0';
+          element.style.minHeight = '';
+          element.style.maxWidth = '';
+          element.style.zIndex = '';
+          element.style.top = '';
+          element.style.left = '';
+          element.style.position = '';
+          element.style.width = '';
+          element.style.height = '';
+          element.style.transform = '';
+          element.style.transition = '';
+          element.style.maxHeight = '';
+          element.style.left = '';
+          element.style.width = '';
+          element.style.height = '';
+          element.style.position = '';
         });
       });
   }

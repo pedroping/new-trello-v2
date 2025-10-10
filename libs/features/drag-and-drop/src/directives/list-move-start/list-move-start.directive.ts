@@ -6,7 +6,7 @@ import {
   inject,
   OnInit,
 } from '@angular/core';
-import { filter, fromEvent, timer } from 'rxjs';
+import { filter, fromEvent, takeUntil, timer } from 'rxjs';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
 import { BoardEnvironmentStoreService } from '../../services/board-environment-store/board-environment-store.service';
@@ -32,7 +32,9 @@ export class ListMoveStartDirective implements OnInit {
   hasMove = false;
   moveHasStart = false;
 
-  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+  @HostListener('pointerdown', ['$event']) onMouseDown(event: PointerEvent) {
+    if (event.pointerType != 'mouse') return;
+
     const buttonElement = this.element.querySelector('#list-edit');
 
     if (
@@ -56,6 +58,15 @@ export class ListMoveStartDirective implements OnInit {
     fromEvent<TouchEvent>(this.element, 'touchstart', { passive: true })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
+        const buttonElement = this.element.querySelector('#list-edit');
+
+        if (
+          buttonElement &&
+          (event.target === buttonElement ||
+            buttonElement.contains(event.target as Node))
+        )
+          return;
+
         if (this.boardEnvironmentEventsService.onListUpStart) return;
 
         const touch = event.touches[0];
@@ -63,24 +74,42 @@ export class ListMoveStartDirective implements OnInit {
         this.hasMove = false;
         this.moveHasStart = true;
 
-        this.boardEnvironmentEventsService
-          .getGlobalTouchMoveEventUnFiltered$()
-          .pipe(filter(() => this.moveHasStart))
+        timer(500)
+          .pipe(
+            takeUntil(
+              this.boardEnvironmentEventsService.getGlobalTouchUpEvent$(
+                this.listDataService.list.id,
+                'list',
+                true,
+              ),
+            ),
+          )
           .subscribe(() => {
-            this.hasMove = true;
+            if (this.hasMove) return;
+
+            this.boardEnvironmentEventsService.onListUpStart = true;
+
+            this.startDownEvent(touch.pageX, touch.pageY);
+
+            this.hasMove = false;
             this.moveHasStart = false;
           });
+      });
 
-        timer(500).subscribe(() => {
-          if (this.hasMove) return;
+    this.boardEnvironmentEventsService
+      .getGlobalTouchUpEvent$(this.listDataService.list.id, 'list', true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.hasMove = true;
+        this.moveHasStart = false;
+      });
 
-          this.boardEnvironmentEventsService.onListUpStart = true;
-
-          this.startDownEvent(touch.pageX, touch.pageY);
-
-          this.hasMove = false;
-          this.moveHasStart = false;
-        });
+    this.boardEnvironmentEventsService
+      .getGlobalTouchMoveEventUnFiltered$()
+      .pipe(filter(() => this.moveHasStart))
+      .subscribe(() => {
+        this.hasMove = true;
+        this.moveHasStart = false;
       });
   }
 

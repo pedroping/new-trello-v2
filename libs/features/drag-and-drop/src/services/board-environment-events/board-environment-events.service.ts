@@ -8,7 +8,11 @@ import {
   Subject,
   tap,
 } from 'rxjs';
-import { IDragMoveEvent, IMoveEvent, TEventType } from '../../interfaces/card.interfaces';
+import {
+  IDragMoveEvent,
+  IMoveEvent,
+  TEventType,
+} from '../../interfaces/card.interfaces';
 
 @Injectable({ providedIn: 'root' })
 export class BoardEnvironmentEventsService {
@@ -161,29 +165,29 @@ export class BoardEnvironmentEventsService {
     );
   }
 
-  getGlobalMouseUpEvent$(id: number, type: TEventType) {
+  getGlobalMouseUpEvent$(id: number, type: TEventType, noFilter?: boolean) {
     return this.mouseUpEvent$.pipe(
-      filter(() =>
-        type == 'card'
-          ? this.actualCardMoving?.id === id
-          : this.actualListMoving?.id == id,
+      filter(
+        () =>
+          (type == 'card'
+            ? this.actualCardMoving?.id === id
+            : this.actualListMoving?.id == id) || !!noFilter,
       ),
       tap((event) => {
-        event.preventDefault();
         event.stopImmediatePropagation();
       }),
     );
   }
 
-  getGlobalTouchUpEvent$(id: number, type: TEventType) {
+  getGlobalTouchUpEvent$(id: number, type: TEventType, noFilter?: boolean) {
     return this.touchUpEvent$.pipe(
-      filter(() =>
-        type == 'card'
-          ? this.actualCardMoving?.id === id
-          : this.actualListMoving?.id == id,
+      filter(
+        () =>
+          (type == 'card'
+            ? this.actualCardMoving?.id === id
+            : this.actualListMoving?.id == id) || !!noFilter,
       ),
       tap((event) => {
-        event.preventDefault();
         event.stopImmediatePropagation();
       }),
     );

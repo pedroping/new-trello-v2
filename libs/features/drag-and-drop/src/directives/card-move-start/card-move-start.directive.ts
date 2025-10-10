@@ -8,7 +8,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { filter, fromEvent, take, timer } from 'rxjs';
+import { filter, fromEvent, merge, take, takeUntil, timer } from 'rxjs';
 import { LIST_GAP } from '../../interfaces/list.interfaces';
 import { LIST_ELEMENT } from '../../providers/list-element-provider';
 import { BoardEnvironmentEventsService } from '../../services/board-environment-events/board-environment-events.service';
@@ -32,7 +32,9 @@ export class CardMoveStartDirective implements OnInit {
   hasMove = false;
   moveHasStart = false;
 
-  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
+  @HostListener('pointerdown', ['$event']) onMouseDown(event: PointerEvent) {
+    if (event.pointerType != 'mouse') return;
+
     const buttonElement = this.elementRef.querySelector('#card-edit');
 
     if (
@@ -42,7 +44,6 @@ export class CardMoveStartDirective implements OnInit {
     )
       return;
 
-    event.preventDefault();
     event.stopImmediatePropagation();
 
     if (this.boardEnvironmentEventsService.onCardUpStart) return;
@@ -53,9 +54,20 @@ export class CardMoveStartDirective implements OnInit {
   }
 
   ngOnInit(): void {
-    fromEvent<TouchEvent>(this.elementRef, 'touchstart', { passive: true })
+    fromEvent<TouchEvent>(this.elementRef, 'touchstart')
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((event) => {
+        const buttonElement = this.elementRef.querySelector('#card-edit');
+
+        if (
+          buttonElement &&
+          (event.target === buttonElement ||
+            buttonElement.contains(event.target as Node))
+        )
+          return;
+
+        event.stopImmediatePropagation();
+
         if (this.boardEnvironmentEventsService.onCardUpStart) return;
 
         const touch = event.touches[0];
@@ -63,29 +75,46 @@ export class CardMoveStartDirective implements OnInit {
         this.hasMove = false;
         this.moveHasStart = true;
 
-        this.boardEnvironmentEventsService
-          .getGlobalTouchMoveEventUnFiltered$()
-          .pipe(filter(() => this.moveHasStart))
+        timer(500)
+          .pipe(
+            takeUntil(
+              this.boardEnvironmentEventsService.getGlobalTouchUpEvent$(
+                this.cardDataService.card.id,
+                'card',
+                true,
+              ),
+            ),
+          )
           .subscribe(() => {
-            this.hasMove = true;
+            if (this.hasMove) return;
+
+            this.startDownEvent(touch.pageX, touch.pageY);
+
+            this.hasMove = false;
             this.moveHasStart = false;
           });
+      });
 
-        timer(500).subscribe(() => {
-          if (this.hasMove) return;
+    this.boardEnvironmentEventsService
+      .getGlobalTouchUpEvent$(this.cardDataService.card.id, 'card', true)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.hasMove = true;
+        this.moveHasStart = false;
+      });
 
-          this.boardEnvironmentEventsService.onCardUpStart = true;
-
-          this.startDownEvent(touch.pageX, touch.pageY);
-
-          this.hasMove = false;
-          this.moveHasStart = false;
-        });
+    this.boardEnvironmentEventsService
+      .getGlobalTouchMoveEventUnFiltered$()
+      .pipe(filter(() => this.moveHasStart))
+      .subscribe(() => {
+        this.hasMove = true;
+        this.moveHasStart = false;
       });
   }
 
   private startDownEvent(x: number, y: number) {
     this.boardEnvironmentEventsService.onCardUpStart = true;
+    this.hasMove = false;
 
     const height = this.cardActionsService.getCardsTotalHeight(
       Array.from(this.elementRef.parentElement!.children).filter(
