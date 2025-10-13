@@ -32,9 +32,7 @@ export class ListMoveStartDirective implements OnInit {
   hasMove = false;
   moveHasStart = false;
 
-  @HostListener('pointerdown', ['$event']) onMouseDown(event: PointerEvent) {
-    if (event.pointerType != 'mouse') return;
-
+  @HostListener('mousedown', ['$event']) onMouseDown(event: MouseEvent) {
     const buttonElement = this.element.querySelector('#list-edit');
 
     if (
