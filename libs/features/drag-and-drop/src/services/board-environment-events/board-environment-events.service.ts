@@ -137,7 +137,7 @@ export class BoardEnvironmentEventsService {
           : this.actualListMoving?.id === id,
       ),
       tap((event) => {
-        event.preventDefault();
+        if (event.eventPhase != 101) event.preventDefault();
         event.stopImmediatePropagation();
       }),
     );
@@ -155,7 +155,7 @@ export class BoardEnvironmentEventsService {
           : this.actualListMoving?.id === id,
       ),
       tap((event) => {
-        event.preventDefault();
+        if (event.eventPhase != 101) event.preventDefault();
         event.stopImmediatePropagation();
       }),
       map((event: TouchEvent) => ({

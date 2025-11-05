@@ -42,7 +42,7 @@ export class ListMoveStartDirective implements OnInit {
     )
       return;
 
-    event.preventDefault();
+    if (event.eventPhase != 101) event.preventDefault();
     event.stopImmediatePropagation();
 
     if (this.boardEnvironmentEventsService.onListUpStart) return;

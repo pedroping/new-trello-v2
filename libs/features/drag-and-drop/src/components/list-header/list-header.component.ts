@@ -26,7 +26,7 @@ export class ListHeaderComponent {
   }
 
   edit(event: Event) {
-    event.preventDefault();
+    if (event.eventPhase != 101) event.preventDefault();
     event.stopImmediatePropagation();
   }
 }
